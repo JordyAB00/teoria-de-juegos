@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ética y Gobernanza de Datos en IA - ULACIT</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #ffffff;
+            padding: 30px 0;
+            text-align: center;
+            border-bottom: 3px solid #00d4ff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        }
+
+        .logo-area {
+            margin-bottom: 20px;
+        }
+
+        .logo-image {
+            max-width: 300px;
+            height: auto;
+        }
+
+        h1 {
+            font-size: 42px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .info-section {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .info-section h2 {
+            color: #2d1b4e;
+            font-size: 28px;
+            margin-bottom: 15px;
+        }
+
+        .info-section p {
+            color: #1d1d1f;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(45, 27, 78, 0.15);
+            border-color: #00d4ff;
+        }
+
+        .card h3 {
+            color: #2d1b4e;
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+
+        .card ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .card li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .card li:last-child {
+            border-bottom: none;
+        }
+
+        .card a {
+            color: #2d1b4e;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+        }
+
+        .card a:hover {
+            color: #00d4ff;
+        }
+
+        .card a::before {
+            content: "▸";
+            color: #00d4ff;
+            font-size: 18px;
+        }
+
+        .week-number {
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #f5f5f7 0%, #ffffff 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        footer {
+            background: #ffffff;
+            padding: 20px 0;
+            text-align: center;
+            margin-top: 50px;
+            border-top: 3px solid #00d4ff;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        footer p {
+            color: #6e6e73;
+            font-size: 14px;
+        }
+
+        .coming-soon {
+            opacity: 0.6;
+            font-style: italic;
+            color: #86868b;
+        }
+
+        .available {
+            font-weight: 600;
+            color: #2d1b4e;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-area">
+            <img src="assets/images/logo-ulacit.png" alt="ULACIT - Universidad Latinoamericana de Ciencia y Tecnología" class="logo-image">
+        </div>
+        <h1>Ética y Gobernanza de Datos en IA</h1>
+        <p class="subtitle">Microcredencial en Inteligencia Artificial y Análisis de Datos</p>
+        <p class="subtitle">Código: 92-0031 | Cuatrimestre 1CO2026</p>
+    </header>
+
+    <div class="container">
+        <div class="info-section">
+            <h2>Acerca del curso</h2>
+            <p>Curso virtual de 15 semanas enfocado en desarrollar competencias para liderar iniciativas de ética y gobernanza de datos en inteligencia artificial. Los estudiantes aprenderán a identificar y aplicar principios éticos fundamentales, marcos regulatorios y mejores prácticas para la gestión responsable de datos.</p>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="stat-number">15</div>
+                    <div class="stat-label">Semanas lectivas</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">13</div>
+                    <div class="stat-label">Casos de análisis</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">3</div>
+                    <div class="stat-label">Entregas de proyecto</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-number">Virtual</div>
+                    <div class="stat-label">Modalidad</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Presentaciones por semana</h2>
+            <div class="grid">
+                <div class="card">
+                    <div class="week-number">Semana 1</div>
+                    <h3>Introducción a la ética y gobernanza en IA</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-01/presentacion-etica-ia-semana1.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="week-number">Semana 2</div>
+                    <h3>Principios éticos fundamentales en IA (FATE)</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-02/fate.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="week-number">Semana 3</div>
+                    <h3>Sesgo y discriminación en datos y algoritmos</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-03/sesgos.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="week-number">Semana 4</div>
+                    <h3>Privacidad y protección de datos personales</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-04/privacidad.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="week-number">Semana 5</div>
+                    <h3>Transparencia y explicabilidad en IA (XAI)</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-05/explicabilidad.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <div class="week-number">Semana 6</div>
+                    <h3>Responsabilidad y rendición de cuentas</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-06/responsabilidad.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+
+                 <div class="card">
+                    <div class="week-number">Semana 7</div>
+                    <h3>Fundamentos de gobernanza de datos</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-07/gobernanza.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+
+<div class="card">
+                    <div class="week-number">Semana 8</div>
+                    <h3>Roles, políticas y stewardship de datos</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-08/gobernanza2.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="week-number">Semana 9</div>
+                    <h3>Marcos y estándares de gobernanza de IA</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-09/marcos.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="week-number">Semana 11</div>
+                    <h3>Gestión de riesgos en IA</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-11/riesgoIA.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="week-number">Semana 12-13</div>
+                    <h3>Derechos humanos y sostenibilidad</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-13/dh_sostenibilidad.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="week-number">Semana 14</div>
+                    <h3>De la teoría a la organización</h3>
+                    <ul>
+                        <li><a href="presentaciones/semana-14/organizacion.html" class="available">Ver presentación</a></li>
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Casos de análisis</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Casos disponibles</h3>
+                    <ul>
+                        <li><span class="coming-soon">Los casos se publicarán semanalmente</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Proyecto integrador</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Avance 1</h3>
+                    <p style="color: #b8b8ff;">Propuesta y marco teórico</p>
+                    <p style="color: #b8b8ff; font-size: 14px;">Entrega: Semana 7</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Avance 2</h3>
+                    <p style="color: #b8b8ff;">Desarrollo completo</p>
+                    <p style="color: #b8b8ff; font-size: 14px;">Entrega: Semana 11</p>
+                </div>
+                
+                <div class="card">
+                    <h3>Entrega final</h3>
+                    <p style="color: #b8b8ff;">Informe final y presentación</p>
+                    <p style="color: #b8b8ff; font-size: 14px;">Entrega: Semana 15</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h2>Recursos adicionales</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Documentación</h3>
+                    <ul>
+                        <li><a href="recursos/silabo.pdf" class="coming-soon">Sílabo del curso</a></li>
+                        <li><a href="recursos/rubricas.pdf" class="coming-soon">Rúbricas de evaluación</a></li>
+                    </ul>
+                </div>
+                
+                <div class="card">
+                    <h3>Algunos sitios de interés</h3>
+                    <ul>
+                        <li><a href="https://www.unesco.org/en/artificial-intelligence/recommendation-ethics" target="_blank">UNESCO - Recomendación sobre ética de IA</a></li>
+                        <li><a href="https://www.oecd.org/en/topics/artificial-intelligence.html" target="_blank">OCDE - Principios de IA</a></li>
+                        <li><a href="https://www.micitt.go.cr/gobierno_digital/inteligencia_artificial" target="_blank">Estrategia Nacional de IA - Costa Rica</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Lic. Jordy Jesús Alfaro Brenes - Universidad Latinoamericana de Ciencia y Tecnología</p>
+    </footer>
+</body>
+</html>

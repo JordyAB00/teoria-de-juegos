@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Derechos humanos y sostenibilidad en IA - Semanas 12-13</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: #f5f5f7;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    padding: 55px 80px 130px 80px;
+    background: #f5f5f7;
+}
+
+.slide.active { opacity: 1; z-index: 1; }
+
+.slide-header { margin-bottom: 28px; }
+
+.slide-title {
+    font-size: 44px;
+    font-weight: 700;
+    color: #2d1b4e;
+    margin-bottom: 8px;
+}
+
+.slide-subtitle {
+    font-size: 20px;
+    color: #6e6e73;
+    font-weight: 300;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 18px;
+    overflow-y: auto;
+    max-height: calc(100vh - 240px);
+    padding-right: 10px;
+}
+
+.slide-content::-webkit-scrollbar { width: 6px; }
+.slide-content::-webkit-scrollbar-thumb { background: #00d4ff; border-radius: 10px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+.cover-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #fff 0%, #f5f5f7 50%, #fff 100%);
+}
+
+.cover-title {
+    font-size: 58px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: grad 3s ease infinite;
+    background-size: 200% 200%;
+    margin-bottom: 18px;
+    line-height: 1.1;
+}
+
+@keyframes grad {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.cover-sub { font-size: 26px; color: #6e6e73; font-weight: 300; margin-bottom: 30px; }
+.cover-info { font-size: 17px; color: #1d1d1f; line-height: 1.6; }
+
+.big-stat {
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px 20px;
+    text-align: center;
+    border: 2px solid #e5e5e7;
+    transition: all 0.3s ease;
+}
+
+.big-stat:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 6px 20px rgba(0,212,255,0.12);
+    transform: translateY(-3px);
+}
+
+.big-stat .num {
+    font-size: 50px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+}
+
+.big-stat .label { font-size: 14px; color: #6e6e73; margin-top: 10px; line-height: 1.4; }
+
+.card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid #e5e5e7;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h3 { font-size: 20px; color: #2d1b4e; margin-bottom: 10px; }
+.card p { font-size: 15px; color: #1d1d1f; line-height: 1.55; }
+.card ul { list-style: none; padding: 0; }
+
+.card li {
+    font-size: 15px; color: #1d1d1f; line-height: 1.55;
+    padding-left: 22px; position: relative; margin-bottom: 5px;
+}
+
+.card li::before {
+    content: "\25B8"; position: absolute; left: 0; color: #00d4ff; font-size: 18px;
+}
+
+.accent-red { background: linear-gradient(135deg, #fff5f5, #fff); border-left: 4px solid #ef4444; }
+.accent-red h3, .accent-red h4 { color: #991b1b; }
+.accent-red p { color: #7f1d1d; }
+
+.accent-blue { background: linear-gradient(135deg, #eff6ff, #fff); border-left: 4px solid #3b82f6; }
+.accent-blue h3, .accent-blue h4 { color: #1e40af; }
+.accent-blue p { color: #1e3a8a; }
+
+.accent-green { background: linear-gradient(135deg, #f0fdf4, #fff); border-left: 4px solid #22c55e; }
+.accent-green h3, .accent-green h4 { color: #15803d; }
+.accent-green p { color: #166534; }
+
+.accent-yellow { background: linear-gradient(135deg, #fefce8, #fff); border-left: 4px solid #eab308; }
+.accent-yellow h3, .accent-yellow h4 { color: #854d0e; }
+.accent-yellow p { color: #713f12; }
+
+.accent-purple { background: linear-gradient(135deg, #faf5ff, #fff); border-left: 4px solid #8b5cf6; }
+.accent-purple h3, .accent-purple h4 { color: #5b21b6; }
+
+.highlight {
+    background: linear-gradient(135deg, #f0f0f2, #fff);
+    border-left: 4px solid #00d4ff;
+    padding: 16px 20px;
+    border-radius: 10px;
+}
+
+.highlight p { font-size: 18px; color: #2d1b4e; font-weight: 500; font-style: italic; }
+
+.pill {
+    display: inline-block;
+    background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 3px;
+}
+
+.dim-card {
+    background: #fff; border-radius: 16px; padding: 22px 16px; border: 2px solid #e5e5e7;
+    text-align: center; transition: all 0.3s ease;
+}
+
+.dim-card:hover {
+    border-color: #00d4ff; transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,212,255,0.12);
+}
+
+.dim-card .icon { font-size: 40px; margin-bottom: 10px; }
+.dim-card h4 { color: #2d1b4e; font-size: 17px; margin-bottom: 8px; }
+.dim-card p { color: #6e6e73; font-size: 13px; line-height: 1.4; }
+
+.caso-mini {
+    background: #fff; border: 2px solid #e5e5e7; border-radius: 14px;
+    padding: 16px; text-align: center; transition: all 0.3s ease;
+}
+.caso-mini:hover { border-color: #ef4444; box-shadow: 0 4px 12px rgba(239,68,68,0.12); }
+.caso-mini .caso-year { font-size: 12px; color: #6e6e73; margin-bottom: 6px; }
+.caso-mini h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 6px; }
+.caso-mini p { font-size: 13px; color: #6e6e73; line-height: 1.4; }
+
+.agenda-block {
+    background: #fff; border-radius: 18px; padding: 28px; border: 2px solid #e5e5e7;
+    transition: all 0.3s ease;
+}
+.agenda-block:hover { border-color: #00d4ff; transform: translateY(-3px); }
+.agenda-block .num-big {
+    font-size: 64px; font-weight: 800;
+    background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1; margin-bottom: 10px;
+}
+.agenda-block h3 { font-size: 24px; color: #2d1b4e; margin-bottom: 12px; }
+.agenda-block ul { list-style: none; padding: 0; }
+.agenda-block li {
+    font-size: 14px; color: #1d1d1f; padding-left: 18px; position: relative;
+    margin-bottom: 5px; line-height: 1.5;
+}
+.agenda-block li::before {
+    content: "\25CF"; position: absolute; left: 0; color: #00d4ff; font-size: 10px; top: 6px;
+}
+
+.justice-card {
+    background: #fff; border-radius: 16px; padding: 24px 18px; border-top: 5px solid;
+    text-align: center;
+}
+.justice-card h4 { font-size: 19px; color: #2d1b4e; margin-bottom: 10px; }
+.justice-card .ej { font-size: 13px; color: #6e6e73; font-style: italic; margin-top: 10px; }
+.justice-card p { font-size: 14px; color: #1d1d1f; line-height: 1.5; }
+
+.section-divider {
+    background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.section-divider .section-num { font-size: 22px; opacity: 0.8; margin-bottom: 12px; letter-spacing: 3px; }
+.section-divider .section-title { font-size: 64px; font-weight: 800; line-height: 1.1; margin-bottom: 18px; }
+.section-divider .section-sub { font-size: 22px; opacity: 0.9; max-width: 700px; }
+
+.compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.compare-side {
+    padding: 20px; border-radius: 14px; color: white;
+}
+.compare-side h4 { font-size: 18px; margin-bottom: 10px; }
+.compare-side p { font-size: 14px; line-height: 1.5; opacity: 0.95; }
+
+.opacity-bar {
+    background: #fff; border-radius: 12px; padding: 16px 20px; border: 1px solid #e5e5e7;
+    display: flex; align-items: center; gap: 16px;
+}
+.opacity-bar .empresa { font-weight: 700; color: #2d1b4e; min-width: 130px; font-size: 16px; }
+.opacity-bar .barra-bg { flex: 1; height: 22px; background: #f0f0f2; border-radius: 11px; overflow: hidden; }
+.opacity-bar .barra-fill {
+    height: 100%; background: linear-gradient(90deg, #ef4444, #f97316);
+    border-radius: 11px; display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 10px; color: white; font-size: 12px; font-weight: 700;
+}
+
+.navigation {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 20px; z-index: 1000;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, #7c3aed, #00d4ff);
+    border: none; color: white; padding: 15px 30px; border-radius: 50px;
+    cursor: pointer; font-size: 16px; font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+}
+
+.nav-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,212,255,0.4); }
+.nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.logo-area { position: fixed; top: 15px; left: 20px; z-index: 1000; }
+.logo-area img { max-width: 150px; height: auto; }
+
+.slide-num {
+    position: fixed; top: 20px; right: 30px;
+    color: #6e6e73; font-size: 16px; z-index: 1000; font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<div class="logo-area">
+    <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+</div>
+
+<div class="slide-num">
+    <span id="cur">1</span> / <span id="tot">17</span>
+</div>
+
+<!-- SLIDE 1: PORTADA -->
+<div class="slide cover-slide active">
+    <h1 class="cover-title">Derechos humanos y<br>sostenibilidad en la IA</h1>
+    <p class="cover-sub">Lo que la IA le hace a las personas y al planeta</p>
+    <div class="cover-info">
+        <p>Semanas 12 y 13 | Microcredencial en IA y Análisis de Datos<br>
+        Universidad Latinoamericana de Ciencia y Tecnología | Abril 2026</p>
+    </div>
+</div>
+
+<!-- SLIDE 2: AGENDA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Agenda de hoy</h2>
+        <p class="slide-subtitle">Dos caras del mismo problema: la IA tiene cuerpo y consecuencias</p>
+    </div>
+    <div class="slide-content">
+        <div class="two-col">
+            <div class="agenda-block">
+                <div class="num-big">01</div>
+                <h3>IA y derechos humanos</h3>
+                <ul>
+                    <li>Impacto en derechos fundamentales</li>
+                    <li>Poblaciones vulnerables</li>
+                    <li>Brecha digital y desigualdad</li>
+                    <li>Justicia algorítmica</li>
+                    <li>Sur Global y derechos digitales</li>
+                </ul>
+            </div>
+            <div class="agenda-block">
+                <div class="num-big">02</div>
+                <h3>Sostenibilidad de la IA</h3>
+                <ul>
+                    <li>Huella de carbono del entrenamiento</li>
+                    <li>Centros de datos: agua y energía</li>
+                    <li>IA verde vs. IA roja</li>
+                    <li>Responsabilidad corporativa</li>
+                    <li>Costa Rica como hub verde</li>
+                </ul>
+            </div>
+        </div>
+        <div class="highlight">
+            <p>Tras la teoría: trabajo en equipos sobre un caso real que combina ambos temas.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: SECTION 1 -->
+<div class="slide section-divider">
+    <div class="section-num">PARTE 01</div>
+    <div class="section-title">IA y derechos<br>humanos</div>
+    <div class="section-sub">Cuando un algoritmo decide quién importa</div>
+</div>
+
+<!-- SLIDE 4: IMPACTO EN DERECHOS FUNDAMENTALES -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Tres derechos bajo presión</h2>
+        <p class="slide-subtitle">Privacidad, libertad de expresión, no discriminación</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="big-stat">
+                <div class="num">€5.880M</div>
+                <div class="label">en multas RGPD acumuladas, &euro;2.300M solo en 2025</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">€120M</div>
+                <div class="label">primera multa del DSA: a X (Twitter), diciembre 2025</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">85,1%</div>
+                <div class="label">de los CV con nombres "blancos" preferidos por LLMs (Brookings)</div>
+            </div>
+        </div>
+        <div class="three-col">
+            <div class="card accent-blue">
+                <h3>Privacidad</h3>
+                <p>Clearview AI: 60.000M de imágenes raspadas. Multas en cinco países y acuerdo de $51,75M en EE.UU.</p>
+            </div>
+            <div class="card accent-yellow">
+                <h3>Expresión</h3>
+                <p>Meta eliminó fact-checking en enero 2025. Moderación con IA falla en idiomas del Sur Global.</p>
+            </div>
+            <div class="card accent-red">
+                <h3>No discriminación</h3>
+                <p>Mobley v. Workday: primera acción colectiva certificada por sesgo de IA en contratación.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: POBLACIONES VULNERABLES -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Quienes menos pueden defenderse</h2>
+        <p class="slide-subtitle">Niñez, adultos mayores y personas con discapacidad</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="caso-mini">
+                <div class="caso-year">2024-2025</div>
+                <h4>Tragedias con chatbots</h4>
+                <p>Sewell Setzer (14) y Adam Raine (16) murieron tras vínculos con Character.AI y ChatGPT.</p>
+            </div>
+            <div class="caso-mini">
+                <div class="caso-year">Noviembre 2025</div>
+                <h4>Zacatecas, México</h4>
+                <p>Imágenes sexuales generadas por IA de 400+ menores de una sola escuela.</p>
+            </div>
+            <div class="caso-mini">
+                <div class="caso-year">2025</div>
+                <h4>Estafas con voz clonada</h4>
+                <p>Adultos mayores en EE.UU. perdieron casi $4.900M por ciberdelitos potenciados con IA.</p>
+            </div>
+        </div>
+        <div class="two-col">
+            <div class="big-stat">
+                <div class="num">+26.385%</div>
+                <div class="label">aumento de videos CSAM generados por IA en un año (IWF 2025)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">72%</div>
+                <div class="label">de adolescentes en EE.UU. han usado chatbots como compañeros emocionales</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: BRECHA DIGITAL -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">La brecha de IA no se cierra: se ensancha</h2>
+        <p class="slide-subtitle">Acceso, infraestructura y alfabetización</p>
+    </div>
+    <div class="slide-content">
+        <div class="four-col">
+            <div class="big-stat">
+                <div class="num">10,6 pts</div>
+                <div class="label">de brecha Norte-Sur en adopción de IA generativa (creció en 6 meses)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">40%</div>
+                <div class="label">de centros de datos del mundo están en EE.UU.</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">&lt;1%</div>
+                <div class="label">de centros de datos en África, con 18% de la población mundial</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">1,12%</div>
+                <div class="label">de la inversión global en IA llega a América Latina</div>
+            </div>
+        </div>
+        <div class="highlight">
+            <p>Mujeres: 22% del talento global en IA, pero 57% de los empleos más expuestos a la automatización.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: JUSTICIA ALGORITMICA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Justicia algorítmica en tres dimensiones</h2>
+        <p class="slide-subtitle">Distributiva, procedimental y de reconocimiento</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="justice-card" style="border-color:#3b82f6;">
+                <h4>Distributiva</h4>
+                <p>¿Quién recibe los beneficios y quién carga los daños de la IA?</p>
+                <p class="ej">Equal Rights Center v. Meta: anuncios de universidades dirigidos por raza ("redlining digital").</p>
+            </div>
+            <div class="justice-card" style="border-color:#8b5cf6;">
+                <h4>Procedimental</h4>
+                <p>¿Hay debido proceso, derecho a ser escuchado y a impugnar?</p>
+                <p class="ej">TJUE caso C-203/22 (2025): consagra el derecho a la explicación contrafáctica.</p>
+            </div>
+            <div class="justice-card" style="border-color:#22c55e;">
+                <h4>De reconocimiento</h4>
+                <p>¿Se reconoce la diversidad de identidades y formas de existir?</p>
+                <p class="ej">Estudio en Nature: LLMs omiten o subordinan personajes de minorías raciales y de género.</p>
+            </div>
+        </div>
+        <div class="card accent-red">
+            <h3>Interseccionalidad: el daño se multiplica</h3>
+            <p>Hombres afroamericanos enfrentan tasas de selección cercanas a cero en pruebas de contratación con IA. Los códigos postales funcionan como proxies ocultos de raza y clase.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: SUR GLOBAL Y CR -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Perspectivas desde el Sur Global</h2>
+        <p class="slide-subtitle">Y el lugar singular de Costa Rica</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="big-stat">
+                <div class="num">201</div>
+                <div class="label">proyectos de ley sobre IA presentados en América Latina (ene 2025-feb 2026)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">5.&deg;</div>
+                <div class="label">lugar de Costa Rica en el ILIA 2025 (subió 4 posiciones)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">2</div>
+                <div class="label">países cofacilitadores del proceso global de IA de la ONU: Costa Rica y España</div>
+            </div>
+        </div>
+        <div class="card accent-yellow">
+            <h3>El dilema costarricense</h3>
+            <p>Costa Rica cofacilita la gobernanza global de IA, pero PRODHAB carece de presupuesto y capacidad técnica para auditar algoritmos. La ENIA 2024-2027 existe; ninguna ley de IA está aprobada todavía.</p>
+        </div>
+        <div class="highlight">
+            <p>"O desarrollamos gobernanza en nuestros propios términos, o seremos una colonia regulatoria de Silicon Valley y Bruselas." — Americas Quarterly</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: DERECHOS DIGITALES EMERGENTES -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Derechos digitales emergentes</h2>
+        <p class="slide-subtitle">La frontera normativa del siglo XXI</p>
+    </div>
+    <div class="slide-content">
+        <div class="four-col">
+            <div class="dim-card">
+                <div class="icon" style="color:#3b82f6;">&#9678;</div>
+                <h4>Revisión humana</h4>
+                <p>Art. 14 EU AI Act: dos personas verificando IA biométrica</p>
+            </div>
+            <div class="dim-card">
+                <div class="icon" style="color:#8b5cf6;">&#9998;</div>
+                <h4>Explicación</h4>
+                <p>Art. 86 EU AI Act y Art. 22 RGPD: derecho a saber por qué</p>
+            </div>
+            <div class="dim-card">
+                <div class="icon" style="color:#22c55e;">&#9788;</div>
+                <h4>Desconexión</h4>
+                <p>Australia, España, Chile, Colombia avanzan</p>
+            </div>
+            <div class="dim-card">
+                <div class="icon" style="color:#ef4444;">&#9762;</div>
+                <h4>Neuroderechos</h4>
+                <p>Chile pionero mundial. UNESCO 2025: 190 países</p>
+            </div>
+        </div>
+        <div class="card accent-purple">
+            <h3>Chile y la primera sentencia mundial sobre neuroprivacidad</h3>
+            <p>Girardi v. Emotiv (2023): la Corte Suprema chilena ordenó eliminar datos cerebrales recopilados sin consentimiento. Chile sigue siendo el único país con neuroderechos en su constitución.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 10: SECTION 2 -->
+<div class="slide section-divider">
+    <div class="section-num">PARTE 02</div>
+    <div class="section-title">Sostenibilidad<br>e impacto ambiental</div>
+    <div class="section-sub">La IA tiene un cuerpo: agua, electricidad y aire</div>
+</div>
+
+<!-- SLIDE 11: HUELLA DE CARBONO -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">La IA ya contamina como una ciudad</h2>
+        <p class="slide-subtitle">Cifras del entrenamiento y de la inferencia</p>
+    </div>
+    <div class="slide-content">
+        <div class="four-col">
+            <div class="big-stat">
+                <div class="num">105M</div>
+                <div class="label">toneladas de CO&#8322; de centros de datos de IA en 12 meses (más que la aviación en EE.UU.)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">48x</div>
+                <div class="label">más electricidad consumió GPT-4 que GPT-3 al entrenarse</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">80-90%</div>
+                <div class="label">del cómputo de IA hoy se va en inferencia, no en entrenamiento</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">50x</div>
+                <div class="label">más emisiones por consulta cuando se activa el modo "razonamiento"</div>
+            </div>
+        </div>
+        <div class="highlight">
+            <p>ChatGPT procesa 1.000 millones de consultas al día y consume 340 MWh diarios — equivalente a 30.000 hogares estadounidenses.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 12: CENTROS DE DATOS -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Centros de datos: agua y energía sin freno</h2>
+        <p class="slide-subtitle">La demanda eléctrica de IA equivaldrá al consumo de Japón</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="big-stat">
+                <div class="num">945 TWh</div>
+                <div class="label">de electricidad consumirán los centros de datos en 2030 (IEA)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">21%</div>
+                <div class="label">de toda la electricidad de Irlanda ya la consumen centros de datos</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">2/3</div>
+                <div class="label">de los centros nuevos están en zonas con estrés hídrico</div>
+            </div>
+        </div>
+        <div class="two-col">
+            <div class="card accent-red">
+                <h3>Conflicto: Cerrillos, Chile</h3>
+                <p>Google planificó un centro que consumiría 14,6 millones de litros de agua diarios. La comunidad se organizó, el tribunal ambiental ordenó reevaluación y Google retiró el diseño en 2024.</p>
+            </div>
+            <div class="card accent-red">
+                <h3>Conflicto: Querétaro, México</h3>
+                <p>Acuífero con déficit de 56.800 millones de litros. Microsoft usó 40 millones de litros en sus centros durante la peor sequía del siglo.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 13: GREEN AI VS RED AI -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">IA verde vs. IA roja</h2>
+        <p class="slide-subtitle">Hacer más con menos, o más con más</p>
+    </div>
+    <div class="slide-content">
+        <div class="compare-row">
+            <div class="compare-side" style="background: linear-gradient(135deg, #dc2626, #991b1b);">
+                <h4>Red AI</h4>
+                <p>Maximiza rendimiento al costo que sea. Modelos cada vez más grandes, entrenamientos más largos, sin medir impacto. La precisión es lo único que cuenta.</p>
+            </div>
+            <div class="compare-side" style="background: linear-gradient(135deg, #16a34a, #15803d);">
+                <h4>Green AI</h4>
+                <p>Prioriza eficiencia ambiental. Compresión, cuantización, destilación, modelos pequeños (SLMs), MoE. Hace casi lo mismo con una fracción del consumo.</p>
+            </div>
+        </div>
+        <div class="three-col">
+            <div class="card accent-green">
+                <h3>SLMs</h3>
+                <p>Phi-3.5-Mini iguala a GPT-3.5 con <strong>98% menos cómputo</strong>. 60-70% menos energía y agua.</p>
+            </div>
+            <div class="card accent-green">
+                <h3>MoE</h3>
+                <p>Activa solo 5-10% de parámetros por token. DeepSeek-V3, Llama 4, Qwen3.</p>
+            </div>
+            <div class="card accent-yellow">
+                <h3>Paradoja de Jevons</h3>
+                <p>Más eficiencia &rarr; más uso. DeepSeek hizo crecer la inversión global, no bajarla.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 14: RESPONSABILIDAD CORPORATIVA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Promesas incumplidas y opacidad</h2>
+        <p class="slide-subtitle">Las grandes tech retroceden en sus compromisos climáticos</p>
+    </div>
+    <div class="slide-content">
+        <div class="opacity-bar">
+            <div class="empresa">Google</div>
+            <div class="barra-bg"><div class="barra-fill" style="width:51%;">+51% emisiones desde 2019</div></div>
+        </div>
+        <div class="opacity-bar">
+            <div class="empresa">Microsoft</div>
+            <div class="barra-bg"><div class="barra-fill" style="width:23%;">+23,4% desde 2020</div></div>
+        </div>
+        <div class="opacity-bar">
+            <div class="empresa">Amazon</div>
+            <div class="barra-bg"><div class="barra-fill" style="width:33%;">+33% desde 2019</div></div>
+        </div>
+        <div class="opacity-bar">
+            <div class="empresa">OpenAI</div>
+            <div class="barra-bg"><div class="barra-fill" style="width:100%;">No publica ningún reporte ambiental</div></div>
+        </div>
+        <div class="card accent-red">
+            <h3>Crisis sistémica de transparencia</h3>
+            <p>10 de 13 grandes empresas no divulgan ningún dato ambiental clave (Stanford 2025). Google eliminó silenciosamente su meta net-zero. Microsoft admitió: "la luna se ha alejado más".</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 15: COSTA RICA HUB VERDE -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Costa Rica: la ventaja renovable</h2>
+        <p class="slide-subtitle">¿Capital mundial de centros de datos verdes?</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="big-stat">
+                <div class="num">98,6%</div>
+                <div class="label">de la electricidad costarricense viene de renovables (2025)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">600 MW</div>
+                <div class="label">de capacidad proyectada bajo desarrollo en CR para 2030</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">1.&deg;</div>
+                <div class="label">país de Centroamérica con estrategia nacional de IA (ENIA 2024-2027)</div>
+            </div>
+        </div>
+        <div class="two-col">
+            <div class="card accent-green">
+                <h3>Lo que ya tenemos</h3>
+                <ul>
+                    <li>Navégalo: el data center más certificado de LATAM, carbono neutral</li>
+                    <li>Rack Lodge: 100% renovable</li>
+                    <li>ENIA con sostenibilidad como principio rector</li>
+                </ul>
+            </div>
+            <div class="card accent-yellow">
+                <h3>Lo que falta</h3>
+                <ul>
+                    <li>Ley 8968 no aborda IA</li>
+                    <li>Capacidad de auditoría algorítmica limitada</li>
+                    <li>Escalar de 15 MW actuales a 600 MW sin replicar conflictos</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 16: TRES IDEAS PARA LLEVAR -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Tres ideas para llevarse</h2>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="dim-card" style="border-color:#ef4444;">
+                <div class="icon" style="color:#ef4444; font-size:48px; font-weight:800;">1</div>
+                <h4>La IA tiene cuerpo</h4>
+                <p>Cada consulta consume electricidad, agua y aire. Cada modelo impacta a comunidades reales y a poblaciones vulnerables.</p>
+            </div>
+            <div class="dim-card" style="border-color:#3b82f6;">
+                <div class="icon" style="color:#3b82f6; font-size:48px; font-weight:800;">2</div>
+                <h4>Los costos no se distribuyen igual</h4>
+                <p>El Sur Global, las comunidades pobres y los grupos históricamente marginados absorben los mayores daños. Eso es injusticia algorítmica y ambiental.</p>
+            </div>
+            <div class="dim-card" style="border-color:#22c55e;">
+                <div class="icon" style="color:#22c55e; font-size:48px; font-weight:800;">3</div>
+                <h4>Hay alternativas</h4>
+                <p>Green AI, modelos pequeños, regulación con dientes y ubicación inteligente. Costa Rica tiene una posición privilegiada para liderar.</p>
+            </div>
+        </div>
+        <div class="card" style="text-align:center; padding:18px;">
+            <span class="pill">FATE</span>
+            <span class="pill">NIST AI RMF</span>
+            <span class="pill">ISO 42001</span>
+            <span class="pill">EU AI Act</span>
+            <span class="pill">RGPD</span>
+            <span class="pill">Ley 8968</span>
+            <span class="pill">ENIA</span>
+            <span class="pill">UNESCO</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 17: A CONTINUACION -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Lo que sigue</h2>
+    </div>
+    <div class="slide-content" style="justify-content:center; align-items:center; text-align:center;">
+        <div style="max-width:720px;">
+            <div class="highlight" style="margin-bottom:30px;">
+                <p>"La pregunta no es si la IA transformará los derechos humanos y el ambiente, sino quién diseñará las reglas de esa transformación."</p>
+            </div>
+            <div class="card accent-red" style="padding:24px;">
+                <h3 style="font-size:22px;">A continuación: caso de análisis ético-crítico 11-12</h3>
+                <p style="font-size:17px; margin-top:10px;">Como las semanas 12 y 13 se trabajan juntas, también el caso. Aplicarán los marcos de derechos humanos y de sostenibilidad sobre un caso real que combina ambos ejes.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navigation">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">&larr; Anterior</button>
+    <button class="nav-btn" id="nextBtn" onclick="go(1)">Siguiente &rarr;</button>
+</div>
+
+<script>
+    let cur = 0;
+    const sl = document.querySelectorAll('.slide');
+    const tot = sl.length;
+    document.getElementById('tot').textContent = tot;
+
+    function show(n) {
+        sl.forEach(s => s.classList.remove('active'));
+        cur = Math.max(0, Math.min(n, tot - 1));
+        sl[cur].classList.add('active');
+        document.getElementById('cur').textContent = cur + 1;
+        document.getElementById('prevBtn').disabled = cur === 0;
+        document.getElementById('nextBtn').disabled = cur === tot - 1;
+    }
+
+    function go(d) { show(cur + d); }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') go(-1);
+        if (e.key === 'ArrowRight') go(1);
+    });
+    show(0);
+</script>
+</body>
+</html>

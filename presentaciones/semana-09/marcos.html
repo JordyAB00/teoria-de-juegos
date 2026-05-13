@@ -1,0 +1,1277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marcos y estándares de gobernanza de IA - Semana 9</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px 140px 80px;
+            background: #f5f5f7;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: calc(100vh - 260px);
+            padding-right: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar-thumb:hover {
+            background: #00b8dd;
+        }
+
+        .content-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-box h3 {
+            font-size: 24px;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .content-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-box li {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .content-box li::before {
+            content: "\25B8";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 20px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .four-columns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f0f2, #ffffff);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .highlight-box p {
+            font-size: 17px;
+            color: #2d1b4e;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .key-point {
+            background: #ffffff;
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .key-point h4 {
+            color: #2d1b4e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .key-point p {
+            color: #1d1d1f;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .logo-area {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo-image {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            color: #6e6e73;
+            font-size: 16px;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 50%, #ffffff 100%);
+            padding: 60px 80px 140px 80px;
+        }
+
+        .cover-title {
+            font-size: 58px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 32px;
+            color: #6e6e73;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .cover-info {
+            font-size: 18px;
+            color: #1d1d1f;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff5f5, #ffffff);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+        }
+
+        .warning-box h4 {
+            color: #991b1b;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            font-size: 16px;
+            color: #991b1b;
+            font-weight: 500;
+        }
+
+        .case-box {
+            background: linear-gradient(135deg, #fefce8, #ffffff);
+            border-left: 4px solid #eab308;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(234, 179, 8, 0.1);
+        }
+
+        .case-box h4 {
+            color: #854d0e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .case-box p {
+            font-size: 15px;
+            color: #713f12;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+        }
+
+        .success-box h4 {
+            color: #15803d;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .success-box p {
+            font-size: 15px;
+            color: #166534;
+            line-height: 1.5;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #2d1b4e, #4c2a7f);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e5e7;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .info-box h4 {
+            color: #1e40af;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            font-size: 15px;
+            color: #1e3a8a;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT" class="logo-image">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">22</span>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide cover-slide active">
+            <h1 class="cover-title">Marcos y estándares de gobernanza de IA</h1>
+            <p class="cover-subtitle">Semana 9: ISO 42001, NIST AI RMF, COBIT, OCDE y UNESCO</p>
+            <div class="cover-info">
+                <p>Microcredencial en Inteligencia Artificial y Análisis de Datos<br>
+                Universidad Latinoamericana de Ciencia y Tecnología<br>
+                Marzo 2026</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Agenda de hoy</h2>
+                <p class="slide-subtitle">Contenidos de la sesión</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Parte 1: Estándares certificables y marcos de riesgo</h3>
+                        <ul>
+                            <li>ISO/IEC 42001: el primer estándar certificable de gestión de IA</li>
+                            <li>Ecosistema complementario: ISO 42005, ISO 42006</li>
+                            <li>Adopción global y en América Latina</li>
+                            <li>NIST AI RMF: las cuatro funciones centrales</li>
+                            <li>Perfiles complementarios: GenAI y Cyber AI</li>
+                            <li>Contexto político y estado actual del NIST AI RMF</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Parte 2: Gobernanza empresarial y principios globales</h3>
+                        <ul>
+                            <li>COBIT 2019: extensión de gobernanza de TI a IA</li>
+                            <li>Certificaciones de ISACA para IA</li>
+                            <li>Principios de la OCDE sobre IA (actualización 2024)</li>
+                            <li>UNESCO: Recomendación sobre Ética de IA</li>
+                            <li>Implementación RAM y posición de Costa Rica</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Parte 3: Integración y comparación</h3>
+                        <ul>
+                            <li>El governance stack: cuatro capas complementarias</li>
+                            <li>Crosswalks oficiales entre marcos</li>
+                            <li>Cuándo usar cada marco según el contexto</li>
+                            <li>Panorama regulatorio global 2025-2026</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Parte 4: Tendencias y cierre</h3>
+                        <ul>
+                            <li>De voluntario a obligatorio: el punto de inflexión</li>
+                            <li>Gobernanza como ventaja competitiva</li>
+                            <li>Datos de la industria sobre impacto de gobernanza</li>
+                            <li>Actividad práctica en equipos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Contexto -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">El contexto: la gobernanza de IA cruzó el punto de inflexión</h2>
+                <p class="slide-subtitle">De principios voluntarios a regulación vinculante</p>
+            </div>
+            <div class="slide-content">
+                <div class="four-columns">
+                    <div class="stat-box">
+                        <div class="stat-number">76%</div>
+                        <div class="stat-label">De organizaciones planea adoptar ISO 42001 (CSA 2025)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">25%</div>
+                        <div class="stat-label">Tiene gobernanza de IA plenamente operativa (AuditBoard 2025)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">40%</div>
+                        <div class="stat-label">De proyectos de IA se cancelarán por controles de riesgo inadecuados (Gartner)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">46%</div>
+                        <div class="stat-label">Menos fallas de cumplimiento en organizaciones con AI boards formales (Gartner)</div>
+                    </div>
+                </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <h4>La brecha de madurez</h4>
+                    <p>Casi la mitad de las organizaciones reportan fallas de gobernanza vinculadas a proyectos de IA generativa (McKinsey 2025). Solo 1 de cada 5 empresas tiene gobernanza madura para IA agéntica (Deloitte 2026). La gobernanza responsable incrementa las tasas de éxito de proyectos entre un 30% y 40% (PwC 2025).</p>
+                </div>
+                <div class="highlight-box">
+                    <p>"NIST provee la metodología de gestión de riesgos. ISO 42001 provee el sistema de gestión auditable. El EU AI Act provee los requisitos legales. Una organización que implementa los tres no duplica esfuerzos si usa los crosswalks publicados." -- Global AI Compliance Center</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: ISO 42001 - Visión general -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">ISO/IEC 42001:2023 -- el estándar certificable de gestión de IA</h2>
+                <p class="slide-subtitle">El primer y único estándar internacional certificable específico para IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Estructura y metodología</h3>
+                        <p>Publicado en diciembre 2023, ISO/IEC 42001 se construye sobre la <strong>High Level Structure (Annex SL)</strong> de ISO, compartida con ISO 27001 (seguridad de información) e ISO 9001 (calidad). Sigue la metodología <strong>Plan-Do-Check-Act (PDCA)</strong> a través de diez cláusulas:</p>
+                        <ul>
+                            <li>Contexto organizacional y partes interesadas</li>
+                            <li>Liderazgo y compromiso de la dirección</li>
+                            <li>Planificación: riesgos, oportunidades y objetivos</li>
+                            <li>Soporte: recursos, competencia y comunicación</li>
+                            <li>Operación: planificación y control operacional</li>
+                            <li>Evaluación del desempeño y mejora continua</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Anexo A: 38 controles específicos de IA</h3>
+                        <p>El Anexo A contiene controles que cubren:</p>
+                        <ul>
+                            <li><strong>Gobernanza responsable de IA:</strong> políticas, roles, rendición de cuentas</li>
+                            <li><strong>Evaluación de impacto:</strong> análisis de efectos sociales, grupales e individuales</li>
+                            <li><strong>Gestión del ciclo de vida:</strong> desde diseño hasta retiro del sistema</li>
+                            <li><strong>Gestión de datos:</strong> calidad, proveniencia, sesgo</li>
+                            <li><strong>Transparencia:</strong> explicabilidad y comunicación a usuarios</li>
+                            <li><strong>Cadena de suministro:</strong> supervisión de proveedores de IA</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <h4>Ventaja clave: integración con sistemas existentes</h4>
+                    <p>Al compartir la estructura Annex SL, las organizaciones que ya tienen ISO 27001 o ISO 9001 pueden integrar ISO 42001 sin duplicar esfuerzos. Empresas como Swimlane mantienen la "triple certificación" (42001 + 27001 + 27701) bajo un sistema de gestión unificado.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: ISO 42001 - Ecosistema y adopción -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">ISO 42001: ecosistema complementario y adopción global</h2>
+                <p class="slide-subtitle">Un estándar que madura rápidamente con normas acompañantes</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Normas complementarias publicadas en 2025</h3>
+                        <ul>
+                            <li><strong>ISO/IEC 42005:2025</strong> (abril 2025): evaluación de impacto de sistemas de IA a nivel social, grupal e individual</li>
+                            <li><strong>ISO/IEC 42006:2025:</strong> requisitos para organismos de auditoría y certificación, habilitando infraestructura de confianza acreditada</li>
+                            <li><strong>ISO/IEC 22989:</strong> terminología de IA</li>
+                            <li><strong>ISO/IEC 23053:</strong> marco de referencia de IA</li>
+                            <li><strong>ISO/IEC 23894:</strong> guía de gestión de riesgos de IA</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Organizaciones certificadas (2025-2026)</h3>
+                        <ul>
+                            <li><strong>Microsoft</strong> -- Microsoft 365 Copilot</li>
+                            <li><strong>Amazon Web Services</strong> -- Bedrock, Q Business, Textract, Transcribe</li>
+                            <li><strong>IBM</strong> -- modelos Granite (primer modelo open-source certificado, cero no-conformidades)</li>
+                            <li><strong>Anthropic</strong> -- enero 2025</li>
+                            <li><strong>KPMG</strong> -- Australia y Estados Unidos</li>
+                            <li><strong>Darktrace</strong> -- julio 2025, entre las primeras de ciberseguridad</li>
+                            <li><strong>Aeropuerto Changi de Singapur</strong> -- febrero 2025</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 15px;">
+                    <h4>Organismos certificadores líderes</h4>
+                    <p>Schellman (primer CB acreditado por ANAB para ISO 42001), BSI, SGS, TÜV SÜD y Applus+ Laboratories. La infraestructura de certificación se expande aceleradamente para satisfacer la creciente demanda global.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: ISO 42001 - LATAM y reconocimiento legal -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">ISO 42001: América Latina y reconocimiento legal</h2>
+                <p class="slide-subtitle">La certificación como ventaja competitiva y escudo regulatorio</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="success-box">
+                        <h4>América Latina se posiciona</h4>
+                        <p><strong>Softtek (México)</strong> se convirtió en la primera empresa tecnológica de la región en obtener certificación ISO 42001, anunciada el 6 de noviembre de 2025, certificada por Applus+.<br><br>
+                        <strong>INTECO (Costa Rica)</strong> adoptó el estándar nacionalmente como <strong>INTE/ISO/IEC 42001:2026</strong>.<br><br>
+                        El organismo certificador <strong>G-Certi</strong> se posiciona para ofrecer servicios ISO 42001 en 104 economías con enfoque especial en la región.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Reconocimiento legal creciente</h3>
+                        <ul>
+                            <li><strong>Colorado AI Act:</strong> reconoce explícitamente la adherencia a ISO 42001 como posible <em>safe harbor</em></li>
+                            <li><strong>EU AI Act:</strong> el Código de Práctica de GPAI se mapea a ISO 42001, convirtiéndolo en el sistema operativo de facto para compliance</li>
+                            <li><strong>Empresas Fortune 500</strong> están comenzando a exigir ISO 42001 a proveedores, replicando la trayectoria que ISO 27001 siguió hace una década</li>
+                            <li><strong>Texas TRAIGA</strong> y otros estados de EE.UU. crean safe harbors referenciando marcos reconocidos</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p>ISO 42001 está siguiendo la misma trayectoria de adopción que ISO 27001: de estándar emergente a requisito de mercado. Las organizaciones con certificación temprana tendrán ventaja competitiva conforme la demanda se vuelva norma en contratos y licitaciones.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: NIST AI RMF - Estructura central -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">NIST AI Risk Management Framework</h2>
+                <p class="slide-subtitle">Cuatro funciones centrales para la gestión de riesgos de IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Estructura: Govern, Map, Measure, Manage</h3>
+                    <p>El NIST AI RMF 1.0 (AI 100-1), publicado el 26 de enero de 2023, estructura la gobernanza de IA confiable en un <strong>ciclo iterativo</strong> de cuatro funciones, no una secuencia lineal. Identifica <strong>siete características</strong> de IA confiable: válida y confiable, segura, resiliente, responsable y transparente, explicable e interpretable, con privacidad mejorada, y equitativa.</p>
+                </div>
+                <div class="four-columns" style="margin-top: 15px;">
+                    <div class="info-box">
+                        <h4>Govern</h4>
+                        <p>Establece la cultura organizacional de riesgo de IA, políticas, roles y rendición de cuentas. Es la función fundacional que permea las otras tres.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Map</h4>
+                        <p>Construye conciencia contextual: sistemas de IA, stakeholders, riesgos potenciales, usos previstos e imprevistos, y poblaciones vulnerables.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>Measure</h4>
+                        <p>Proporciona métodos analíticos: detección de sesgo, monitoreo de desempeño, métricas de equidad y seguimiento de cumplimiento.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Manage</h4>
+                        <p>Prioriza mitigación de riesgos, asigna recursos, establece protocolos de respuesta a incidentes y planes de acción.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p>A diferencia de ISO 42001, el NIST AI RMF no es certificable. Es un marco de orientación flexible que las organizaciones adaptan a su contexto, y que reguladores y legisladores referencian en leyes y guías de enforcement.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: NIST - Ecosistema complementario -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">NIST AI RMF: ecosistema de perfiles y guías complementarias</h2>
+                <p class="slide-subtitle">Extensiones para IA generativa, ciberseguridad y derechos humanos</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>AI 600-1: perfil de IA generativa</h4>
+                        <p>Publicado julio 2024. Identifica <strong>12 categorías de riesgo</strong> únicas o exacerbadas por IA generativa. Contiene más de 200 acciones sugeridas. Texas TRAIGA crea safe harbor para entidades que cumplan sustancialmente con este perfil.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>IR 8596: perfil Cyber AI</h4>
+                        <p>Borrador preliminar diciembre 2025. Integra el AI RMF con el Cybersecurity Framework 2.0 en tres áreas: asegurar sistemas de IA, defensa cibernética habilitada por IA, y contramedidas contra ataques cibernéticos con IA.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Guías adicionales</h4>
+                        <p><strong>SP 800-218A:</strong> desarrollo seguro para IA generativa. <strong>SP 800-53 R5.2.0</strong> (agosto 2025): nuevos controles relevantes para IA. <strong>Perfil de Derechos Humanos</strong> del Departamento de Estado.</p>
+                    </div>
+                </div>
+                <div class="content-box" style="margin-top: 15px;">
+                    <h3>Repositorio de crosswalks oficiales</h3>
+                    <p>NIST mantiene mapeos oficiales del AI RMF hacia: <strong>ISO/IEC 42001</strong> (contribuido por Microsoft), <strong>ISO/IEC 23894</strong>, <strong>ISO/IEC 42005</strong>, <strong>EU AI Act</strong>, <strong>Recomendación de la OCDE</strong>, <strong>Singapore AI Verify</strong>, <strong>Guías de Japón AISI</strong> y <strong>Korea TTA Guidebook</strong>. Estos crosswalks permiten usar NIST operacionalmente mientras se persigue certificación ISO, un enfoque común en empresas estadounidenses.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: NIST - Contexto político -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">NIST AI RMF: contexto político y estado actual</h2>
+                <p class="slide-subtitle">Navegando vientos políticos sin perder relevancia técnica</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="warning-box">
+                        <h4>Cambios políticos en EE.UU.</h4>
+                        <p>En enero 2025, se revocó la Orden Ejecutiva 14110 de Biden que dirigía el trabajo de NIST sobre IA generativa. En julio 2025, el plan "America's AI Action Plan" ordenó a NIST <strong>revisar el AI RMF para eliminar referencias</strong> a desinformación, diversidad e inclusión, y cambio climático.<br><br>
+                        El AI RMF 1.1 está en desarrollo incorporando estas revisiones. Un decreto de diciembre 2025 creó un grupo de litigio de IA en el DOJ para impugnar leyes estatales, lo que provocó que <strong>42 fiscales generales</strong> enviaran una carta oponiéndose.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>Relevancia sostenida pese al contexto</h4>
+                        <p>El NIST AI RMF sigue siendo el <strong>estándar de facto para gobernanza de IA en EE.UU.</strong> Las agencias federales (FTC, CFPB, FDA, SEC, EEOC, DoD, GAO) lo referencian en guías de enforcement.<br><br>
+                        Empresas como Workday, IBM y AWS alinean sus prácticas de gobernanza al marco. Disponible en traducciones al japonés y árabe.<br><br>
+                        Las leyes estatales anti-discriminación subyacentes no se ven afectadas por los cambios políticos al marco mismo.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p>La lección para profesionales de gobernanza: los marcos técnicos son herramientas, no posiciones políticas. El valor del NIST AI RMF reside en su estructura de gestión de riesgos, que trasciende ciclos políticos y es aplicable independientemente de la dirección regulatoria del momento.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: COBIT 2019 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">COBIT 2019: extensión de gobernanza de TI a la IA</h2>
+                <p class="slide-subtitle">Un puente desde la gobernanza empresarial existente</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Estructura de COBIT 2019</h3>
+                    <p>Publicado por ISACA, COBIT estructura la gobernanza de tecnología empresarial en <strong>5 dominios con 40 objetivos</strong>, operando a través de siete componentes: procesos, estructuras organizacionales, políticas y procedimientos, personas y competencias, cultura y ética, flujos de información, e infraestructura.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="info-box">
+                        <h4>EDM + APO</h4>
+                        <p><strong>EDM:</strong> Evaluar, Dirigir y Monitorear (gobernanza a nivel de junta). <strong>APO:</strong> Alinear, Planificar y Organizar (estrategia, presupuesto, riesgo, recursos).</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>BAI + DSS</h4>
+                        <p><strong>BAI:</strong> Construir, Adquirir e Implementar (desarrollo, gestión de cambios). <strong>DSS:</strong> Entregar, Dar Servicio y Soporte (operaciones, seguridad, continuidad).</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>MEA</h4>
+                        <p><strong>MEA:</strong> Monitorear, Evaluar y Valorar (desempeño, cumplimiento regulatorio, aseguramiento).</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 15px;">
+                    <div class="key-point">
+                        <h4>Seis beneficios para gobernanza de IA (ISACA 2025)</h4>
+                        <p>Alineación de objetivos de IA con metas de negocio. Accountability y propiedad claras. Gestión de riesgos robusta a lo largo del ciclo de vida. Mecanismos de mejora continua. Loops de retroalimentación documentados. Guía de cumplimiento regulatorio.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Caso de estudio: Air Canada (2024)</h4>
+                        <p>ISACA usó el caso del chatbot de Air Canada como ejemplo de gobernanza inadecuada. El chatbot proporcionó información incorrecta sobre tarifas de duelo, generando responsabilidad legal. COBIT habría requerido supervisión en EDM01 y gestión de riesgos en APO12.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: COBIT - Certificaciones y limitaciones -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">COBIT: nuevas certificaciones de IA y limitaciones</h2>
+                <p class="slide-subtitle">ISACA acelera su oferta para profesionales de gobernanza de IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="info-box">
+                        <h4>AAIA (mayo 2025)</h4>
+                        <p>Advanced in AI Audit: primera certificación avanzada de auditoría específica de IA. Requiere CISA, CIA o CPA activo. Cubre gobernanza y riesgo de IA, operaciones de IA, y herramientas de auditoría de IA.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>AAISM (agosto 2025)</h4>
+                        <p>Advanced in AI Security Management: primera certificación de gestión de seguridad centrada en IA. Requiere CISM o CISSP activo. Complementa los conocimientos de ciberseguridad con gobernanza de IA.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>AI Fundamentals Certificate</h4>
+                        <p>Certificado de nivel introductorio sin prerrequisitos. Proporciona alfabetización básica en IA para profesionales de todas las áreas. Complementado por un AI Controls Toolkit.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 15px;">
+                    <div class="content-box">
+                        <h3>Validación académica</h3>
+                        <p>Un estudio de junio 2025 desarrolló un marco de gobernanza de IA para ciudades inteligentes integrando COBIT 2019, demostrando mejoras medibles de madurez: <strong>69.2% en DSS05</strong> (Gestión de Servicios de Seguridad) y <strong>60.7% en APO12</strong> (Riesgo Gestionado).</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Limitación importante</h4>
+                        <p>COBIT no fue diseñado para riesgos específicos de IA como sesgo algorítmico, equidad o explicabilidad. Estos deben abordarse mediante las guías suplementarias de ISACA o integrando otros marcos (NIST, ISO 42001). Su fortaleza está en extender gobernanza de TI existente a la IA, no en reemplazar marcos especializados.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Principios de la OCDE -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Principios de la OCDE sobre IA</h2>
+                <p class="slide-subtitle">El lenguaje común global, actualizado para la era generativa</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Origen y actualización</h3>
+                    <p>Adoptados originalmente en mayo 2019 como el primer estándar intergubernamental sobre IA, fueron <strong>actualizados en mayo 2024</strong> para abordar IA generativa, IA de propósito general y evolución post-despliegue. El G20 adoptó principios alineados. <strong>47 adherentes</strong> se han comprometido, incluyendo todos los miembros de la OCDE y la Unión Europea.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 15px;">
+                    <div class="content-box">
+                        <h3>Cinco principios basados en valores</h3>
+                        <ul>
+                            <li><strong>Crecimiento inclusivo:</strong> la IA debe beneficiar a personas y al planeta</li>
+                            <li><strong>Valores centrados en el ser humano:</strong> derechos humanos, equidad y bienestar</li>
+                            <li><strong>Transparencia:</strong> divulgación responsable sobre sistemas de IA</li>
+                            <li><strong>Robustez y seguridad:</strong> funcionamiento seguro a lo largo del ciclo de vida</li>
+                            <li><strong>Rendición de cuentas:</strong> responsabilidad por el funcionamiento adecuado</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Cinco recomendaciones de política</h3>
+                        <ul>
+                            <li>Inversión en I+D de IA confiable</li>
+                            <li>Fomento de ecosistemas digitales accesibles</li>
+                            <li>Entornos de política habilitadores</li>
+                            <li>Desarrollo de capacidad humana y preparación laboral</li>
+                            <li>Cooperación internacional para IA interoperable</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <h4>Contribución crítica: la definición revisada de sistema de IA</h4>
+                    <p>En noviembre 2023, la OCDE revisó su definición de sistema de IA, ahora adoptada por el EU AI Act, el Consejo de Europa, Estados Unidos, Naciones Unidas y Japón. Esta definición proporciona la <strong>terminología legal fundacional</strong> utilizada a través de jurisdicciones, logrando armonización conceptual sin precedentes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: OCDE - LATAM y Costa Rica -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">La OCDE, América Latina y el Observatorio OECD.AI</h2>
+                <p class="slide-subtitle">Siete países latinoamericanos adherentes y un observatorio de referencia global</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="success-box">
+                        <h4>Países latinoamericanos adherentes</h4>
+                        <p>Siete países de la región se han adherido a los Principios de la OCDE sobre IA: <strong>Argentina, Brasil, Chile, Colombia, Costa Rica, México y Perú</strong>.<br><br>
+                        Una evaluación OCDE/CAF clasificó a Colombia y Uruguay como los más maduros, mientras que <strong>Costa Rica y México</strong> muestran "compromiso sólido."<br><br>
+                        <strong>Costa Rica, como miembro de la OCDE</strong>, participa en el Comité de Gobernanza de IA y el Global Partnership on AI (GPAI). La ENIA 2024-2027 se alinea explícitamente con los principios de la OCDE.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>OECD.AI Policy Observatory</h3>
+                        <ul>
+                            <li>Rastrea más de <strong>1,000 iniciativas de política</strong> en más de 70 jurisdicciones</li>
+                            <li>Contiene <strong>50+ estrategias nacionales de IA</strong></li>
+                            <li>En septiembre 2025, la OCDE publicó un informe de <strong>306 páginas</strong> analizando 200 casos reales de uso de IA en gobierno</li>
+                            <li>Propone un marco de tres pilares: <strong>Enablers</strong> (habilitadores), <strong>Guardrails</strong> (barandillas) y <strong>Engagement</strong> (participación)</li>
+                            <li>Recurso gratuito y accesible en <strong>oecd.ai</strong></li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p>Los Principios de la OCDE cumplen una función única: no son certificables ni vinculantes, pero establecen el lenguaje y los valores compartidos que luego se operacionalizan a través de marcos técnicos (NIST, ISO) y se hacen exigibles mediante regulación (EU AI Act, leyes nacionales).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: UNESCO -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">UNESCO: Recomendación sobre la Ética de la IA</h2>
+                <p class="slide-subtitle">El instrumento normativo global más amplio: 193 estados miembros</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Estructura: valores, principios y áreas de acción</h3>
+                    <p>Adoptada unánimemente en noviembre 2021 por los <strong>193 estados miembros</strong> de la UNESCO. Articula <strong>4 valores fundamentales</strong>, <strong>10 principios</strong> y <strong>11 áreas de acción política</strong>.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="key-point">
+                        <h4>4 valores fundamentales</h4>
+                        <p>Derechos humanos y dignidad. Sociedades pacíficas y justas. Diversidad e inclusión. Medio ambiente y florecimiento del ecosistema.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>10 principios</h4>
+                        <p>Proporcionalidad y no causar daño. Seguridad. Privacidad. Gobernanza multi-stakeholder. Responsabilidad y rendición de cuentas. Transparencia y explicabilidad. Supervisión humana. Sostenibilidad. Conciencia y alfabetización. Equidad y no discriminación.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>11 áreas de acción</h4>
+                        <p>Evaluación de impacto ético. Gobernanza de datos. Género. Cultura. Educación e investigación. Salud. Economía y trabajo. Medio ambiente. Servicios públicos. Comunicación e información. Cooperación internacional.</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 15px;">
+                    <h4>Implementación: Readiness Assessment Methodology (RAM)</h4>
+                    <p>Desplegada en <strong>más de 80 países</strong> (desde 50 en 2023). Evalúa preparación en cinco dimensiones: legal/regulatoria, social/cultural, económica, científica/educativa y técnica/infraestructural. <strong>Chile fue el primer país del mundo en completar el RAM.</strong> El 3er Foro Global sobre Ética de IA se celebró en Bangkok en junio 2025.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: UNESCO - Costa Rica -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">UNESCO y Costa Rica: una posición privilegiada</h2>
+                <p class="slide-subtitle">Costa Rica como líder regional en ética de IA según la UNESCO</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="success-box">
+                        <h4>Participación activa de Costa Rica</h4>
+                        <p>Costa Rica está entre los <strong>50 países iniciales del RAM</strong> y es uno de solo <strong>10 países piloto</strong> para el Global Index on Responsible AI (junto a Canadá, India, Kenya y otros).<br><br>
+                        La UNESCO publicó el documento <em>"Artificial Intelligence in Costa Rica: Justice, Ethics, and Inclusion"</em>.<br><br>
+                        En noviembre 2025, UNESCO se asoció con Costa Rica en una iniciativa para equipar funcionarios públicos de más de <strong>300 entidades</strong> con competencias en IA, lanzando un MOOC co-desarrollado con la Universidad de Oxford.<br><br>
+                        La Escuela de Administración Pública de la UCR es miembro de la alianza SPARK-AI de la UNESCO.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Publicaciones recientes de la UNESCO</h3>
+                        <ul>
+                            <li><strong>Diciembre 2025:</strong> guías para el uso de sistemas de IA en tribunales y cortes</li>
+                            <li><strong>Noviembre 2025:</strong> recomendación sobre ética de la neurotecnología, extendiendo la metodología de IA a interfaces cerebro-computadora</li>
+                            <li><strong>2do Foro Global (2024):</strong> ocho grandes empresas tech firmaron compromisos de IA ética: Microsoft, Mastercard, Lenovo, GSMA, INNIT, LG, Salesforce y Telefónica</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 15px;">
+                    <p>La posición de Costa Rica en el ecosistema de la UNESCO es estratégica: participación simultánea en RAM, en el índice piloto de IA responsable, y con una estrategia nacional (ENIA) explícitamente alineada con los principios de la UNESCO y la OCDE.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Tabla comparativa -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Comparación directa entre los cinco marcos</h2>
+                <p class="slide-subtitle">Tipo, certificabilidad, enforcement y cobertura</p>
+            </div>
+            <div class="slide-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Dimensión</th>
+                            <th>ISO 42001</th>
+                            <th>NIST AI RMF</th>
+                            <th>COBIT 2019</th>
+                            <th>OCDE</th>
+                            <th>UNESCO</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Tipo</strong></td>
+                            <td>Estándar certificable</td>
+                            <td>Marco de riesgo</td>
+                            <td>Gobernanza de TI</td>
+                            <td>Principios de política</td>
+                            <td>Estándar ético</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Certificable</strong></td>
+                            <td>Sí (único)</td>
+                            <td>No</td>
+                            <td>No (para IA)</td>
+                            <td>No</td>
+                            <td>No</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Enforcement</strong></td>
+                            <td>Mercado + safe harbors</td>
+                            <td>Referenciado por reguladores</td>
+                            <td>Voluntario</td>
+                            <td>Presión de pares</td>
+                            <td>Voluntario (RAM)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Cobertura GenAI</strong></td>
+                            <td>Vía evaluación de riesgos</td>
+                            <td>Perfil AI 600-1</td>
+                            <td>No específica</td>
+                            <td>Actualizado 2024</td>
+                            <td>No específica</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Audiencia principal</strong></td>
+                            <td>Todas las organizaciones</td>
+                            <td>Todas las organizaciones</td>
+                            <td>Líderes TI/negocio</td>
+                            <td>Gobiernos</td>
+                            <td>Todos los stakeholders</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Alcance geográfico</strong></td>
+                            <td>Global (ISO)</td>
+                            <td>EE.UU. / global</td>
+                            <td>Global (ISACA)</td>
+                            <td>47 adherentes</td>
+                            <td>193 estados miembros</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Relevancia para CR</strong></td>
+                            <td>INTE adoptó INTE/ISO 42001:2026</td>
+                            <td>Referencia técnica</td>
+                            <td>Extensión de TI</td>
+                            <td>CR es miembro OCDE</td>
+                            <td>CR es país piloto</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 17: El governance stack -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">El governance stack: cuatro capas complementarias</h2>
+                <p class="slide-subtitle">Los marcos no compiten, se complementan en un ecosistema integrado</p>
+            </div>
+            <div class="slide-content">
+                <div class="four-columns">
+                    <div class="info-box">
+                        <h4>Capa 1: valores y ética</h4>
+                        <p><strong>OCDE + UNESCO</strong><br><br>Establece los valores universales y las barandillas éticas. Define el "por qué" y los principios rectores que orientan toda la gobernanza.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>Capa 2: estándares</h4>
+                        <p><strong>NIST AI RMF + ISO 42001 + COBIT</strong><br><br>Proporciona estructuras de implementación, gestión de riesgos y cumplimiento operativo. Define el "cómo" se operacionalizan los principios.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Capa 3: regulación</h4>
+                        <p><strong>EU AI Act + leyes nacionales</strong><br><br>Hace la gobernanza exigible. Define obligaciones, prohibiciones, multas y mecanismos de enforcement. Define el "qué debe hacerse."</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Capa 4: cooperación</h4>
+                        <p><strong>GPAI + acuerdos bilaterales</strong><br><br>Soporta armonización transfronteriza, intercambio de mejores prácticas y coordinación entre jurisdicciones.</p>
+                    </div>
+                </div>
+                <div class="content-box" style="margin-top: 15px;">
+                    <h3>Selección según contexto organizacional</h3>
+                    <ul>
+                        <li><strong>Necesita certificación formal</strong> &rarr; ISO 42001</li>
+                        <li><strong>Necesita guía flexible de riesgo</strong> &rarr; NIST AI RMF</li>
+                        <li><strong>Necesita cumplir con mercado europeo</strong> &rarr; EU AI Act + ISO 42001 como columna vertebral</li>
+                        <li><strong>Necesita fundamentos éticos</strong> &rarr; OCDE / UNESCO</li>
+                        <li><strong>Necesita extender gobernanza de TI existente</strong> &rarr; COBIT</li>
+                        <li><strong>Contratista federal de EE.UU.</strong> &rarr; NIST AI RMF (crecientemente esperado)</li>
+                        <li><strong>Organización multinacional</strong> &rarr; Stack unificado: NIST + ISO 42001 + regulación aplicable</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Crosswalks y integración práctica -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Crosswalks: la integración práctica entre marcos</h2>
+                <p class="slide-subtitle">Mapeos oficiales que eliminan duplicación de esfuerzos</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Principio de integración</h3>
+                    <p>El consenso experto en 2026 es claro: <strong>integración de marcos, no selección de un marco único</strong>, define la mejor práctica. Los crosswalks oficiales publicados por NIST, ISO y centros de investigación permiten que las organizaciones construyan programas unificados donde cada marco aporta su fortaleza sin generar trabajo duplicado.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="key-point">
+                        <h4>NIST &harr; ISO 42001</h4>
+                        <p>Mapeo contribuido por Microsoft. Las subcategorías del AI RMF se alinean con las cláusulas de ISO 42001. Permite usar NIST para operación diaria mientras se persigue certificación ISO.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>NIST &harr; EU AI Act</h4>
+                        <p>Crosswalk oficial que vincula las funciones Govern/Map/Measure/Manage con los requisitos del EU AI Act por categoría de riesgo. Crucial para empresas con operaciones transatlánticas.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>ISO 42001 &harr; EU AI Act</h4>
+                        <p>El Código de Práctica GPAI se mapea directamente a ISO 42001. La certificación ISO se posiciona como evidencia de conformidad ante los requisitos europeos.</p>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <h4>Ejemplo práctico: organización multinacional</h4>
+                    <p>Una empresa con operaciones en EE.UU. y Europa implementa ISO 42001 como sistema de gestión central, usa NIST AI RMF para la metodología de riesgo operacional, alinea con los requisitos del EU AI Act para su mercado europeo, adopta los principios OCDE como marco de valores, y referencia la Recomendación UNESCO para su política de derechos humanos. Un solo programa de gobernanza, múltiples marcos integrados.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Panorama regulatorio global -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Panorama regulatorio global 2025-2026</h2>
+                <p class="slide-subtitle">Un mapa en rápida transformación</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Unión Europea: EU AI Act</h3>
+                        <ul>
+                            <li><strong>Feb 2025:</strong> prohibiciones sobre prácticas de riesgo inaceptable y requisitos de alfabetización en IA entraron en vigor</li>
+                            <li><strong>Ago 2025:</strong> obligaciones de GPAI aplicables; 26 proveedores firmaron Código de Práctica; Meta se negó</li>
+                            <li><strong>Ene 2026:</strong> Finlandia, primer estado en enforcement activo</li>
+                            <li><strong>Ago 2026:</strong> obligaciones de IA de alto riesgo, poderes plenos de enforcement, multas hasta 35M EUR o 7% de facturación global</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>América Latina</h3>
+                        <ul>
+                            <li><strong>Costa Rica:</strong> ENIA 2024-2027, primera en Centroamérica; Primer Diálogo Nacional (nov 2025); revisión del Proyecto 23097</li>
+                            <li><strong>Perú:</strong> primer país de LATAM con ley de IA aprobada</li>
+                            <li><strong>Brasil:</strong> PL 2338/2023 bajo revisión; BRL 23B para Plan de IA</li>
+                            <li><strong>Chile:</strong> regulación enviada al Congreso en 2024</li>
+                            <li><strong>17 países</strong> comprometidos con cooperación de IA responsable</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 15px;">
+                    <div class="case-box">
+                        <h4>Asia-Pacífico</h4>
+                        <p><strong>Singapur:</strong> primer marco de gobernanza para IA agéntica (enero 2026). <strong>China:</strong> más regulaciones sectoriales que cualquier otro país; legislación comprehensiva es prioridad 2026. <strong>India:</strong> AI Impact Summit con 118 países y USD 200B+ en compromisos de inversión.</p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Cumbres globales 2025-2026</h4>
+                        <p>Paris AI Action Summit (feb 2025): 62 países firmaron declaración. India AI Impact Summit (feb 2026): el mayor evento global de IA con 600,000+ asistentes. G7 "AI for Prosperity" (jun 2025). Total: más de USD 200 mil millones en compromisos de inversión en IA.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Tendencias emergentes -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Tendencias que redefinen la gobernanza en 2026</h2>
+                <p class="slide-subtitle">Cinco cambios estructurales en el panorama de gobernanza de IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>1. De voluntario a obligatorio</h4>
+                        <p>El EU AI Act (agosto 2026), el Colorado AI Act, y 24 estados de EE.UU. adoptando el NAIC Model Bulletin significan que la gobernanza pasa de mejor práctica a obligación legal. Las organizaciones que postergan se exponen a riesgos crecientes.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>2. Convergencia entre marcos</h4>
+                        <p>Los crosswalks oficiales proliferan. La definición OCDE se convirtió en estándar global. ISO 42001 se posiciona como la columna vertebral universal de compliance. La fragmentación regulatoria se mitiga mediante armonización técnica.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>3. IA generativa y agéntica tensionan los marcos</h4>
+                        <p>Solo 20% de empresas tiene gobernanza madura para IA agéntica. El marco de Singapur (enero 2026) es el primer intento de abordar riesgos de agentes autónomos. Los marcos existentes requieren adaptación continua.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 15px;">
+                    <div class="info-box">
+                        <h4>4. Convergencia ciberseguridad-IA</h4>
+                        <p>El perfil Cyber AI de NIST y los controles de IA en SP 800-53 aceleran la integración entre seguridad de la información y gobernanza de IA. Las organizaciones necesitan equipos cross-funcionales que entiendan ambos dominios.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>5. Gobernanza como ventaja competitiva</h4>
+                        <p>Organizaciones con alta madurez en IA sostienen iniciativas a <strong>2.25x la tasa</strong> de las menos maduras (Gartner). Equipos de procurement comienzan a referenciar ISO 42001 junto a SOC 2. La gobernanza dejó de ser costo y se convirtió en diferenciador de mercado.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Conclusiones -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Conclusiones: tres ideas fundamentales</h2>
+                <p class="slide-subtitle">De la teoría a la práctica de marcos y estándares de gobernanza de IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>1. Integración, no selección</h4>
+                        <p>La mejor práctica no es elegir un marco, sino integrar varios según el contexto organizacional. Los crosswalks publicados eliminan duplicación. ISO 42001 como sistema certificable, NIST como metodología de riesgo, OCDE/UNESCO como valores, COBIT como puente desde TI, y regulación aplicable como obligación. Un programa, múltiples capas.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>2. La gobernanza ya es obligatoria</h4>
+                        <p>Con el EU AI Act activando obligaciones de alto riesgo en agosto 2026, leyes estatales creando safe harbors vinculados a marcos específicos, y Fortune 500 exigiendo ISO 42001 a proveedores, el costo de no gobernar supera ampliamente el costo de implementar. La transición de voluntario a obligatorio ya ocurrió.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>3. Costa Rica tiene posición estratégica</h4>
+                        <p>Miembro de la OCDE, país piloto de UNESCO, primera estrategia de IA en Centroamérica (ENIA 2024-2027), estándar INTE/ISO 42001:2026 adoptado, y Primer Diálogo Nacional en noviembre 2025. La base está puesta; el desafío es pasar de estrategia a implementación concreta.</p>
+                    </div>
+                </div>
+                <div class="content-box" style="margin-top: 20px;">
+                    <h3>Para profesionales de gobernanza de IA</h3>
+                    <p>Los marcos son herramientas, no fines. Su valor se materializa cuando se implementan en organizaciones reales con roles claros, políticas ejecutables y cultura de datos. La ausencia total de marcos, como veremos en casos reales, produce consecuencias medibles: multas millonarias, daño reputacional, y en los casos más graves, daño humano directo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Cierre -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Recapitulación y lo que viene</h2>
+                <p class="slide-subtitle">Síntesis de la sesión y actividad práctica</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Hoy aprendimos</h3>
+                    <ul>
+                        <li>ISO/IEC 42001 como único estándar certificable de gestión de IA, su ecosistema complementario y adopción acelerada</li>
+                        <li>NIST AI RMF: cuatro funciones (Govern, Map, Measure, Manage), perfiles complementarios y contexto político actual</li>
+                        <li>COBIT 2019: cómo extender gobernanza de TI existente a la IA, con nuevas certificaciones de ISACA</li>
+                        <li>Principios de la OCDE: el lenguaje común global, actualizado para IA generativa, con siete países de LATAM adherentes</li>
+                        <li>Recomendación UNESCO: alcance universal, metodología RAM, y la posición privilegiada de Costa Rica</li>
+                        <li>El governance stack de cuatro capas y los crosswalks que permiten integración sin duplicación</li>
+                        <li>El panorama regulatorio global y las cinco tendencias que redefinen 2026</li>
+                    </ul>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="info-box">
+                        <h4>Semana 10: regulaciones y políticas sobre IA</h4>
+                        <p>Profundizaremos en el EU AI Act (enfoque basado en riesgo), estrategias nacionales de IA en Latinoamérica, regulación sectorial, sandbox regulatorios, el papel de organismos internacionales y tendencias regulatorias emergentes.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>A continuación: actividad práctica en equipos</h4>
+                        <p>Después de esta presentación, trabajaremos en equipos un caso de análisis ético-crítico donde aplicarán los marcos y estándares de gobernanza que hemos discutido hoy, junto con los conceptos de semanas anteriores.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">&larr; Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente &rarr;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            } else if (n < 0) {
+                currentSlide = 0;
+            } else {
+                currentSlide = n;
+            }
+
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

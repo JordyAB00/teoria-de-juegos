@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Implementación y futuro de la gobernanza en IA - Semanas 14-15</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow: hidden;
+    background: #f5f5f7;
+}
+
+.slide {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0; left: 0;
+    opacity: 0;
+    transition: opacity 0.6s ease-in-out;
+    display: flex;
+    flex-direction: column;
+    padding: 55px 80px 130px 80px;
+    background: #f5f5f7;
+}
+
+.slide.active { opacity: 1; z-index: 1; }
+
+.slide-header { margin-bottom: 28px; }
+
+.slide-title {
+    font-size: 44px;
+    font-weight: 700;
+    color: #2d1b4e;
+    margin-bottom: 8px;
+}
+
+.slide-subtitle {
+    font-size: 20px;
+    color: #6e6e73;
+    font-weight: 300;
+}
+
+.slide-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 18px;
+    overflow-y: auto;
+    max-height: calc(100vh - 240px);
+    padding-right: 10px;
+}
+
+.slide-content::-webkit-scrollbar { width: 6px; }
+.slide-content::-webkit-scrollbar-thumb { background: #00d4ff; border-radius: 10px; }
+
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+.cover-slide {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(135deg, #fff 0%, #f5f5f7 50%, #fff 100%);
+}
+
+.cover-title {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: grad 3s ease infinite;
+    background-size: 200% 200%;
+    margin-bottom: 18px;
+    line-height: 1.1;
+}
+
+@keyframes grad {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.cover-sub { font-size: 26px; color: #6e6e73; font-weight: 300; margin-bottom: 30px; }
+.cover-info { font-size: 17px; color: #1d1d1f; line-height: 1.6; }
+
+.big-stat {
+    background: #fff;
+    border-radius: 18px;
+    padding: 24px 20px;
+    text-align: center;
+    border: 2px solid #e5e5e7;
+    transition: all 0.3s ease;
+}
+
+.big-stat:hover {
+    border-color: #00d4ff;
+    box-shadow: 0 6px 20px rgba(0,212,255,0.12);
+    transform: translateY(-3px);
+}
+
+.big-stat .num {
+    font-size: 50px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1.1;
+}
+
+.big-stat .label { font-size: 14px; color: #6e6e73; margin-top: 10px; line-height: 1.4; }
+
+.card {
+    background: #fff;
+    border-radius: 18px;
+    padding: 22px;
+    border: 1px solid #e5e5e7;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.card h3 { font-size: 20px; color: #2d1b4e; margin-bottom: 10px; }
+.card p { font-size: 15px; color: #1d1d1f; line-height: 1.55; }
+.card ul { list-style: none; padding: 0; }
+
+.card li {
+    font-size: 15px; color: #1d1d1f; line-height: 1.55;
+    padding-left: 22px; position: relative; margin-bottom: 5px;
+}
+
+.card li::before {
+    content: "\25B8"; position: absolute; left: 0; color: #00d4ff; font-size: 18px;
+}
+
+.accent-red { background: linear-gradient(135deg, #fff5f5, #fff); border-left: 4px solid #ef4444; }
+.accent-red h3, .accent-red h4 { color: #991b1b; }
+.accent-red p { color: #7f1d1d; }
+
+.accent-blue { background: linear-gradient(135deg, #eff6ff, #fff); border-left: 4px solid #3b82f6; }
+.accent-blue h3, .accent-blue h4 { color: #1e40af; }
+.accent-blue p { color: #1e3a8a; }
+
+.accent-green { background: linear-gradient(135deg, #f0fdf4, #fff); border-left: 4px solid #22c55e; }
+.accent-green h3, .accent-green h4 { color: #15803d; }
+.accent-green p { color: #166534; }
+
+.accent-yellow { background: linear-gradient(135deg, #fefce8, #fff); border-left: 4px solid #eab308; }
+.accent-yellow h3, .accent-yellow h4 { color: #854d0e; }
+.accent-yellow p { color: #713f12; }
+
+.accent-purple { background: linear-gradient(135deg, #faf5ff, #fff); border-left: 4px solid #8b5cf6; }
+.accent-purple h3, .accent-purple h4 { color: #5b21b6; }
+
+.highlight {
+    background: linear-gradient(135deg, #f0f0f2, #fff);
+    border-left: 4px solid #00d4ff;
+    padding: 16px 20px;
+    border-radius: 10px;
+}
+
+.highlight p { font-size: 18px; color: #2d1b4e; font-weight: 500; font-style: italic; }
+
+.pill {
+    display: inline-block;
+    background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+    color: white;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin: 3px;
+}
+
+.dim-card {
+    background: #fff; border-radius: 16px; padding: 22px 16px; border: 2px solid #e5e5e7;
+    text-align: center; transition: all 0.3s ease;
+}
+
+.dim-card:hover {
+    border-color: #00d4ff; transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0,212,255,0.12);
+}
+
+.dim-card .icon { font-size: 40px; margin-bottom: 10px; }
+.dim-card h4 { color: #2d1b4e; font-size: 17px; margin-bottom: 8px; }
+.dim-card p { color: #6e6e73; font-size: 13px; line-height: 1.4; }
+
+.section-divider {
+    background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+    color: white;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.section-divider .section-num { font-size: 22px; opacity: 0.8; margin-bottom: 12px; letter-spacing: 3px; }
+.section-divider .section-title { font-size: 64px; font-weight: 800; line-height: 1.1; margin-bottom: 18px; }
+.section-divider .section-sub { font-size: 22px; opacity: 0.9; max-width: 700px; }
+
+.caso-mini {
+    background: #fff; border: 2px solid #e5e5e7; border-radius: 14px;
+    padding: 16px; text-align: center; transition: all 0.3s ease;
+}
+.caso-mini:hover { border-color: #00d4ff; box-shadow: 0 4px 12px rgba(0,212,255,0.12); }
+.caso-mini h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 6px; }
+.caso-mini p { font-size: 13px; color: #6e6e73; line-height: 1.4; }
+
+.flow-row { display: flex; align-items: center; justify-content: center; gap: 6px; flex-wrap: wrap; }
+
+.flow-step {
+    color: white; padding: 16px 14px; border-radius: 14px; text-align: center;
+    min-width: 120px; flex: 1; max-width: 180px;
+    box-shadow: 0 4px 14px rgba(45,27,78,0.2);
+}
+.flow-step h4 { font-size: 16px; margin-bottom: 4px; }
+.flow-step p { font-size: 11px; opacity: 0.9; line-height: 1.3; }
+.flow-arrow { font-size: 28px; color: #00d4ff; font-weight: 700; }
+
+.vs-container { display: grid; grid-template-columns: 1fr auto 1fr; gap: 16px; align-items: stretch; }
+.vs-side { padding: 22px; border-radius: 18px; color: white; }
+.vs-side h3 { font-size: 22px; margin-bottom: 12px; }
+.vs-side li { font-size: 14px; line-height: 1.6; margin-bottom: 6px; list-style: none; padding-left: 18px; position: relative; }
+.vs-side li::before { content: "\25CF"; position: absolute; left: 0; font-size: 10px; top: 5px; }
+.vs-divider { display: flex; align-items: center; font-size: 42px; font-weight: 800; color: #2d1b4e; }
+
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-item { display: flex; align-items: center; gap: 14px; }
+.bar-label { min-width: 140px; font-size: 15px; font-weight: 600; color: #2d1b4e; text-align: right; }
+.bar-bg { flex: 1; height: 28px; background: #f0f0f2; border-radius: 14px; overflow: hidden; position: relative; }
+.bar-fill {
+    height: 100%; border-radius: 14px; display: flex; align-items: center;
+    justify-content: flex-end; padding-right: 12px;
+    color: white; font-size: 13px; font-weight: 700;
+    transition: width 0.8s ease;
+}
+
+.agenda-block {
+    background: #fff; border-radius: 18px; padding: 24px; border: 2px solid #e5e5e7;
+    transition: all 0.3s ease;
+}
+.agenda-block:hover { border-color: #00d4ff; transform: translateY(-3px); }
+.agenda-block .num-big {
+    font-size: 56px; font-weight: 800;
+    background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    line-height: 1; margin-bottom: 8px;
+}
+.agenda-block h3 { font-size: 22px; color: #2d1b4e; margin-bottom: 10px; }
+.agenda-block ul { list-style: none; padding: 0; }
+.agenda-block li {
+    font-size: 14px; color: #1d1d1f; padding-left: 18px; position: relative;
+    margin-bottom: 5px; line-height: 1.5;
+}
+.agenda-block li::before {
+    content: "\25CF"; position: absolute; left: 0; color: #00d4ff; font-size: 10px; top: 6px;
+}
+
+.navigation {
+    position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 20px; z-index: 1000;
+}
+
+.nav-btn {
+    background: linear-gradient(135deg, #7c3aed, #00d4ff);
+    border: none; color: white; padding: 15px 30px; border-radius: 50px;
+    cursor: pointer; font-size: 16px; font-weight: 600;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+}
+
+.nav-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,212,255,0.4); }
+.nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.logo-area { position: fixed; top: 15px; left: 20px; z-index: 1000; }
+.logo-area img { max-width: 150px; height: auto; }
+
+.slide-num {
+    position: fixed; top: 20px; right: 30px;
+    color: #6e6e73; font-size: 16px; z-index: 1000; font-weight: 500;
+}
+</style>
+</head>
+<body>
+
+<div class="logo-area">
+    <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+</div>
+
+<div class="slide-num">
+    <span id="cur">1</span> / <span id="tot">14</span>
+</div>
+
+<!-- SLIDE 1: PORTADA -->
+<div class="slide cover-slide active">
+    <h1 class="cover-title">De la teoría a la<br>organización</h1>
+    <p class="cover-sub">Implementar gobernanza de IA + tendencias que definen el futuro</p>
+    <div class="cover-info">
+        <p>Semanas 14 y 15 | Microcredencial en IA y Análisis de Datos<br>
+        Universidad Latinoamericana de Ciencia y Tecnología | Abril 2026</p>
+    </div>
+</div>
+
+<!-- SLIDE 2: AGENDA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Agenda</h2>
+        <p class="slide-subtitle">Dos bloques: lo que las organizaciones hacen hoy y lo que viene</p>
+    </div>
+    <div class="slide-content">
+        <div class="two-col">
+            <div class="agenda-block">
+                <div class="num-big">01</div>
+                <h3>Implementación organizacional</h3>
+                <ul>
+                    <li>Comités de ética: éxitos y fracasos</li>
+                    <li>Políticas internas de IA</li>
+                    <li>Capacitación y cultura ética</li>
+                    <li>Auditorías y consecuencias</li>
+                    <li>Casos de éxito reales</li>
+                </ul>
+            </div>
+            <div class="agenda-block">
+                <div class="num-big">02</div>
+                <h3>Tendencias futuras</h3>
+                <ul>
+                    <li>Deepfakes industrializados</li>
+                    <li>Futuro del trabajo</li>
+                    <li>AGI: predicciones y riesgos</li>
+                    <li>Geopolítica de la IA</li>
+                    <li>Ciudadanía y gobernanza participativa</li>
+                </ul>
+            </div>
+        </div>
+        <div class="highlight">
+            <p>Al terminar la teoría, trabajaremos el último caso de análisis ético-crítico del curso.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 3: LA BRECHA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">La brecha entre intención y acción</h2>
+        <p class="slide-subtitle">Casi todos quieren gobernanza; casi nadie la tiene</p>
+    </div>
+    <div class="slide-content">
+        <div class="four-col">
+            <div class="big-stat">
+                <div class="num">86%</div>
+                <div class="label">de empresas dice que la IA transformará sus operaciones para 2030</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">&lt;1%</div>
+                <div class="label">ha operacionalizado completamente la IA responsable (WEF)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">2,3/5</div>
+                <div class="label">madurez promedio en IA responsable (McKinsey 2026)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">49%</div>
+                <div class="label">de empleados usa herramientas de IA no autorizadas</div>
+            </div>
+        </div>
+        <div class="highlight" style="margin-top:10px;">
+            <p>El problema no es de conocimiento. Es de implementación. ¿Cómo se cierra esa brecha?</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 4: COMITÉS DE ÉTICA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Comités de ética: lo que funciona y lo que no</h2>
+    </div>
+    <div class="slide-content">
+        <div class="vs-container">
+            <div class="vs-side" style="background: linear-gradient(135deg, #16a34a, #15803d);">
+                <h3>Funciona</h3>
+                <ul>
+                    <li><strong>Microsoft:</strong> modelo hub-and-spoke con 3 pilares (AETHER + ORA + RAISE) y autoridad real</li>
+                    <li><strong>IBM:</strong> 4 niveles de gobernanza + watsonx.governance para monitoreo automatizado</li>
+                    <li><strong>Deutsche Telekom:</strong> 9 principios traducidos en manual práctico + capacitación obligatoria</li>
+                </ul>
+            </div>
+            <div class="vs-divider">vs</div>
+            <div class="vs-side" style="background: linear-gradient(135deg, #dc2626, #991b1b);">
+                <h3>Fracasa</h3>
+                <ul>
+                    <li><strong>Google ATEAC:</strong> creado y disuelto en 9 días. Sin autoridad, sin remuneración, miembros controversiales</li>
+                    <li><strong>Axon:</strong> 9 de 13 miembros renunciaron porque el CEO ignoró una votación 8-4 en contra</li>
+                    <li>El patrón: comités decorativos sin poder de veto</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card accent-blue" style="padding:14px 20px; margin-top:10px;">
+            <p><strong>Lección central:</strong> un comité sin autoridad real es peor que no tener comité, porque crea una ilusión de gobernanza.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 5: POLÍTICAS INTERNAS -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Política interna de IA: los 5 pilares</h2>
+        <p class="slide-subtitle">Desde febrero 2025, el EU AI Act la hace obligatoria (Art. 4)</p>
+    </div>
+    <div class="slide-content">
+        <div class="flow-row">
+            <div class="flow-step" style="background: linear-gradient(135deg, #2d1b4e, #4c2a7f);">
+                <h4>Alcance</h4>
+                <p>Usos aceptables e inaceptables</p>
+            </div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background: linear-gradient(135deg, #1e40af, #3b82f6);">
+                <h4>Datos</h4>
+                <p>Protección, privacidad, consentimiento</p>
+            </div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background: linear-gradient(135deg, #0e7490, #00d4ff);">
+                <h4>Control</h4>
+                <p>Revisión humana y auditoría de sesgo</p>
+            </div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background: linear-gradient(135deg, #b45309, #f97316);">
+                <h4>Riesgos</h4>
+                <p>Gestión, incidentes, escalamiento</p>
+            </div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background: linear-gradient(135deg, #15803d, #22c55e);">
+                <h4>Cultura</h4>
+                <p>Capacitación, transparencia, revisión semestral</p>
+            </div>
+        </div>
+        <div class="two-col" style="margin-top:18px;">
+            <div class="card accent-yellow" style="padding:16px;">
+                <h3>La realidad</h3>
+                <p>Solo el <strong>30%</strong> de organizaciones en EE.UU. tiene directrices de IA. El <strong>77%</strong> de empleados pega datos en herramientas de IA sin política que lo regule.</p>
+            </div>
+            <div class="card accent-green" style="padding:16px;">
+                <h3>El estándar</h3>
+                <p>Microsoft publicó su Responsible AI Standard v2 con 6 principios y revisión centralizada pre-despliegue. Deloitte creó su Trustworthy AI Framework.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 6: CAPACITACIÓN Y CULTURA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Capacitación y cultura ética</h2>
+        <p class="slide-subtitle">De los principios a la práctica cotidiana</p>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="caso-mini">
+                <h4>FedEx</h4>
+                <p>Alfabetización en IA para ~500.000 empleados. La alta dirección hizo inmersión de 2 días en Silicon Valley.</p>
+            </div>
+            <div class="caso-mini">
+                <h4>KPMG España</h4>
+                <p>140.000 horas de capacitación en IA. 6.834 horas específicas en IA ética con certificación personal.</p>
+            </div>
+            <div class="caso-mini">
+                <h4>Bayer</h4>
+                <p>Data Academy multinivel: el 90%+ reportó mejoras en innovación o procesos tras completarla.</p>
+            </div>
+        </div>
+        <div class="flow-row" style="margin-top:10px;">
+            <div class="flow-step" style="background:#2d1b4e; min-width:100px;"><h4>1</h4><p>Evangelismo</p></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background:#4c2a7f; min-width:100px;"><h4>2</h4><p>Políticas</p></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background:#1e40af; min-width:100px;"><h4>3</h4><p>Documentación</p></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background:#0e7490; min-width:100px;"><h4>4</h4><p>Revisión</p></div>
+            <span class="flow-arrow">&rarr;</span>
+            <div class="flow-step" style="background:#15803d; min-width:100px;"><h4>5</h4><p>Acción</p></div>
+        </div>
+        <div class="card accent-purple" style="padding:14px 20px; margin-top:6px;">
+            <p><strong>Las 5 etapas de la cultura ética en IA</strong> (Davenport, MIT Sloan 2025): comunicar importancia &rarr; aprobar políticas &rarr; documentar cada caso de uso &rarr; evaluar contra criterios &rarr; aceptar, revisar o rechazar.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 7: AUDITORÍAS Y CONSECUENCIAS -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Auditorías y consecuencias: la ley ya tiene dientes</h2>
+    </div>
+    <div class="slide-content">
+        <div class="two-col">
+            <div>
+                <div class="card accent-red" style="padding:16px; margin-bottom:14px;">
+                    <h3>NYC Local Law 144: la lección</h3>
+                    <p>Primera ley de auditoría de sesgo en contratación con IA. Resultado: implementación calificada como <strong>"ineficaz"</strong>. De 32 empresas encuestadas, DCWP encontró 1 violación. Los auditores encontraron 17.</p>
+                </div>
+                <div class="card accent-yellow" style="padding:16px;">
+                    <h3>Denunciantes y protecciones</h3>
+                    <p><strong>AI Whistleblower Protection Act</strong> (mayo 2025): modelo Sarbanes-Oxley para IA. Casos emblemáticos: Timnit Gebru, Leopold Aschenbrenner, carta "Right to Warn".</p>
+                </div>
+            </div>
+            <div>
+                <div class="bar-chart">
+                    <div class="bar-item">
+                        <div class="bar-label">EU AI Act</div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:100%; background: linear-gradient(90deg, #dc2626, #ef4444);">7% facturación</div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">GDPR (2025)</div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:75%; background: linear-gradient(90deg, #b45309, #f97316);">€1.150M multas</div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">Italia/OpenAI</div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:40%; background: linear-gradient(90deg, #854d0e, #eab308);">€15M</div></div>
+                    </div>
+                    <div class="bar-item">
+                        <div class="bar-label">NY RAISE Act</div>
+                        <div class="bar-bg"><div class="bar-fill" style="width:85%; background: linear-gradient(90deg, #991b1b, #dc2626);">hasta $30M</div></div>
+                    </div>
+                </div>
+                <div class="highlight" style="margin-top:16px;">
+                    <p>Las organizaciones con responsabilidad explícita de IA responsable obtienen madurez de 2,6 vs. 1,8 sin ella.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 8: CASOS DE ÉXITO -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Dos referentes que sí lo hicieron</h2>
+        <p class="slide-subtitle">BBVA y Telefónica: gobernanza de IA desde la estrategia</p>
+    </div>
+    <div class="slide-content">
+        <div class="two-col">
+            <div class="card" style="padding:20px; border-top: 5px solid #0052B4;">
+                <h3 style="color:#0052B4;">BBVA</h3>
+                <ul>
+                    <li>Marco alineado con BCBS 239 y EU AI Act</li>
+                    <li>2.500+ científicos de datos</li>
+                    <li>11.000 licencias ChatGPT Enterprise (80%+ uso diario)</li>
+                    <li>Proyecto Fair Learning con Universidad de Navarra: 3 años investigando sesgo</li>
+                    <li>Data University: 50.000+ empleados capacitados</li>
+                </ul>
+            </div>
+            <div class="card" style="padding:20px; border-top: 5px solid #00A3E0;">
+                <h3 style="color:#00A3E0;">Telefónica</h3>
+                <ul>
+                    <li>Pionera desde 2018, principios actualizados en 2024</li>
+                    <li>3 niveles: RAI Champions, Comité de Ética, AI Office</li>
+                    <li>Chief Responsible AI Officer dedicado</li>
+                    <li>Co-preside UNESCO Business Council on AI Ethics</li>
+                    <li>4.000 empleados completaron curso de ética de IA</li>
+                </ul>
+            </div>
+        </div>
+        <div class="card accent-green" style="padding:14px 20px; margin-top:10px;">
+            <p><strong>Patrón compartido:</strong> gobernanza a nivel de junta directiva, inversión temprana, capacitación masiva, métricas de resultados. Ambas empresas reportan ventaja competitiva, no solo cumplimiento.</p>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 9: DIVIDER -->
+<div class="slide section-divider">
+    <div class="section-num">PARTE 02</div>
+    <div class="section-title">Tendencias<br>futuras</div>
+    <div class="section-sub">Lo que viene cambiará las reglas del juego</div>
+</div>
+
+<!-- SLIDE 10: DEEPFAKES -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Deepfakes: la amenaza se industrializó</h2>
+    </div>
+    <div class="slide-content">
+        <div class="four-col">
+            <div class="big-stat">
+                <div class="num">$1.100M</div>
+                <div class="label">drenados de cuentas corporativas en EE.UU. por deepfakes (2025)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">8M</div>
+                <div class="label">archivos deepfake detectados en 2025 (vs. 500K en 2023)</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">$25M</div>
+                <div class="label">robados a Arup: un empleado cayó en una videollamada con un CFO falso</div>
+            </div>
+            <div class="big-stat">
+                <div class="num">38</div>
+                <div class="label">países con incidentes deepfake electorales desde 2021</div>
+            </div>
+        </div>
+        <div class="two-col" style="margin-top:10px;">
+            <div class="card accent-blue" style="padding:14px;">
+                <h3>Respuesta regulatoria</h3>
+                <p>TAKE IT DOWN Act (EE.UU.): 3 años de prisión por deepfakes íntimos. EU AI Act Art. 50: etiquetado obligatorio. 46 estados con legislación vigente.</p>
+            </div>
+            <div class="card accent-yellow" style="padding:14px;">
+                <h3>En América Latina</h3>
+                <p>Deepfakes electorales en Argentina y México. Brasil prohibió contenido electoral generado por IA sin etiquetar. El 40% de países sudamericanos ha sido afectado.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 11: FUTURO DEL TRABAJO + AGI -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Futuro del trabajo y la carrera hacia AGI</h2>
+    </div>
+    <div class="slide-content">
+        <div class="two-col">
+            <div>
+                <div class="big-stat" style="margin-bottom:14px;">
+                    <div class="num">+78M</div>
+                    <div class="label">saldo neto de empleos para 2030 (170M creados - 92M desplazados, WEF)</div>
+                </div>
+                <div class="card accent-yellow" style="padding:14px;">
+                    <h3>Pero no es parejo</h3>
+                    <ul>
+                        <li>57% de horas de trabajo en EE.UU. son automatizables (McKinsey)</li>
+                        <li>Mujeres: doble probabilidad de riesgo en LATAM</li>
+                        <li>Costa Rica lidera la región en habilidades profesionales de IA (ILIA 2025)</li>
+                    </ul>
+                </div>
+            </div>
+            <div>
+                <div class="card accent-purple" style="padding:14px; margin-bottom:14px;">
+                    <h3>¿Cuándo llega AGI?</h3>
+                    <ul>
+                        <li><strong>Amodei (Anthropic):</strong> "posiblemente 2027"</li>
+                        <li><strong>Altman (OpenAI):</strong> ~2029</li>
+                        <li><strong>Hassabis (DeepMind):</strong> 50% para 2030</li>
+                        <li><strong>LeCun (Meta):</strong> escéptico, a una década</li>
+                    </ul>
+                    <p style="margin-top:8px; font-size:13px; color:#6e6e73;">Los CEOs de IA tienen incentivos financieros para promover tiempos cortos.</p>
+                </div>
+                <div class="big-stat">
+                    <div class="num">18 min</div>
+                    <div class="label">para la medianoche: AI Safety Clock del IMD (marzo 2026)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 12: GEOPOLÍTICA -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Geopolítica y ciudadanía</h2>
+        <p class="slide-subtitle">Quién controla la IA y quién debería decidir sus reglas</p>
+    </div>
+    <div class="slide-content">
+        <div class="two-col">
+            <div>
+                <div class="card accent-red" style="padding:16px; margin-bottom:14px;">
+                    <h3>DeepSeek: la sacudida</h3>
+                    <p>Enero 2025: una startup china rivalizó con OpenAI a una fracción del costo. App #1 en EE.UU. Nvidia perdió <strong>$600.000M</strong> en un día. Demostró que la eficiencia algorítmica puede vencer al poder bruto de cómputo.</p>
+                </div>
+                <div class="card accent-blue" style="padding:16px;">
+                    <h3>Poder concentrado</h3>
+                    <p>EE.UU. controla el <strong>74%</strong> del cómputo global de IA. América Latina recibe solo el <strong>1,12%</strong> de la inversión global pese al 6,6% del PIB.</p>
+                </div>
+            </div>
+            <div>
+                <div class="card accent-green" style="padding:16px; margin-bottom:14px;">
+                    <h3>Gobernanza participativa</h3>
+                    <p>Países Bajos: infraestructura permanente de asambleas ciudadanas para IA (100-200 personas, gobierno obligado a responder en 6 meses). Colombia: mesas redondas con ONGs, estudiantes e industria.</p>
+                </div>
+                <div class="card accent-purple" style="padding:16px;">
+                    <h3>Costa Rica en el tablero</h3>
+                    <p>Cofacilitadora del proceso global de IA en la ONU. ENIA 2024-2027 vigente. Norma INTE/ISO/IEC 42001:2026 adoptada. 3 proyectos de ley en debate. Ninguno aprobado.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 13: TRES IDEAS -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Tres ideas para llevarse</h2>
+    </div>
+    <div class="slide-content">
+        <div class="three-col">
+            <div class="dim-card" style="border-color:#ef4444;">
+                <div class="icon" style="color:#ef4444; font-size:48px; font-weight:800;">1</div>
+                <h4>Implementar no es opcional</h4>
+                <p>El EU AI Act obliga. Las multas llegan. Pero las empresas que invierten temprano ganan ventaja competitiva, no solo cumplen.</p>
+            </div>
+            <div class="dim-card" style="border-color:#3b82f6;">
+                <div class="icon" style="color:#3b82f6; font-size:48px; font-weight:800;">2</div>
+                <h4>Comités sin poder = teatro</h4>
+                <p>Google y Axon enseñaron que un comité decorativo es peor que ninguno. Autoridad real, composición diversa y recursos adecuados son requisitos mínimos.</p>
+            </div>
+            <div class="dim-card" style="border-color:#22c55e;">
+                <div class="icon" style="color:#22c55e; font-size:48px; font-weight:800;">3</div>
+                <h4>El futuro ya llegó</h4>
+                <p>Deepfakes industrializados, AGI en el horizonte cercano y una brecha geopolítica creciente. Quien no gobierne su IA hoy, será gobernado por la de otros.</p>
+            </div>
+        </div>
+        <div class="card" style="text-align:center; padding:18px; margin-top:10px;">
+            <span class="pill">FATE</span>
+            <span class="pill">DAMA-DMBOK</span>
+            <span class="pill">ISO 42001</span>
+            <span class="pill">NIST AI RMF</span>
+            <span class="pill">EU AI Act</span>
+            <span class="pill">RGPD</span>
+            <span class="pill">Ley 8968</span>
+            <span class="pill">ENIA</span>
+            <span class="pill">COBIT</span>
+        </div>
+    </div>
+</div>
+
+<!-- SLIDE 14: CIERRE -->
+<div class="slide">
+    <div class="slide-header">
+        <h2 class="slide-title">Lo que sigue</h2>
+    </div>
+    <div class="slide-content" style="justify-content:center; align-items:center; text-align:center;">
+        <div style="max-width:720px;">
+            <div class="highlight" style="margin-bottom:30px;">
+                <p>"La ventana para la autorregulación se cierra. Las organizaciones que construyan gobernanza ahora definirán los estándares; las que esperen, solo podrán cumplirlos."</p>
+            </div>
+            <div class="card accent-red" style="padding:24px;">
+                <h3 style="font-size:22px;">A continuación: último caso de análisis ético-crítico</h3>
+                <p style="font-size:17px; margin-top:10px;">Recibirán las instrucciones del caso 13 y trabajarán en equipos. Este es el cierre de los casos semanales del curso.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="navigation">
+    <button class="nav-btn" id="prevBtn" onclick="go(-1)">&larr; Anterior</button>
+    <button class="nav-btn" id="nextBtn" onclick="go(1)">Siguiente &rarr;</button>
+</div>
+
+<script>
+    let cur = 0;
+    const sl = document.querySelectorAll('.slide');
+    const tot = sl.length;
+    document.getElementById('tot').textContent = tot;
+
+    function show(n) {
+        sl.forEach(s => s.classList.remove('active'));
+        cur = Math.max(0, Math.min(n, tot - 1));
+        sl[cur].classList.add('active');
+        document.getElementById('cur').textContent = cur + 1;
+        document.getElementById('prevBtn').disabled = cur === 0;
+        document.getElementById('nextBtn').disabled = cur === tot - 1;
+    }
+
+    function go(d) { show(cur + d); }
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') go(-1);
+        if (e.key === 'ArrowRight') go(1);
+    });
+    show(0);
+</script>
+</body>
+</html>

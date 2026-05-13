@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentos de gobernanza de datos - Semana 7</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px 140px 80px;
+            background: #f5f5f7;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: calc(100vh - 260px);
+            padding-right: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar-thumb:hover {
+            background: #00b8dd;
+        }
+
+        .content-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-box h3 {
+            font-size: 24px;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .content-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-box li {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .content-box li::before {
+            content: "\25B8";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 20px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .four-columns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f0f2, #ffffff);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .highlight-box p {
+            font-size: 17px;
+            color: #2d1b4e;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .key-point {
+            background: #ffffff;
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .key-point h4 {
+            color: #2d1b4e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .key-point p {
+            color: #1d1d1f;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .logo-area {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo-image {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            color: #6e6e73;
+            font-size: 16px;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 50%, #ffffff 100%);
+            padding: 60px 80px 140px 80px;
+        }
+
+        .cover-title {
+            font-size: 60px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 32px;
+            color: #6e6e73;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .cover-info {
+            font-size: 18px;
+            color: #1d1d1f;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff5f5, #ffffff);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+        }
+
+        .warning-box h4 {
+            color: #991b1b;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            font-size: 16px;
+            color: #991b1b;
+            font-weight: 500;
+        }
+
+        .case-box {
+            background: linear-gradient(135deg, #fefce8, #ffffff);
+            border-left: 4px solid #eab308;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(234, 179, 8, 0.1);
+        }
+
+        .case-box h4 {
+            color: #854d0e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .case-box p {
+            font-size: 15px;
+            color: #713f12;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+        }
+
+        .success-box h4 {
+            color: #15803d;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .success-box p {
+            font-size: 15px;
+            color: #166534;
+            line-height: 1.5;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #2d1b4e, #4c2a7f);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e5e7;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #eff6ff, #ffffff);
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .info-box h4 {
+            color: #1e40af;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .info-box p {
+            font-size: 15px;
+            color: #1e3a8a;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT" class="logo-image">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">20</span>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide cover-slide active">
+            <h1 class="cover-title">Fundamentos de gobernanza de datos</h1>
+            <p class="cover-subtitle">Semana 7: DAMA-DMBOK, calidad de datos, ciclo de vida, arquitectura y metadatos</p>
+            <div class="cover-info">
+                <p>Microcredencial en Inteligencia Artificial y Análisis de Datos<br>
+                Universidad Latinoamericana de Ciencia y Tecnología<br>
+                Febrero 2026</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Agenda de hoy</h2>
+                <p class="slide-subtitle">Contenidos de la sesión</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Parte 1: Gobernanza de datos</h3>
+                        <ul>
+                            <li>Gobernanza vs. gestión de datos: la distinción estratégica</li>
+                            <li>Tendencias 2025-2026: gobernanza automatizada, datos como producto</li>
+                            <li>DAMA-DMBOK: las 11 áreas de conocimiento</li>
+                            <li>DMBOK 2.0 revisado y el proyecto DMBOK 3.0</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Parte 2: Calidad de datos</h3>
+                        <ul>
+                            <li>Las 6 dimensiones fundamentales (+ currency)</li>
+                            <li>El costo real de la mala calidad de datos</li>
+                            <li>Impacto bidireccional de la IA generativa en calidad</li>
+                            <li>Herramientas modernas de calidad de datos</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Parte 3: Ciclo de vida y arquitectura</h3>
+                        <ul>
+                            <li>Ciclo de vida del dato: modelos actualizados</li>
+                            <li>Sostenibilidad: la nueva dimensión imperativa</li>
+                            <li>Arquitecturas modernas: lakehouse, mesh, fabric</li>
+                            <li>Formatos abiertos y plataformas dominantes</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Parte 4: Metadatos y marcos</h3>
+                        <ul>
+                            <li>Metadatos pasivos vs. metadatos activos</li>
+                            <li>Metadatos como fundamento para IA</li>
+                            <li>ISO 42001, NIST AI RMF: convergencia de marcos</li>
+                            <li>Actividad práctica en equipos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: El panorama actual -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">El panorama actual: por qué la gobernanza importa ahora</h2>
+                <p class="slide-subtitle">La gobernanza de datos como factor determinante del éxito en IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="warning-box">
+                    <p>La gobernanza de datos se ha convertido en el factor determinante del éxito o fracaso de los proyectos de IA. Las organizaciones están invirtiendo masivamente en modelos, pero la infraestructura de datos que los sostiene permanece críticamente subdesarrollada.</p>
+                </div>
+                <div class="four-columns">
+                    <div class="stat-box">
+                        <div class="stat-number">60%</div>
+                        <div class="stat-label">Proyectos de IA serán abandonados por falta de datos "AI-ready" (Gartner)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">95%</div>
+                        <div class="stat-label">Proyectos corporativos de IA no generan valor medible (MIT)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">4%</div>
+                        <div class="stat-label">Organizaciones con alta madurez en gobernanza de datos e IA</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">#1</div>
+                        <div class="stat-label">Calidad de datos es la tendencia principal en analítica para 2026 (BARC)</div>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>"La IA no fallará por falta de modelos. Fallará por falta de disciplina de datos." -- Publicis Sapient, Guía 2026</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Gobernanza vs. Gestión -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Gobernanza de datos vs. gestión de datos</h2>
+                <p class="slide-subtitle">La distinción estratégica que define el éxito organizacional</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="info-box">
+                        <h4>Gobernanza de datos</h4>
+                        <p>"La especificación de derechos de decisión y un marco de rendición de cuentas para asegurar el comportamiento apropiado en la valoración, creación, consumo y control de datos y analítica." -- Gartner, 2025<br><br>
+                        Es estratégica: define el <strong>"qué" y "por qué"</strong>. Establece políticas, estándares, roles y derechos de decisión. Los stakeholders son CDOs, consejos de gobernanza y oficiales de cumplimiento.</p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Gestión de datos</h4>
+                        <p>"La ejecución de procesos técnicos para dar vida a la visión establecida por la gobernanza." -- Alation, 2025<br><br>
+                        Es operacional: define el <strong>"cómo"</strong>. Incluye ingesta, almacenamiento, transformación, ETL y pipelines. Los stakeholders son ingenieros de datos, DBAs y operaciones IT.</p>
+                    </div>
+                </div>
+                <table class="comparison-table" style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>Dimensión</th>
+                            <th>Gobernanza de datos</th>
+                            <th>Gestión de datos</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Enfoque</strong></td>
+                            <td>Estrategia, políticas, rendición de cuentas</td>
+                            <td>Ejecución, operaciones, implementación técnica</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Actividades</strong></td>
+                            <td>Creación de políticas, derechos de decisión, estándares</td>
+                            <td>Ingesta, almacenamiento, transformación, ETL</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Relación</strong></td>
+                            <td>Establece las reglas</td>
+                            <td>Implementa las reglas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Analogía</strong></td>
+                            <td>La constitución de un país</td>
+                            <td>Las instituciones que ejecutan las leyes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 5: Tendencias 2025-2026 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Tendencias emergentes en gobernanza (2025-2026)</h2>
+                <p class="slide-subtitle">La gobernanza se transforma con IA, regulación y nuevos paradigmas</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Estado actual: crecimiento con desafíos de adopción</h3>
+                    <p>El 71% de las organizaciones reporta tener un programa de gobernanza de datos en 2025 (frente al 60% en 2023). Sin embargo, Gartner predice que el 80% de las iniciativas de gobernanza fracasarán para 2027 por problemas de adopción. El mercado de gestión de datos impulsada por IA se proyecta alcanzar los $30,500 millones para 2026.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>Gobernanza automatizada por IA</h4>
+                        <p>Verificación de cumplimiento un 60% más rápida y reducción del 40% en documentación manual. La IA monitorea, clasifica y valida datos automáticamente.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Datos como producto</h4>
+                        <p>Cada dataset se trata como un activo reutilizable con propietario, SLAs y garantías de calidad. Es un cambio cultural: los datos dejan de ser un subproducto para convertirse en un producto con ciclo de vida propio.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Gobernanza federada</h4>
+                        <p>Equilibra supervisión central con ownership a nivel de dominio. Los contratos de datos emergen como mecanismo para formalizar formato, calidad y garantías entre equipos descentralizados.</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 20px;">
+                    <h4>Tendencia crítica: gobernanza de IA como disciplina separada</h4>
+                    <p>Impulsada por el EU AI Act y regulaciones similares, las organizaciones necesitan ahora gobernar no solo los datos, sino también los modelos, su linaje y su explicabilidad. En enero 2025, Gartner público su primer Magic Quadrant para Plataformas de Gobernanza de Datos y Analítica, marcando la maduración del campo como categoría de mercado independiente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: DAMA-DMBOK Intro -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">DAMA-DMBOK: el framework de referencia global</h2>
+                <p class="slide-subtitle">El cuerpo de conocimiento que se reinventa para la era de la IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Las 11 áreas de conocimiento</h3>
+                    <p>DAMA International posiciona la <strong>gobernanza de datos en el centro</strong> de su modelo, rodeada por 10 áreas de conocimiento. El modelo funciona como una rueda donde la gobernanza coordina y supervisa todas las demás actividades.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="key-point">
+                        <h4>1. Gobernanza de datos (centro)</h4>
+                        <p>Planificación, supervisión y control sobre la gestión de datos y el uso de datos y recursos relacionados.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>2. Arquitectura de datos</h4>
+                        <p>Estructura general de datos como parte de la arquitectura empresarial.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>3. Modelado y diseño de datos</h4>
+                        <p>Análisis, diseño, construcción y mantenimiento de modelos de datos.</p>
+                    </div>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="key-point">
+                        <h4>4. Almacenamiento y operaciones</h4>
+                        <p>Despliegue y gestión de activos de datos físicos.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>5. Seguridad de datos</h4>
+                        <p>Privacidad, confidencialidad y acceso apropiado.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>6. Integración e interoperabilidad</h4>
+                        <p>Adquisición, transformación y entrega de datos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: DAMA-DMBOK áreas 7-11 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">DAMA-DMBOK: áreas 7-11</h2>
+                <p class="slide-subtitle">Documentos, datos maestros, BI, metadatos y calidad</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>7. Documentos y contenido</h4>
+                        <p>Gestión de datos no estructurados: documentos, imágenes, videos y contenido multimedia.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>8. Datos de referencia y maestros (MDM)</h4>
+                        <p>Consistencia en entidades de datos clave que se comparten a través de la organización.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>9. Data warehousing e inteligencia de negocios</h4>
+                        <p>Soporte a analítica y toma de decisiones basada en datos.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>10. Gestión de metadatos</h4>
+                        <p>Mantenimiento de "datos sobre datos": definiciones, linaje, clasificaciones y relaciones entre datos.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>11. Calidad de datos</h4>
+                        <p>Gestión de la aptitud de los datos para su uso: medición, monitoreo y mejora continua.</p>
+                    </div>
+                </div>
+                <div class="success-box" style="margin-top: 20px;">
+                    <h4>Certificación CDMP</h4>
+                    <p>Aproximadamente 13,000 profesionales a nivel mundial poseen la certificación CDMP (Certified Data Management Professional) de DAMA. En América Latina, DAMA tiene 4 capítulos activos (Brasil, Chile, Colombia, México) y 5 en formación (Argentina, Bolivia, Ecuador, Perú, Uruguay). El DMBOK 2.0 fue traducido al español por voluntarios de la región.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: DMBOK 2.0 y 3.0 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">DMBOK 2.0 revisado y el proyecto DMBOK 3.0</h2>
+                <p class="slide-subtitle">Un framework en evolución continua</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="info-box">
+                        <h4>DMBOK 2.0 Edición Revisada (marzo 2025)</h4>
+                        <p>Publicada en marzo de 2025 con mejoras significativas: definiciones actualizadas, actividades reordenadas cronológicamente, reemplazo del término "programa de gobernanza" por "función de gobernanza", y la expansión de las dimensiones de calidad con la adición de <strong>currency</strong> (vigencia) como novena dimensión.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Proyecto DMBOK 3.0 (lanzado junio 2025)</h4>
+                        <p>Iniciativa comunitaria "evergreening" con 11 editores especializados y contribuciones globales. Áreas nuevas incluyen gobernanza de IA (ciclo de vida de modelos, detección de sesgos), entornos cloud-nativos, plataformas modernas (data mesh, data fabric) y ética de datos y sostenibilidad. A febrero de 2026, permanece en desarrollo activo.</p>
+                    </div>
+                </div>
+                <div class="content-box" style="margin-top: 20px;">
+                    <h3>Casos de implementación recientes de DAMA-DMBOK</h3>
+                    <ul>
+                        <li><strong>Banca:</strong> Un banco mutual australiano implementó DAMA-DMBOK en seis semanas, alineando gobernanza con los estándares del regulador financiero APRA</li>
+                        <li><strong>Finanzas + IA:</strong> Un marco estratégico integró DAMA-DMBOK con el NIST AI RMF para instituciones financieras que implementan IA en aprobación de préstamos</li>
+                        <li><strong>Cooperativas:</strong> Delta Community Credit Union operacionalizó confianza en datos y toma de decisiones usando el framework con la plataforma OvalEdge</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Calidad de datos - Dimensiones -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Calidad de datos: las dimensiones fundamentales</h2>
+                <p class="slide-subtitle">El talón de Aquiles de la IA que las organizaciones no pueden ignorar</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>Exactitud</h4>
+                        <p>Fidelidad de los datos respecto a las entidades del mundo real que representan. Un dato es exacto si refleja correctamente la realidad.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Completitud</h4>
+                        <p>Todos los valores requeridos están presentes. Incluye completitud de registros, de campos y de valores.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Consistencia</h4>
+                        <p>Uniformidad de los datos entre sistemas. Un mismo dato no debe tener valores contradictorios en diferentes fuentes.</p>
+                    </div>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="key-point">
+                        <h4>Actualidad / Frescura</h4>
+                        <p>Disponibilidad oportuna que refleja el estado actual de la entidad representada. Datos desactualizados pueden llevar a decisiones erróneas.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Validez</h4>
+                        <p>Conformidad con formatos, reglas de negocio y rangos definidos. Un dato válido cumple con los parámetros establecidos para su campo.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Unicidad</h4>
+                        <p>Ausencia de duplicados. Cada entidad del mundo real debe estar representada una sola vez en el dataset.</p>
+                    </div>
+                </div>
+                <div class="info-box" style="margin-top: 15px;">
+                    <h4>Currency: la novena dimensión (DMBOK 2.0 revisado)</h4>
+                    <p>La edición revisada de DMBOK 2.0 agregó <strong>currency</strong> como novena dimensión, distinta de la actualidad: se refiere a si los datos siguen siendo vigentes y relevantes para el propósito actual, no solo a si son recientes. DAMA mantiene una lista comprehensiva de 65 dimensiones y subdimensiones de calidad de datos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Costo de la mala calidad -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">El costo real de la mala calidad de datos</h2>
+                <p class="slide-subtitle">Estadísticas alarmantes y su impacto en las organizaciones</p>
+            </div>
+            <div class="slide-content">
+                <div class="four-columns">
+                    <div class="stat-box">
+                        <div class="stat-number">15%</div>
+                        <div class="stat-label">De los ingresos anuales perdidos por mala calidad de datos (Gartner)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">62%</div>
+                        <div class="stat-label">De organizaciones reporta datos incompletos</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">$5M+</div>
+                        <div class="stat-label">Pérdidas anuales en +25% de organizaciones por mala calidad (IBM)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">30%</div>
+                        <div class="stat-label">Del tiempo organizacional dedicado a tareas sin valor por datos deficientes (McKinsey)</div>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="case-box">
+                        <h4>Caso Harvard Business School (feb 2025)</h4>
+                        <p>Datos inexactos de turnos laborales causaron que gerentes de más de 6,000 tiendas anularan manualmente el 84% de los horarios generados por IA. El sistema era técnica y algorítmicamente sofisticado, pero la calidad de los datos de entrada lo invalidó.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Encuesta Qlik (2025)</h4>
+                        <p>El 81% de las empresas lucha con la calidad de datos para IA, y el 96% de profesionales de datos advirtió que la falta de priorización de calidad podría llevar a "crisis generalizadas" en las organizaciones.</p>
+                    </div>
+                </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <h4>Efecto cascada</h4>
+                    <p>Mala calidad de datos en la entrada produce modelos de IA sesgados, decisiones incorrectas, pérdida de confianza organizacional y potencial incumplimiento regulatorio. El principio "garbage in, garbage out" aplica con mayor fuerza en la era de la IA.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: IA y calidad de datos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Impacto bidireccional: IA generativa y calidad de datos</h2>
+                <p class="slide-subtitle">La IA mejora la calidad pero también crea nuevos riesgos</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="success-box">
+                        <h4>Impactos positivos de la IA en calidad</h4>
+                        <p><strong>Automatización:</strong> herramientas de IA automatizan perfilado, validación y detección de anomalías a escala.<br><br>
+                        <strong>Clasificación:</strong> IA generativa asiste en clasificación automática, enriquecimiento y documentación de datos.<br><br>
+                        <strong>Monitoreo en tiempo real:</strong> detección de patrones con ML habilita supervisión continua.<br><br>
+                        <strong>Caso JPMorgan Chase:</strong> implementó validación en tiempo real verificando datos transaccionales en milisegundos.<br><br>
+                        <strong>Caso Mayo Clinic:</strong> automatizó protocolos de estandarización de imágenes médicas con cumplimiento HIPAA.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Impactos negativos y nuevos riesgos</h4>
+                        <p><strong>Datos sintéticos:</strong> menor calidad lleva a mayores tasas de error en modelos entrenados con datos generados por IA.<br><br>
+                        <strong>Bucles de retroalimentación:</strong> datos generados por IA que alimentan otros modelos degradan la calidad progresivamente, causando divergencia del mundo real.<br><br>
+                        <strong>Colapso de modelo:</strong> amplificación de sesgos en entrenamiento recursivo.<br><br>
+                        <strong>Contaminación de datos:</strong> Europol estima que para 2026, el 90% del contenido en línea podría ser generado por IA, levantando preocupaciones serias sobre datos de entrenamiento.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Ciclo de vida del dato -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Ciclo de vida del dato</h2>
+                <p class="slide-subtitle">Modelos actualizados para la era de la IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Las cinco etapas centrales</h3>
+                    <p>El modelo predominante en 2025-2026 mantiene cinco etapas, aunque modelos expandidos añaden distribución y descomponen etapas intermedias. La evolución más significativa es la gestión del ciclo de vida impulsada por inteligencia: sistemas que interpretan contenido, comprenden contexto empresarial y se ajustan automáticamente.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 15px;">
+                    <div class="stat-box">
+                        <div class="stat-number">147 ZB</div>
+                        <div class="stat-label">Zettabytes de datos existentes globalmente</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">460 TWh</div>
+                        <div class="stat-label">Consumo energético de centros de datos en 2024</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">945 TWh</div>
+                        <div class="stat-label">Consumo proyectado para 2030 (equivalente a Japón)</div>
+                    </div>
+                </div>
+                <div class="four-columns" style="margin-top: 15px;">
+                    <div class="key-point" style="text-align:center;">
+                        <h4>1. Creación</h4>
+                        <p>Generación, captura o adquisición de datos desde fuentes internas o externas.</p>
+                    </div>
+                    <div class="key-point" style="text-align:center;">
+                        <h4>2. Almacenamiento</h4>
+                        <p>Depósito seguro en bases de datos, data lakes, warehouses o la nube.</p>
+                    </div>
+                    <div class="key-point" style="text-align:center;">
+                        <h4>3. Uso</h4>
+                        <p>Consulta, análisis, procesamiento y toma de decisiones con los datos.</p>
+                    </div>
+                    <div class="key-point" style="text-align:center;">
+                        <h4>4. Archivo</h4>
+                        <p>Preservación a largo plazo de datos que ya no se usan activamente.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 10px;">
+                    <p>5. Destrucción: eliminación segura cuando los datos cumplen su periodo de retención. El paradigma de "ciclo de vida de producto de datos" (alineado con data mesh) trata los datos como productos iterativos: requisitos, diseño, despliegue, monitoreo, iteración, depreciación.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Sostenibilidad -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Sostenibilidad: la nueva dimensión imperativa</h2>
+                <p class="slide-subtitle">El costo ambiental de gestionar datos en la era de la IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="warning-box">
+                        <h4>El costo ambiental de la IA</h4>
+                        <p>Una consulta a ChatGPT usa aproximadamente <strong>10 veces la electricidad</strong> de una búsqueda en Google. Los centros de datos consumieron ~460 TWh globalmente en 2024 (~1.5% de la electricidad mundial) y se proyecta que alcancen ~945 TWh para 2030.<br><br>
+                        Esto tiene implicaciones directas para la gobernanza de datos: cada dato almacenado innecesariamente, cada copia redundante, cada pipeline ineficiente tiene un costo energético y ambiental.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Respuesta regulatoria y del mercado</h3>
+                        <ul>
+                            <li>La Directiva de Eficiencia Energética de la UE requiere reporte de métricas energéticas para centros de datos mayores a 500kW</li>
+                            <li>Comisión Europea prepara un paquete de eficiencia energética para centros de datos (previsto inicios 2026)</li>
+                            <li>El mercado de centros de datos verdes se valora en $90,000 millones en 2025, con crecimiento proyectado al 22% CAGR</li>
+                            <li>La gestión del ciclo de vida del dato incluye ahora la eliminación responsable como práctica de sostenibilidad</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>La gobernanza de datos responsable debe incorporar la sostenibilidad: políticas de retención estrictas, eliminación oportuna de datos obsoletos, y arquitecturas que minimicen la huella energética son ahora requisitos éticos además de operacionales.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Arquitecturas modernas -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Arquitecturas de datos modernas</h2>
+                <p class="slide-subtitle">Lakehouse domina, mesh madura, fabric conecta</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="success-box">
+                        <h4>Data lakehouse</h4>
+                        <p>Gartner lo elevó a estatus <strong>"transformacional"</strong> en su Hype Cycle 2025. Adopción creció un 44% interanual. Combina lo mejor de data lakes (almacenamiento flexible) y data warehouses (consultas estructuradas). La arquitectura Medallion (capas Bronze/Silver/Gold) se ha convertido en el patrón estándar para gobernanza de calidad.</p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Data mesh</h4>
+                        <p>Solo el 18% de las organizaciones tiene madurez de gobernanza suficiente para adoptarlo. Se entiende cada vez más como un <strong>enfoque organizacional</strong> (quien es dueño de los datos), no una tecnología. Los contratos de datos emergen como mecanismo clave para formalizar garantías entre equipos descentralizados.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Data fabric</h4>
+                        <p>Arquitectura impulsada por metadatos que conecta fuentes diversas mediante grafos de conocimiento semántico, automatización por IA y orquestación consciente de linaje. Diferenciador clave: <strong>no requiere transformación cultural</strong> y se construye sobre activos existentes. Ideal para sectores regulados.</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 20px;">
+                    <h4>Plataformas dominantes en 2025-2026</h4>
+                    <p><strong>Databricks:</strong> posición más alta en Magic Quadrant de Gartner, 12,000+ clientes, crecimiento del 45% interanual. <strong>Snowflake:</strong> 23% de cuota de mercado en data warehousing empresarial. <strong>Microsoft Fabric:</strong> unifica lakehouse, warehouse y Power BI, reportando 40% de reducción en tiempo de desarrollo ETL. Los formatos de tabla abiertos (Apache Iceberg, Delta Lake, Hudi) habilitan interoperabilidad entre proveedores.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Metadatos - De documentación a estrategia -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Metadatos: de documentación a infraestructura estratégica</h2>
+                <p class="slide-subtitle">La infraestructura invisible que habilita la IA autónoma</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>El cambio paradigmático: metadatos pasivos vs. activos</h3>
+                    <p>Solo el 11% de las organizaciones reporta alta madurez en gestión de metadatos. Los metadatos han sido elevados de función documental a <strong>fundamento estratégico para IA</strong>. Los modelos de IA consumen metadatos, no datos crudos: la capa semántica donde residen los metadatos proporciona a la IA definiciones estandarizadas, relaciones y clasificaciones.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="warning-box">
+                        <h4>Metadatos pasivos (enfoque tradicional)</h4>
+                        <p>Catálogos estáticos consultados manualmente. Documentación que se desactualiza rápidamente. Requieren esfuerzo humano constante para mantenerse relevantes. No generan valor por sí mismos.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>Metadatos activos (paradigma moderno)</h4>
+                        <p>Dinámicos, analizados continuamente por ML. Detectan anomalías, generan recomendaciones y disparan acciones automatizadas. Para IA de agentes (agentic AI), los metadatos proporcionan la capa semántica que los agentes necesitan para descubrir, evaluar y usar datos autónomamente.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Los tipos críticos de metadatos para IA/ML incluyen: de negocio, técnicos, operacionales, de cumplimiento, de comportamiento/uso, y específicos de ML (hiperparámetros, model cards, proveniencia de datos de entrenamiento, monitoreo de drift).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Estándares de metadatos y herramientas -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Estándares, herramientas y el futuro de los metadatos</h2>
+                <p class="slide-subtitle">Estándares abiertos, herramientas modernas y metadata lakehouse</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>OpenLineage</h4>
+                        <p>Proyecto graduado de LF AI & Data Foundation. Se consolida como estándar abierto para recolección de metadatos de linaje de datos a través de sistemas heterogéneos.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Open Data Contract Standard (ODCS) 3.1</h4>
+                        <p>Define contratos formales entre productores y consumidores de datos: formato, calidad, SLAs y garantías. Es "el avance más significativo para la gobernanza de datos".</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Model Context Protocol (MCP)</h4>
+                        <p>Nuevo paradigma para exponer contexto de metadatos a agentes de IA. Permite que los agentes descubran y comprendan datos disponibles automáticamente.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="info-box">
+                        <h4>Herramientas comerciales líderes</h4>
+                        <p><strong>Informatica IDMC:</strong> plataforma líder de inteligencia de datos.<br>
+                        <strong>Collibra:</strong> inteligencia de datos con calidad embebida.<br>
+                        <strong>Alation:</strong> catálogo de datos basado en comportamiento y colaboración.<br>
+                        <strong>Atlan:</strong> metadatos activos con enfoque moderno.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>Herramientas de código abierto</h4>
+                        <p><strong>OpenMetadata:</strong> catálogo de datos open source con gobernanza integrada.<br>
+                        <strong>DataHub (LinkedIn):</strong> plataforma de metadatos extensible.<br>
+                        <strong>Great Expectations:</strong> pruebas declarativas de calidad de datos.<br>
+                        <strong>Soda:</strong> lenguaje SodaCL para verificaciones legibles de calidad.</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 15px;">
+                    <h4>Concepto emergente: metadata lakehouse</h4>
+                    <p>Arquitectura donde los metadatos se almacenan en formatos abiertos y consultables, aplicando los mismos principios del data lakehouse a los propios metadatos. Gartner predice que el 60% de tareas de gestión de datos serán automatizadas para 2027.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: ISO 42001 y NIST AI RMF -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">ISO 42001 y NIST AI RMF: convergencia de marcos</h2>
+                <p class="slide-subtitle">La gobernanza de datos se integra con la gobernanza de IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="info-box">
+                        <h4>ISO/IEC 42001:2023</h4>
+                        <p>Primer estándar internacional certificable para sistemas de gestión de IA (AIMS). A octubre 2025, no es legalmente obligatorio pero es crecientemente referenciado en contratación y regulación. El 76% de organizaciones planea certificarse (CSA 2025).<br><br>
+                        Principios clave: rendición de cuentas, equidad, explicabilidad, privacidad de datos y confiabilidad.<br><br>
+                        <strong>ISO/IEC 42005:2025</strong> complementa con evaluación de impacto de IA.</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>NIST AI RMF: evolución continua</h4>
+                        <p>AI RMF 1.0 (enero 2023) complementado por el Perfil de IA Generativa (NIST AI 600-1, julio 2024) con 13 riesgos únicos y 400+ acciones.<br><br>
+                        Actualización de marzo 2025: categorías ampliadas de amenazas para LLMs (envenenamiento, evasión, extracción, manipulación).<br><br>
+                        Un crosswalk oficial mapea AI RMF a ISO 42001, habilitando programas de gobernanza unificados.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>ISO 42001 proporciona gobernanza top-down (estructura organizacional, políticas, certificación) mientras NIST AI RMF ofrece gestión de riesgos bottom-up (identificar riesgos, medir desempeño, abordar confiabilidad). La Colorado AI Act referencia explícitamente NIST AI RMF como base aceptable para programas de riesgo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Ola regulatoria -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Ola regulatoria 2025-2026</h2>
+                <p class="slide-subtitle">Regulaciones que redefinen la gobernanza de datos</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="warning-box">
+                        <h4>EU AI Act</h4>
+                        <p>Aplicación plena para sistemas de alto riesgo en <strong>agosto de 2026</strong>. Multas de hasta 35 millones EUR o 7% de ingresos globales. Primera revisión de prácticas prohibidas (Art. 5) realizada en febrero 2026.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>CCPA/CPRA actualizadas</h4>
+                        <p>Vigentes enero 2026 con evaluaciones de riesgo obligatorias, divulgación de plazos de retención y derechos ampliados. Kentucky, Rhode Island e Indiana aplican nuevas leyes de privacidad desde enero 2026.</p>
+                    </div>
+                    <div class="info-box">
+                        <h4>Colorado AI Act</h4>
+                        <p>Vigente febrero 2026. Impone requisitos de notificación, divulgación y mitigación de riesgo para sistemas de IA de alto riesgo. Referencia explícitamente NIST AI RMF.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="stat-box">
+                        <div class="stat-number">$7,100M</div>
+                        <div class="stat-label">Multas GDPR acumuladas desde 2018, con $1,200M solo en 2025</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">3,322</div>
+                        <div class="stat-label">Incidentes de compromiso de datos en EE.UU. en 2025 (récord histórico)</div>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 15px;">
+                    <h4>Primera multa GDPR a empresa de IA generativa</h4>
+                    <p>La Garante italiana multó a OpenAI con 15 millones EUR por violaciones de GDPR en el entrenamiento de ChatGPT. TikTok recibió 530 millones EUR por transferencia ilegal de datos a China. Meta: 479 millones EUR por manipulación de consentimiento.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Perspectiva latinoamericana -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Perspectiva latinoamericana: transformación regulatoria</h2>
+                <p class="slide-subtitle">Un continente en aceleración con realidades diversas</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="success-box">
+                        <h4>Avances destacados</h4>
+                        <p><strong>Perú:</strong> primer país latinoamericano con regulación general de IA en vigor (enero 2026), implementación sectorial escalonada hasta 2028.<br><br>
+                        <strong>Chile:</strong> Ley 21.719 aprobada (agosto 2024), vigencia plena diciembre 2026. Crea agencia de protección de datos con sanciones de hasta 4% de ingresos. Alineada con GDPR.<br><br>
+                        <strong>Brasil:</strong> ANPD transformada en agencia regulatoria independiente (septiembre 2025). Ordenó a Meta suspender uso de datos personales para entrenar IA. Borrador de adecuación de la UE publicado.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Desafíos y retrocesos</h3>
+                        <ul>
+                            <li><strong>México:</strong> el INAI fue disuelto (marzo 2025), transfiriendo funciones al ejecutivo. CIDH cuestiona el modelo. Expertos lo consideran regresión democrática</li>
+                            <li><strong>Costa Rica:</strong> Ley 8968 (2011) requiere modernización. Bill 23097 propone alinearla con GDPR. Tres proyectos de ley de IA en debate pero ninguno aprobado</li>
+                            <li><strong>Ciberseguridad:</strong> 42% de empresas latinas sufrió filtraciones. Brasil cuadruplicó incidentes de fuga de datos de ~906 a 4,000+ entre 2023 y 2024</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Perú advierte sobre una brecha crítica: regulación de IA sin un marco robusto de gobernanza de datos. La lección es clara: la gobernanza de IA sin gobernanza de datos es como construir un edificio sin cimientos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Conclusiones -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Conclusiones: tres ideas fundamentales</h2>
+                <p class="slide-subtitle">De la teoría a la práctica de la gobernanza de datos</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>1. La gobernanza de datos es el fundamento de la IA responsable</h4>
+                        <p>Sin datos gobernados, los modelos de IA amplifican sesgos, violan privacidad y producen resultados no confiables. El 60% de los proyectos de IA fracasan por falta de datos "AI-ready", no por limitaciones algorítmicas.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>2. DAMA-DMBOK evoluciona para la era de la IA</h4>
+                        <p>Con DMBOK 3.0 en desarrollo, el framework incorpora gobernanza de IA, ética de datos y sostenibilidad. La integración con NIST AI RMF e ISO 42001 permite programas de gobernanza unificados.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>3. América Latina vive un momento decisivo</h4>
+                        <p>Con Perú liderando en regulación de IA, Chile implementando protección de datos al nivel GDPR, y Brasil emergiendo como potencia regulatoria, la región avanza desigualmente pero con urgencia creciente.</p>
+                    </div>
+                </div>
+                <div class="content-box" style="margin-top: 20px;">
+                    <h3>Para profesionales en gobernanza de datos e IA</h3>
+                    <p>La calidad de datos, los metadatos y la arquitectura no son preocupaciones puramente técnicas sino pilares éticos y regulatorios. Cada dato mal gestionado tiene un costo financiero, ambiental y potencialmente humano. Las herramientas y frameworks existen; el desafío es implementar gobernanza real con compromiso organizacional genuino.</p>
+                </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <p style="text-align: center; font-size: 18px;">A continuación: actividad práctica en equipos. Trabajaremos un caso de análisis ético-crítico donde aplicaremos los conceptos de gobernanza de datos vistos hoy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">&larr; Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente &rarr;</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            } else if (n < 0) {
+                currentSlide = 0;
+            } else {
+                currentSlide = n;
+            }
+
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

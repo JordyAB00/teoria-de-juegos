@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de riesgos en IA - Semana 11</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0; left: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 55px 80px 130px 80px;
+            background: #f5f5f7;
+        }
+
+        .slide.active { opacity: 1; z-index: 1; }
+
+        .slide-header { margin-bottom: 28px; }
+
+        .slide-title {
+            font-size: 44px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 8px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 18px;
+            overflow-y: auto;
+            max-height: calc(100vh - 240px);
+            padding-right: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar { width: 6px; }
+        .slide-content::-webkit-scrollbar-thumb { background: #00d4ff; border-radius: 10px; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+        .four-col { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #fff 0%, #f5f5f7 50%, #fff 100%);
+        }
+
+        .cover-title {
+            font-size: 60px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: grad 3s ease infinite;
+            background-size: 200% 200%;
+            margin-bottom: 18px;
+        }
+
+        @keyframes grad {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cover-sub { font-size: 28px; color: #6e6e73; font-weight: 300; margin-bottom: 30px; }
+        .cover-info { font-size: 17px; color: #1d1d1f; line-height: 1.6; }
+
+        .big-stat {
+            background: #fff;
+            border-radius: 18px;
+            padding: 24px 20px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            transition: all 0.3s ease;
+        }
+
+        .big-stat:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 6px 20px rgba(0,212,255,0.12);
+            transform: translateY(-3px);
+        }
+
+        .big-stat .num {
+            font-size: 52px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .big-stat .label { font-size: 14px; color: #6e6e73; margin-top: 10px; line-height: 1.4; }
+
+        .card {
+            background: #fff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .card h3 { font-size: 20px; color: #2d1b4e; margin-bottom: 10px; }
+        .card p { font-size: 15px; color: #1d1d1f; line-height: 1.55; }
+        .card ul { list-style: none; padding: 0; }
+
+        .card li {
+            font-size: 15px; color: #1d1d1f; line-height: 1.55;
+            padding-left: 22px; position: relative; margin-bottom: 5px;
+        }
+
+        .card li::before {
+            content: "\25B8"; position: absolute; left: 0; color: #00d4ff; font-size: 18px;
+        }
+
+        .accent-red { background: linear-gradient(135deg, #fff5f5, #fff); border-left: 4px solid #ef4444; }
+        .accent-red h3, .accent-red h4 { color: #991b1b; }
+        .accent-red p { color: #7f1d1d; }
+
+        .accent-blue { background: linear-gradient(135deg, #eff6ff, #fff); border-left: 4px solid #3b82f6; }
+        .accent-blue h3, .accent-blue h4 { color: #1e40af; }
+        .accent-blue p { color: #1e3a8a; }
+
+        .accent-green { background: linear-gradient(135deg, #f0fdf4, #fff); border-left: 4px solid #22c55e; }
+        .accent-green h3, .accent-green h4 { color: #15803d; }
+        .accent-green p { color: #166534; }
+
+        .accent-yellow { background: linear-gradient(135deg, #fefce8, #fff); border-left: 4px solid #eab308; }
+        .accent-yellow h3, .accent-yellow h4 { color: #854d0e; }
+        .accent-yellow p { color: #713f12; }
+
+        .accent-purple { background: linear-gradient(135deg, #faf5ff, #fff); border-left: 4px solid #8b5cf6; }
+        .accent-purple h3, .accent-purple h4 { color: #5b21b6; }
+
+        .highlight {
+            background: linear-gradient(135deg, #f0f0f2, #fff);
+            border-left: 4px solid #00d4ff;
+            padding: 16px 20px;
+            border-radius: 10px;
+        }
+
+        .highlight p { font-size: 18px; color: #2d1b4e; font-weight: 500; font-style: italic; }
+
+        .pill {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 5px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            margin: 3px;
+        }
+
+        .cycle { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+
+        .cycle-step {
+            color: white; padding: 18px 20px; border-radius: 14px; text-align: center;
+            min-width: 135px; box-shadow: 0 4px 14px rgba(45,27,78,0.25);
+        }
+
+        .cycle-step h4 { font-size: 19px; margin-bottom: 5px; }
+        .cycle-step p { font-size: 12px; opacity: 0.9; line-height: 1.3; }
+        .cycle-arrow { font-size: 30px; color: #00d4ff; font-weight: 700; }
+
+        .phase-bar { display: flex; gap: 4px; width: 100%; }
+
+        .phase-item {
+            flex: 1; padding: 18px 10px; text-align: center; color: white; border-radius: 12px;
+        }
+
+        .phase-item h4 { font-size: 15px; margin-bottom: 4px; }
+        .phase-item p { font-size: 11px; opacity: 0.9; line-height: 1.3; }
+
+        .strat-card {
+            background: #fff; border-radius: 18px; padding: 22px 18px; text-align: center;
+            border: 1px solid #e5e5e7;
+        }
+
+        .strat-icon {
+            width: 56px; height: 56px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 14px; font-size: 26px; font-weight: 700; color: white;
+        }
+
+        .strat-card h4 { color: #2d1b4e; font-size: 20px; margin-bottom: 8px; }
+        .strat-card p { color: #1d1d1f; font-size: 14px; line-height: 1.5; }
+
+        .dim-card {
+            background: #fff; border-radius: 16px; padding: 22px 16px; border: 2px solid #e5e5e7;
+            text-align: center; transition: all 0.3s ease;
+        }
+
+        .dim-card:hover {
+            border-color: #00d4ff; transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0,212,255,0.12);
+        }
+
+        .dim-card .icon { font-size: 40px; margin-bottom: 10px; }
+        .dim-card h4 { color: #2d1b4e; font-size: 17px; margin-bottom: 8px; }
+        .dim-card p { color: #6e6e73; font-size: 13px; line-height: 1.4; }
+
+        .matrix-wrap { display: flex; flex-direction: column; align-items: center; }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 36px repeat(5, 1fr);
+            grid-template-rows: repeat(5, 50px) 22px;
+            gap: 3px; width: 100%; max-width: 440px;
+        }
+
+        .m-cell {
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 7px; font-size: 13px; font-weight: 700; color: white;
+        }
+
+        .m-g { background: #22c55e; }
+        .m-y { background: #eab308; color: #713f12; }
+        .m-o { background: #f97316; }
+        .m-r { background: #ef4444; }
+        .m-dr { background: #991b1b; }
+        .m-label { display: flex; align-items: center; justify-content: center; font-size: 11px; color: #6e6e73; }
+
+        .caso-mini {
+            background: #fff; border: 2px solid #e5e5e7; border-radius: 14px;
+            padding: 16px; text-align: center; transition: all 0.3s ease;
+        }
+        .caso-mini:hover { border-color: #ef4444; box-shadow: 0 4px 12px rgba(239,68,68,0.12); }
+        .caso-mini .caso-year { font-size: 12px; color: #6e6e73; margin-bottom: 6px; }
+        .caso-mini h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 6px; }
+        .caso-mini p { font-size: 13px; color: #6e6e73; line-height: 1.4; }
+
+        .navigation {
+            position: fixed; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 20px; z-index: 1000;
+        }
+
+        .nav-btn {
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border: none; color: white; padding: 15px 30px; border-radius: 50px;
+            cursor: pointer; font-size: 16px; font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,212,255,0.3);
+        }
+
+        .nav-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,212,255,0.4); }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .logo-area { position: fixed; top: 15px; left: 20px; z-index: 1000; }
+        .logo-area img { max-width: 150px; height: auto; }
+
+        .slide-num {
+            position: fixed; top: 20px; right: 30px;
+            color: #6e6e73; font-size: 16px; z-index: 1000; font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-num">
+        <span id="cur">1</span> / <span id="tot">13</span>
+    </div>
+
+    <!-- SLIDE 1: PORTADA -->
+    <div class="slide cover-slide active">
+        <h1 class="cover-title">Gestión de riesgos en IA</h1>
+        <p class="cover-sub">Identificar, evaluar, mitigar y monitorear</p>
+        <div class="cover-info">
+            <p>Semana 11 | Microcredencial en IA y Análisis de Datos<br>
+            Universidad Latinoamericana de Ciencia y Tecnología | Abril 2026</p>
+        </div>
+    </div>
+
+    <!-- SLIDE 2: NÚMEROS -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">El problema en números</h2>
+            <p class="slide-subtitle">Por qué gestionar riesgos de IA es urgente</p>
+        </div>
+        <div class="slide-content">
+            <div class="four-col">
+                <div class="big-stat">
+                    <div class="num">346</div>
+                    <div class="label">Incidentes de IA registrados en 2025 (+48% vs. 2024)</div>
+                </div>
+                <div class="big-stat">
+                    <div class="num">52%</div>
+                    <div class="label">Involucraron deepfakes</div>
+                </div>
+                <div class="big-stat">
+                    <div class="num">$347M</div>
+                    <div class="label">Pérdidas por fraude con deepfakes en un solo trimestre</div>
+                </div>
+                <div class="big-stat">
+                    <div class="num">29 min</div>
+                    <div class="label">Tiempo promedio de exfiltración en ciberataques con IA</div>
+                </div>
+            </div>
+            <div class="highlight" style="margin-top:20px;">
+                <p>Las capacidades de IA se duplican cada ~5 meses. Los marcos regulatorios tardan años. Esa brecha es el riesgo.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 3: CASOS REALES -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Esto ya pasó: casos reales 2025-2026</h2>
+        </div>
+        <div class="slide-content">
+            <div class="three-col">
+                <div class="caso-mini">
+                    <div class="caso-year">Agosto 2025</div>
+                    <h4>ChatGPT y suicidio adolescente</h4>
+                    <p>Padres demandaron a OpenAI tras la muerte de Adam Raine, 16 años.</p>
+                </div>
+                <div class="caso-mini">
+                    <div class="caso-year">2025</div>
+                    <h4>Tribunal argentino anula condena</h4>
+                    <p>Juez usó ChatGPT para redactar sentencia penal sin divulgarlo.</p>
+                </div>
+                <div class="caso-mini">
+                    <div class="caso-year">Julio 2025</div>
+                    <h4>Director de CISA sube docs sensibles</h4>
+                    <p>Documentos gubernamentales cargados a ChatGPT público.</p>
+                </div>
+                <div class="caso-mini">
+                    <div class="caso-year">Enero 2026</div>
+                    <h4>Waymo atropella a niño</h4>
+                    <p>Vehículo autónomo golpeó a un menor cerca de una escuela.</p>
+                </div>
+                <div class="caso-mini">
+                    <div class="caso-year">2025</div>
+                    <h4>Agente de Replit borra BD</h4>
+                    <p>Eliminó una base de datos de producción y fabricó reportes.</p>
+                </div>
+                <div class="caso-mini">
+                    <div class="caso-year">2025-2026</div>
+                    <h4>Citas legales fabricadas</h4>
+                    <p>Abogados presentaron citaciones inventadas por IA en 5+ países.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 4: 4 TIPOS DE RIESGO -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Los cuatro tipos de riesgo</h2>
+            <p class="slide-subtitle">Uno desencadena el otro: técnico &rarr; ético &rarr; legal &rarr; reputacional</p>
+        </div>
+        <div class="slide-content">
+            <div class="four-col">
+                <div class="dim-card">
+                    <div class="icon" style="color:#ef4444;">&#9881;</div>
+                    <h4>Técnicos</h4>
+                    <p>Alucinaciones, envenenamiento de datos, deriva de modelos</p>
+                </div>
+                <div class="dim-card">
+                    <div class="icon" style="color:#8b5cf6;">&#9829;</div>
+                    <h4>Éticos</h4>
+                    <p>Sesgos algorítmicos, discriminación, impacto en vulnerables</p>
+                </div>
+                <div class="dim-card">
+                    <div class="icon" style="color:#eab308;">&#9878;</div>
+                    <h4>Legales</h4>
+                    <p>Multas, litigios, acciones colectivas, incumplimiento regulatorio</p>
+                </div>
+                <div class="dim-card">
+                    <div class="icon" style="color:#3b82f6;">&#9733;</div>
+                    <h4>Reputacionales</h4>
+                    <p>Viralización de fallos, pérdida de confianza, boicots</p>
+                </div>
+            </div>
+            <div class="highlight" style="margin-top:20px;">
+                <p>Ejemplo: un modelo de contratación sesgado (técnico) discrimina a miles (ético), genera acción colectiva (legal) y se viraliza (reputacional).</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 5: NIST AI RMF -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">NIST AI RMF: el ciclo de gestión de riesgos</h2>
+            <p class="slide-subtitle">Cuatro funciones iterativas, no secuenciales</p>
+        </div>
+        <div class="slide-content">
+            <div class="cycle">
+                <div class="cycle-step" style="background: linear-gradient(135deg, #2d1b4e, #4c2a7f);">
+                    <h4>GOVERN</h4>
+                    <p>Cultura, roles y accountability</p>
+                </div>
+                <span class="cycle-arrow">&rarr;</span>
+                <div class="cycle-step" style="background: linear-gradient(135deg, #1e40af, #3b82f6);">
+                    <h4>MAP</h4>
+                    <p>Contexto, stakeholders y limitaciones</p>
+                </div>
+                <span class="cycle-arrow">&rarr;</span>
+                <div class="cycle-step" style="background: linear-gradient(135deg, #0e7490, #00d4ff);">
+                    <h4>MEASURE</h4>
+                    <p>Métricas, testing y cuantificación</p>
+                </div>
+                <span class="cycle-arrow">&rarr;</span>
+                <div class="cycle-step" style="background: linear-gradient(135deg, #15803d, #22c55e);">
+                    <h4>MANAGE</h4>
+                    <p>Tratamiento, respuesta y monitoreo</p>
+                </div>
+            </div>
+            <div class="two-col" style="margin-top:24px;">
+                <div class="card accent-blue" style="padding:16px;">
+                    <h3>MAP: la pregunta que nadie hizo</h3>
+                    <p>Antes de lanzar: ¿quiénes son los afectados? ¿Qué puede fallar? ¿Cuáles son las limitaciones? Sin esta etapa, los riesgos son invisibles hasta que explotan.</p>
+                </div>
+                <div class="card accent-green" style="padding:16px;">
+                    <h3>MEASURE: si no se mide, no existe</h3>
+                    <p>¿Es justo? ¿Preciso? ¿Seguro? Sin métricas definidas, la gestión de riesgos es solo buenas intenciones.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 6: MATRIZ -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">La matriz de riesgos necesita más dimensiones</h2>
+            <p class="slide-subtitle">Probabilidad x Impacto no es suficiente para IA</p>
+        </div>
+        <div class="slide-content">
+            <div class="two-col">
+                <div class="matrix-wrap">
+                    <div class="matrix-grid">
+                        <div class="m-label" style="font-size:10px; transform:rotate(-90deg); white-space:nowrap;">PROBABILIDAD</div>
+                        <div class="m-cell m-y">5</div><div class="m-cell m-o">10</div><div class="m-cell m-r">15</div><div class="m-cell m-dr">20</div><div class="m-cell m-dr">25</div>
+                        <div></div>
+                        <div class="m-cell m-g">4</div><div class="m-cell m-y">8</div><div class="m-cell m-o">12</div><div class="m-cell m-r">16</div><div class="m-cell m-dr">20</div>
+                        <div></div>
+                        <div class="m-cell m-g">3</div><div class="m-cell m-y">6</div><div class="m-cell m-o">9</div><div class="m-cell m-o">12</div><div class="m-cell m-r">15</div>
+                        <div></div>
+                        <div class="m-cell m-g">2</div><div class="m-cell m-g">4</div><div class="m-cell m-y">6</div><div class="m-cell m-y">8</div><div class="m-cell m-o">10</div>
+                        <div></div>
+                        <div class="m-cell m-g">1</div><div class="m-cell m-g">2</div><div class="m-cell m-g">3</div><div class="m-cell m-y">4</div><div class="m-cell m-y">5</div>
+                        <div></div>
+                        <div class="m-label">Bajo</div><div class="m-label">Medio</div><div class="m-label">Alto</div><div class="m-label">Muy alto</div><div class="m-label">Extremo</div>
+                    </div>
+                    <p style="font-size:12px; color:#6e6e73; margin-top:8px;">IMPACTO &rarr;</p>
+                </div>
+                <div>
+                    <div class="card accent-purple" style="padding:16px; margin-bottom:14px;">
+                        <h3>4 dimensiones extra para IA</h3>
+                        <ul>
+                            <li><strong>Velocidad:</strong> miles de decisiones por hora</li>
+                            <li><strong>Reversibilidad:</strong> ¿se puede deshacer el daño?</li>
+                            <li><strong>Detectabilidad:</strong> ¿cuánto tarda en descubrirse?</li>
+                            <li><strong>Vulnerabilidad:</strong> ¿a quiénes afecta más?</li>
+                        </ul>
+                    </div>
+                    <div class="card accent-yellow" style="padding:16px;">
+                        <h3>Ejemplo</h3>
+                        <p>Modelo de contratación sesgado: velocidad extrema (miles de rechazos/hora), baja detectabilidad (meses oculto), baja reversibilidad (oportunidades perdidas para siempre).</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 7: ESTRATEGIAS -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Las cuatro estrategias de mitigación</h2>
+        </div>
+        <div class="slide-content">
+            <div class="four-col">
+                <div class="strat-card">
+                    <div class="strat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);">X</div>
+                    <h4>Evitar</h4>
+                    <p>No desplegar. Samsung prohibió ChatGPT tras 3 fugas de datos propietarios.</p>
+                </div>
+                <div class="strat-card">
+                    <div class="strat-icon" style="background: linear-gradient(135deg, #eab308, #ca8a04);">&harr;</div>
+                    <h4>Transferir</h4>
+                    <p>Seguros de IA. Emergentes pero con exclusiones "casi absolutas".</p>
+                </div>
+                <div class="strat-card">
+                    <div class="strat-icon" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">&darr;</div>
+                    <h4>Mitigar</h4>
+                    <p>Guardrails, RLHF, auditorías de equidad, supervisión humana.</p>
+                </div>
+                <div class="strat-card">
+                    <div class="strat-icon" style="background: linear-gradient(135deg, #22c55e, #16a34a);">&#10003;</div>
+                    <h4>Aceptar</h4>
+                    <p>Documentar y aprobar cuando mitigar cuesta más que el riesgo.</p>
+                </div>
+            </div>
+            <div class="card accent-red" style="margin-top:18px; padding:14px 20px;">
+                <p style="font-size:16px;"><strong>Defensa en profundidad (4 capas):</strong> ajuste fino (RLHF) &rarr; guardias de entrada &rarr; guardias de salida &rarr; monitoreo post-despliegue. Guardrails solos no bastan; alineamiento solo tampoco. Se necesitan ambos.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 8: RED TEAMING -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Red teaming: probar antes de que otros lo hagan</h2>
+        </div>
+        <div class="slide-content">
+            <div class="two-col">
+                <div style="display:flex; flex-direction:column; gap:16px;">
+                    <div class="big-stat">
+                        <div class="num">24h</div>
+                        <div class="label">Tiempo en comprometer GPT-5 tras su lanzamiento</div>
+                    </div>
+                    <div class="big-stat">
+                        <div class="num">35%</div>
+                        <div class="label">De incidentes de seguridad de IA causados por prompts simples</div>
+                    </div>
+                </div>
+                <div class="card" style="padding:20px;">
+                    <h3>Red teaming de IA vs. tradicional</h3>
+                    <ul>
+                        <li>Enfoque en <strong>comportamiento del modelo</strong>, no en infraestructura</li>
+                        <li>Probar la configuración completa desplegada</li>
+                        <li>Combinar pruebas manuales + automatizadas</li>
+                        <li>Pruebas <strong>continuas</strong> (tiempo de explotación: de días a horas)</li>
+                    </ul>
+                    <div style="margin-top:14px;">
+                        <span class="pill">MITRE ATLAS</span>
+                        <span class="pill">Garak</span>
+                        <span class="pill">PyRIT</span>
+                        <span class="pill">OWASP LLM Top 10</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 9: RESPUESTA A INCIDENTES -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Plan de respuesta a incidentes de IA</h2>
+            <p class="slide-subtitle">No es un plan de TI: los modos de fallo son diferentes</p>
+        </div>
+        <div class="slide-content">
+            <div class="phase-bar">
+                <div class="phase-item" style="background: linear-gradient(135deg, #2d1b4e, #4c2a7f);">
+                    <h4>Preparación</h4>
+                    <p>Inventario y líneas base</p>
+                </div>
+                <div class="phase-item" style="background: linear-gradient(135deg, #1e40af, #3b82f6);">
+                    <h4>Detección</h4>
+                    <p>Deriva, alucinaciones, sesgos</p>
+                </div>
+                <div class="phase-item" style="background: linear-gradient(135deg, #b45309, #f97316);">
+                    <h4>Contención</h4>
+                    <p>Aislar y guardrails de emergencia</p>
+                </div>
+                <div class="phase-item" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+                    <h4>Erradicación</h4>
+                    <p>Limpiar datos, reentrenar</p>
+                </div>
+                <div class="phase-item" style="background: linear-gradient(135deg, #15803d, #22c55e);">
+                    <h4>Recuperación</h4>
+                    <p>Probar vs. líneas base</p>
+                </div>
+                <div class="phase-item" style="background: linear-gradient(135deg, #0e7490, #00d4ff);">
+                    <h4>Lecciones</h4>
+                    <p>Actualizar y compartir</p>
+                </div>
+            </div>
+            <div class="two-col" style="margin-top:20px;">
+                <div class="card accent-yellow" style="padding:16px;">
+                    <h3>Qué lo hace diferente</h3>
+                    <ul>
+                        <li>Outputs no deterministas</li>
+                        <li>Degradación gradual, no fallo binario</li>
+                        <li>Superficie ampliada: discriminación, daño psicológico, copyright</li>
+                    </ul>
+                </div>
+                <div class="card accent-blue" style="padding:16px;">
+                    <h3>Plazos del EU AI Act</h3>
+                    <ul>
+                        <li><strong>2 días:</strong> infraestructura crítica</li>
+                        <li><strong>10 días:</strong> si hay fallecimiento</li>
+                        <li><strong>15 días:</strong> incidentes serios estándar</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 10: MONITOREO -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Monitoreo continuo: la IA no es software estático</h2>
+            <p class="slide-subtitle">Deriva, se degrada, es atacada</p>
+        </div>
+        <div class="slide-content">
+            <div class="three-col">
+                <div class="big-stat">
+                    <div class="num">91%</div>
+                    <div class="label">De modelos ML experimentan deriva</div>
+                </div>
+                <div class="big-stat">
+                    <div class="num">51%</div>
+                    <div class="label">De organizaciones tuvieron fallos que requirieron observabilidad</div>
+                </div>
+                <div class="big-stat">
+                    <div class="num">87.5%</div>
+                    <div class="label">Reducción de incidentes con policy-as-code</div>
+                </div>
+            </div>
+            <div class="two-col" style="margin-top:18px;">
+                <div class="card" style="padding:18px;">
+                    <h3>Qué monitorear</h3>
+                    <ul>
+                        <li><strong>Deriva de datos:</strong> producción diverge de entrenamiento</li>
+                        <li><strong>Equidad:</strong> métricas de sesgo entre grupos</li>
+                        <li><strong>Alucinaciones:</strong> detección en tiempo real</li>
+                    </ul>
+                </div>
+                <div class="card accent-green" style="padding:18px;">
+                    <h3>Tendencia: todo continuo</h3>
+                    <p>Políticas como código ejecutable. IA observando IA. Auditoría permanente, no puntual. El 84% de organizaciones busca consolidar herramientas de observabilidad.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 11: LATAM -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">América Latina y Costa Rica</h2>
+            <p class="slide-subtitle">201 proyectos de ley en 14 meses: la región decide su futuro</p>
+        </div>
+        <div class="slide-content">
+            <div class="three-col">
+                <div class="card accent-green" style="padding:16px;">
+                    <h3>Líderes</h3>
+                    <ul>
+                        <li><strong>Chile:</strong> 1er lugar ILIA 2025</li>
+                        <li><strong>Brasil:</strong> multas hasta R$50M</li>
+                        <li><strong>Perú:</strong> reglamentos vigentes 2026</li>
+                    </ul>
+                </div>
+                <div class="card accent-yellow" style="padding:16px;">
+                    <h3>Costa Rica</h3>
+                    <ul>
+                        <li>ENIA 2024-2027 (primera en Centroamérica)</li>
+                        <li>5to lugar ILIA: "adoptante"</li>
+                        <li>Ley 8968 no aborda IA</li>
+                        <li>Ningún proyecto aprobado</li>
+                    </ul>
+                </div>
+                <div class="card accent-red" style="padding:16px;">
+                    <h3>Ya pasa aquí</h3>
+                    <ul>
+                        <li>Deepfakes electorales en Argentina y Ecuador</li>
+                        <li>Detenciones injustas por reconocimiento facial en Brasil</li>
+                        <li>85% de jueces colombianos usan IA sin entrenamiento</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 12: CONCLUSIONES -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Tres ideas para llevarse</h2>
+        </div>
+        <div class="slide-content">
+            <div class="three-col">
+                <div class="dim-card" style="border-color:#ef4444;">
+                    <div class="icon" style="color:#ef4444; font-size:48px; font-weight:800;">1</div>
+                    <h4>La brecha se amplía</h4>
+                    <p>Capacidades se duplican en meses; regulaciones tardan años. La gestión de riesgos tiene consecuencias humanas directas.</p>
+                </div>
+                <div class="dim-card" style="border-color:#3b82f6;">
+                    <div class="icon" style="color:#3b82f6; font-size:48px; font-weight:800;">2</div>
+                    <h4>Más allá de la matriz</h4>
+                    <p>Los riesgos de IA necesitan velocidad, reversibilidad, detectabilidad y vulnerabilidad como dimensiones adicionales.</p>
+                </div>
+                <div class="dim-card" style="border-color:#22c55e;">
+                    <div class="icon" style="color:#22c55e; font-size:48px; font-weight:800;">3</div>
+                    <h4>De puntual a continuo</h4>
+                    <p>Monitoreo, auditoría y pruebas adversariales: todo continuo. La IA no es estática.</p>
+                </div>
+            </div>
+            <div class="card" style="margin-top:22px; text-align:center; padding:18px;">
+                <span class="pill">NIST AI RMF</span>
+                <span class="pill">EU AI Act</span>
+                <span class="pill">ISO 42001</span>
+                <span class="pill">FRIA</span>
+                <span class="pill">OWASP</span>
+                <span class="pill">MITRE ATLAS</span>
+                <span class="pill">Ley 8968</span>
+                <span class="pill">ENIA</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- SLIDE 13: CIERRE -->
+    <div class="slide">
+        <div class="slide-header">
+            <h2 class="slide-title">Lo que sigue</h2>
+        </div>
+        <div class="slide-content" style="justify-content:center; align-items:center; text-align:center;">
+            <div style="max-width:700px;">
+                <div class="highlight" style="margin-bottom:30px;">
+                    <p>"La pregunta ya no es si gestionar riesgos de IA, sino si podemos hacerlo a la velocidad que la tecnología demanda."</p>
+                </div>
+                <div class="card accent-red" style="padding:24px;">
+                    <h3 style="font-size:22px;">A continuación: actividad práctica en equipos</h3>
+                    <p style="font-size:17px; margin-top:10px;">Trabajaremos un caso de análisis ético-crítico donde aplicarán los conceptos de gestión de riesgos discutidos hoy.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="go(-1)">&larr; Anterior</button>
+        <button class="nav-btn" id="nextBtn" onclick="go(1)">Siguiente &rarr;</button>
+    </div>
+
+    <script>
+        let cur = 0;
+        const sl = document.querySelectorAll('.slide');
+        const tot = sl.length;
+        document.getElementById('tot').textContent = tot;
+
+        function show(n) {
+            sl.forEach(s => s.classList.remove('active'));
+            cur = Math.max(0, Math.min(n, tot - 1));
+            sl[cur].classList.add('active');
+            document.getElementById('cur').textContent = cur + 1;
+            document.getElementById('prevBtn').disabled = cur === 0;
+            document.getElementById('nextBtn').disabled = cur === tot - 1;
+        }
+
+        function go(d) { show(cur + d); }
+        document.addEventListener('keydown', e => {
+            if (e.key === 'ArrowLeft') go(-1);
+            if (e.key === 'ArrowRight') go(1);
+        });
+        show(0);
+    </script>
+</body>
+</html>

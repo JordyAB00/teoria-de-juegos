@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Principios éticos fundamentales en IA (FATE) - Semana 2</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px 140px 80px;
+            background: #f5f5f7;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 20px;
+            overflow-y: auto;
+            max-height: calc(100vh - 280px);
+        }
+
+        .content-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-box h3 {
+            font-size: 24px;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .content-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-box li {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .content-box li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 20px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f0f2, #ffffff);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .highlight-box p {
+            font-size: 17px;
+            color: #2d1b4e;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .key-point {
+            background: #ffffff;
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .key-point h4 {
+            color: #2d1b4e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .key-point p {
+            color: #1d1d1f;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .logo-area {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo-image {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            color: #6e6e73;
+            font-size: 16px;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 50%, #ffffff 100%);
+            padding: 60px 80px 140px 80px;
+        }
+
+        .cover-title {
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 32px;
+            color: #6e6e73;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .cover-info {
+            font-size: 18px;
+            color: #1d1d1f;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        .comparison-table {
+            background: #ffffff;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .comparison-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .comparison-table th {
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            color: #ffffff;
+            padding: 12px;
+            font-size: 16px;
+            text-align: left;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            font-size: 14px;
+            color: #1d1d1f;
+            border-bottom: 1px solid #f5f5f7;
+        }
+
+        .formula-box {
+            background: #f0f0f2;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            color: #2d1b4e;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT" class="logo-image">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">13</span>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide cover-slide active">
+            <h1 class="cover-title">Principios éticos fundamentales en IA</h1>
+            <p class="cover-subtitle">Semana 2: Framework FATE y principios complementarios</p>
+            <div class="cover-info">
+                <p>Microcredencial en Inteligencia Artificial y Análisis de Datos<br>
+                Universidad Latinoamericana de Ciencia y Tecnología<br>
+                Enero 2026</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Introducción FATE -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Framework FATE</h2>
+                <p class="slide-subtitle">Los cuatro pilares de la ética en IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Fairness (Equidad)</h3>
+                        <p>Los sistemas de IA deben tratar a todos de manera justa, sin discriminación por raza, género, edad u otras características protegidas. Incluye equidad individual, grupal y contrafactual.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Accountability (Responsabilidad)</h3>
+                        <p>Debe existir una cadena clara de responsabilidad desde el desarrollo hasta la implementación. Incluye responsabilidad legal, ética y mecanismos de rendición de cuentas.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Transparency (Transparencia)</h3>
+                        <p>Las personas tienen derecho a saber cuándo interactúan con IA y cómo funcionan los sistemas. Abarca transparencia algorítmica, de datos, de propósito y de resultados.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Explicability (Explicabilidad)</h3>
+                        <p>Los sistemas deben poder explicar sus decisiones de manera comprensible para humanos no técnicos, especialmente en contextos críticos como salud y justicia.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Fairness - Definiciones -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Fairness: ¿qué significa equidad?</h2>
+                <p class="slide-subtitle">Paradigmas y definiciones contemporáneas</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Dos paradigmas fundamentales</h3>
+                    <ul>
+                        <li><strong>Equidad comparativa:</strong> Tratar casos similares de forma similar</li>
+                        <li><strong>Equidad no comparativa:</strong> Tratar a cada persona como merece, independientemente de otros</li>
+                    </ul>
+                </div>
+                <div class="three-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>Equidad individual</h4>
+                        <p>Personas similares reciben predicciones similares. El desafío: ¿qué constituye "similitud"?</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Equidad grupal</h4>
+                        <p>Propiedades estadísticas similares entre grupos protegidos. Más común por facilidad de medición.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Equidad contrafactual</h4>
+                        <p>¿La decisión cambiaría si la persona perteneciera a otro grupo demográfico?</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>No existe una definición única de equidad. El contexto, los valores de la sociedad y las características del problema determinan qué definición es apropiada.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Fairness - Métricas -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Métricas de fairness</h2>
+                <p class="slide-subtitle">Midiendo la equidad algorítmica</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Métricas principales</h3>
+                        <ul>
+                            <li><strong>Paridad demográfica:</strong> P(Ŷ=1|A=a) = P(Ŷ=1|A=b) para grupos a, b</li>
+                            <li><strong>Equalized odds:</strong> Tasas iguales de VP y FP entre grupos</li>
+                            <li><strong>Equalized opportunity:</strong> Solo igualdad en verdaderos positivos</li>
+                            <li><strong>Paridad predictiva:</strong> Valor predictivo positivo igual entre grupos</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Herramientas de evaluación</h3>
+                        <ul>
+                            <li><strong>IBM AI Fairness 360:</strong> 70+ métricas, 10 algoritmos de mitigación</li>
+                            <li><strong>Microsoft Fairlearn:</strong> Clasificación y regresión con dashboard</li>
+                            <li><strong>Google Fairness Indicators:</strong> Integración con TensorFlow</li>
+                            <li><strong>Fairkit-learn:</strong> Visualización trade-offs Pareto-óptimos</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Teorema de imposibilidad: Cuando las tasas base difieren entre grupos, es matemáticamente imposible satisfacer simultáneamente equalized odds y paridad predictiva (excepto con predicción perfecta).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Fairness - Debates -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Debates contemporáneos en fairness</h2>
+                <p class="slide-subtitle">Desafíos actuales (2024-2026)</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>Interseccionalidad</h4>
+                    <p>Analizar atributos protegidos aisladamente (raza O género) falla en capturar discriminación en intersecciones. Mujeres negras experimentan sesgos únicos que no se capturan analizando raza y género separadamente.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="stat-box">
+                        <div class="stat-number">85%</div>
+                        <div class="stat-label">Preferencia por nombres asociados con blancos en screeners de currículos con IA</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">9%</div>
+                        <div class="stat-label">Preferencia por nombres asociados con negros (Universidad de Washington, 2024)</div>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>¿Quién define la equidad?</h4>
+                        <p>Expertos discrepan, legisladores carecen de expertise técnico, y el número creciente de definiciones complica la regulación.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Equidad contextual</h4>
+                        <p>Ninguna métrica única es universalmente apropiada. La selección debe guiarse por dominio, requisitos regulatorios y características del sesgo en los datos.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Accountability - Conceptos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Accountability: el problema de las muchas manos</h2>
+                <p class="slide-subtitle">Cadenas de responsabilidad en IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>El desafío central</h3>
+                    <p>Cuando múltiples actores contribuyen a un sistema de IA, asignar responsabilidad por impactos adversos se vuelve extremadamente difícil. Cada actor puede señalar hacia otro, creando "responsabilidad dislocada".</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Desarrolladores</h3>
+                        <ul>
+                            <li>Evaluaciones de riesgo iniciales</li>
+                            <li>Testing y validación rigurosos</li>
+                            <li>Calidad de datos y mitigación de sesgo</li>
+                            <li>Model cards con capacidades y limitaciones</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Desplegadores</h3>
+                        <ul>
+                            <li>Evaluaciones de impacto pre-despliegue</li>
+                            <li>Monitoreo de rendimiento en producción</li>
+                            <li>Supervisión humana apropiada</li>
+                            <li>Transparencia hacia afectados</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Usuarios finales</h3>
+                        <ul>
+                            <li>Comprender limitaciones del sistema</li>
+                            <li>Ejercer escepticismo apropiado</li>
+                            <li>No inputear datos sensibles en sistemas públicos</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Proveedores de datos</h3>
+                        <ul>
+                            <li>Asegurar calidad de datos</li>
+                            <li>Consentimiento apropiado</li>
+                            <li>Documentación de proveniencia</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Accountability - Marcos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Marcos de gobernanza y accountability</h2>
+                <p class="slide-subtitle">Regulación y fallos recientes</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>EU AI Act: marco más comprehensivo</h4>
+                    <p>Categorías de riesgo (prohibido, alto, limitado, mínimo) con multas hasta €35M o 7% de facturación global. Establece responsabilidades claras para proveedores y desplegadores.</p>
+                </div>
+                <div class="three-columns" style="margin-top: 20px;">
+                    <div class="stat-box">
+                        <div class="stat-number">39%</div>
+                        <div class="stat-label">Fortune 100 con supervisión de IA a nivel de junta</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">66%</div>
+                        <div class="stat-label">Directores con conocimiento "limitado a nulo" de IA</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">120+</div>
+                        <div class="stat-label">Casos judiciales con citas legales alucinadas por IA (2024-2025)</div>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Caso Air Canada Chatbot (feb 2024): La corte rechazó el argumento de que el chatbot era "entidad legal separada responsable de sus propias acciones". Las empresas son responsables de lo que su tecnología dice y hace.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Transparency - Niveles -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Transparency: el derecho a saber</h2>
+                <p class="slide-subtitle">Niveles de transparencia en IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Transparencia algorítmica</h3>
+                        <p>Comprender la arquitectura del modelo y los métodos de entrenamiento utilizados.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Transparencia de datos</h3>
+                        <p>Conocer qué datos de entrenamiento se usaron, sus fuentes y características.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Transparencia de propósito</h3>
+                        <p>Divulgación clara de usos previstos, limitaciones conocidas y contextos apropiados.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Transparencia de resultados</h3>
+                        <p>Comprender cómo se generan los outputs y qué significan en términos prácticos.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>La transparencia no es binaria (transparente vs. opaco), sino un espectro con múltiples dimensiones. Diferentes stakeholders requieren diferentes niveles de transparencia.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Transparency - Regulación -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Marco regulatorio de transparencia</h2>
+                <p class="slide-subtitle">GDPR, EU AI Act y legislación emergente</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>GDPR Artículo 22: decisiones automatizadas</h4>
+                    <p>Prohíbe decisiones "basadas únicamente en procesamiento automatizado" que produzcan efectos legales. Otorga derechos a intervención humana, expresar punto de vista y acceder a "información significativa sobre la lógica involucrada".</p>
+                </div>
+                <div class="key-point">
+                    <h4>Caso CJEU C-203/22 (Dun & Bradstreet, 2024)</h4>
+                    <p>Confirmó la existencia del derecho a explicación. La complejidad del procesamiento automatizado NO justifica reducir estándares de transparencia.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>EU AI Act</h3>
+                        <ul>
+                            <li>Artículo 13: sistemas de alto riesgo deben ser "suficientemente transparentes"</li>
+                            <li>Artículo 50: informar cuando se interactúa con IA</li>
+                            <li>Artículo 86: derecho a explicaciones claras y significativas</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Estados Unidos (2025-2026)</h3>
+                        <ul>
+                            <li>California TFAIA: frameworks de seguridad y reportes de transparencia</li>
+                            <li>New York RAISE Act: protocolos públicos de seguridad</li>
+                            <li>38 estados: ~100 medidas relacionadas con IA en 2025</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Explicability - Conceptos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Explicability: IA interpretable vs. caja negra</h2>
+                <p class="slide-subtitle">Conceptos fundamentales de XAI</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Interpretabilidad</h3>
+                        <p>Grado en que un humano puede comprender la lógica interna de un modelo. Es una <strong>propiedad del modelo mismo</strong>.</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Explicabilidad</h3>
+                        <p>Proceso de generar justificaciones después del hecho. Son <strong>técnicas aplicadas</strong> a modelos complejos.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>Explicaciones locales</h4>
+                        <p>Explican predicciones individuales. Ejemplo: "¿Por qué fue rechazado ESTE préstamo específico?"</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Explicaciones globales</h4>
+                        <p>Explican comportamiento general del modelo. Ejemplo: "¿Qué features son generalmente más importantes?"</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>La explicabilidad es especialmente crítica en contextos de alto riesgo: salud (diagnósticos), justicia (sentencias), crédito (aprobaciones) y empleo (contratación).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Explicability - Métodos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Métodos de explicabilidad (XAI)</h2>
+                <p class="slide-subtitle">Técnicas principales y sus características</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>LIME (Local Interpretable Model-agnostic Explanations)</h3>
+                        <ul>
+                            <li>Toma una instancia a explicar</li>
+                            <li>Genera muestras perturbadas alrededor de ella</li>
+                            <li>Ajusta modelo interpretable (regresión lineal)</li>
+                            <li>Agnóstico al modelo, pero solo local</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>SHAP (SHapley Additive exPlanations)</h3>
+                        <ul>
+                            <li>Basado en teoría de juegos</li>
+                            <li>Trata features como "jugadores"</li>
+                            <li>Calcula contribución de cada feature</li>
+                            <li>Fundamento teórico sólido, pero costoso</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>Mecanismos de atención</h4>
+                        <p>En transformers, los pesos de atención indican en qué se "enfoca" el modelo. Advertencia: pueden no reflejar el razonamiento real.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Explicaciones contrafactuales</h4>
+                        <p>"¿Qué cambios mínimos al input resultarían en predicción diferente?" Ejemplo: "Si tu ingreso fuera $5,000 mayor, habría sido aprobado".</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Explicability - Trade-offs -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">El mito del trade-off precisión-interpretabilidad</h2>
+                <p class="slide-subtitle">Investigación reciente y desafíos con LLMs</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>¿Es real el trade-off?</h4>
+                    <p>Investigación incluyendo el FICO Explainable ML Challenge (2018) demuestra que frecuentemente es una <strong>falacia</strong>. Modelos interpretables frecuentemente rinden igual o mejor que alternativas caja negra en dominios como justicia criminal, salud y scoring crediticio.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="stat-box">
+                        <div class="stat-number">~70%</div>
+                        <div class="stat-label">De datasets benchmark donde modelos white-box rinden igual que black-box</div>
+                    </div>
+                    <div class="content-box">
+                        <h3>Desafíos con LLMs</h3>
+                        <ul>
+                            <li>Billones de parámetros hacen técnicas tradicionales prohibitivas</li>
+                            <li>Capacidades emergentes sin programación explícita</li>
+                            <li>Alucinaciones sin causas claras</li>
+                            <li>Complejidad no lineal distribuida</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Bank for International Settlements (2025): Reguladores financieros preocupados por LLMs propietarios que no pueden ser validados independientemente.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Privacidad y Beneficencia -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Principios complementarios</h2>
+                <p class="slide-subtitle">Privacidad, beneficencia y no maleficencia</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Privacidad y protección de datos</h3>
+                        <ul>
+                            <li><strong>Privacidad diferencial:</strong> Ruido calibrado que protege individuos</li>
+                            <li><strong>Aprendizaje federado:</strong> Entrenamiento sin compartir datos crudos</li>
+                            <li><strong>Cifrado homomórfico:</strong> Computaciones sobre datos cifrados</li>
+                            <li><strong>Enforcement:</strong> €5.88 mil millones en multas GDPR (ene 2025)</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Beneficencia y no maleficencia</h3>
+                        <ul>
+                            <li><strong>Beneficencia:</strong> Diseñar sistemas que beneficien a personas y sociedad</li>
+                            <li><strong>No maleficencia:</strong> "Primero, no hacer daño" - evitar consecuencias negativas previsibles</li>
+                            <li><strong>Recomendación UNESCO:</strong> 10 principios incluyendo proporcionalidad, seguridad y equidad</li>
+                            <li><strong>IA centrada en humanos:</strong> Herramienta que mejora (no reemplaza) capacidades humanas</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>13% de organizaciones reportaron brechas de modelos/aplicaciones de IA en 2024-2025, con 97% careciendo de controles de acceso apropiados (IBM Cost of a Data Breach 2025).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Conclusión -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Conclusiones: tensiones fundamentales</h2>
+                <p class="slide-subtitle">El camino adelante</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>Los principios FATE son inherentemente tensionados</h4>
+                    <p>El teorema de imposibilidad demuestra que no podemos satisfacer simultáneamente todas las definiciones de equidad. La accountability distribuida crea el problema de las muchas manos. La transparencia puede chocar con propiedad intelectual. La explicabilidad enfrenta límites técnicos con LLMs.</p>
+                </div>
+                <div class="key-point">
+                    <h4>Estos desafíos no son excusas para inacción</h4>
+                    <p>El EU AI Act demuestra que es posible regular IA comprehensivamente. Empresas como Unilever y Scotiabank prueban que la ética puede integrarse en procesos de desarrollo. Costa Rica tiene la oportunidad de posicionarse como líder regional.</p>
+                </div>
+                <div class="highlight-box">
+                    <p style="text-align: center; font-size: 22px;">Los principios FATE no son checklist de cumplimiento, sino marcos para navegación ética continua de trade-offs complejos en contextos específicos.</p>
+                </div>
+                <div class="content-box" style="margin-top: 20px;">
+                    <h3>Próximos pasos</h3>
+                    <p>Después de este repaso teórico, trabajaremos en equipos analizando un caso real que cristaliza estas tensiones: un algoritmo diseñado para eficiencia que causa daño a poblaciones vulnerables, operando sin transparencia ni accountability clara.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            } else if (n < 0) {
+                currentSlide = 0;
+            } else {
+                currentSlide = n;
+            }
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

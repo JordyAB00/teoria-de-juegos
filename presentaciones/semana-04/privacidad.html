@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacidad y protección de datos personales - Semana 4</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px 140px 80px;
+            background: #f5f5f7;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 20px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: calc(100vh - 260px);
+            padding-right: 10px;
+        }
+        
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .slide-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .slide-content::-webkit-scrollbar-thumb {
+            background: #00d4ff;
+            border-radius: 10px;
+        }
+        
+        .slide-content::-webkit-scrollbar-thumb:hover {
+            background: #00b8dd;
+        }
+
+        .content-box {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-box h3 {
+            font-size: 24px;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .content-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-box li {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .content-box li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 20px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px;
+        }
+
+        .four-columns {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f0f2, #ffffff);
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .highlight-box p {
+            font-size: 17px;
+            color: #2d1b4e;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        .key-point {
+            background: #ffffff;
+            border-left: 4px solid #00d4ff;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .key-point h4 {
+            color: #2d1b4e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .key-point p {
+            color: #1d1d1f;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .logo-area {
+            position: fixed;
+            top: 15px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .logo-image {
+            max-width: 150px;
+            height: auto;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 20px;
+            right: 30px;
+            color: #6e6e73;
+            font-size: 16px;
+            z-index: 1000;
+            font-weight: 500;
+        }
+
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 50%, #ffffff 100%);
+            padding: 60px 80px 140px 80px;
+        }
+
+        .cover-title {
+            font-size: 64px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 32px;
+            color: #6e6e73;
+            margin-bottom: 30px;
+            font-weight: 300;
+        }
+
+        .cover-info {
+            font-size: 18px;
+            color: #1d1d1f;
+            margin-top: 30px;
+            line-height: 1.6;
+        }
+
+        .stat-box {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 15px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .stat-box:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #6e6e73;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff5f5, #ffffff);
+            border-left: 4px solid #ef4444;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(239, 68, 68, 0.1);
+        }
+
+        .warning-box p {
+            font-size: 16px;
+            color: #991b1b;
+            font-weight: 500;
+        }
+
+        .case-box {
+            background: linear-gradient(135deg, #fefce8, #ffffff);
+            border-left: 4px solid #eab308;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(234, 179, 8, 0.1);
+        }
+
+        .case-box h4 {
+            color: #854d0e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .case-box p {
+            font-size: 15px;
+            color: #713f12;
+            line-height: 1.5;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #f0fdf4, #ffffff);
+            border-left: 4px solid #22c55e;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            box-shadow: 0 2px 8px rgba(34, 197, 94, 0.1);
+        }
+
+        .success-box h4 {
+            color: #15803d;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .success-box p {
+            font-size: 15px;
+            color: #166534;
+            line-height: 1.5;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .comparison-table th {
+            background: linear-gradient(135deg, #2d1b4e, #4c2a7f);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-size: 15px;
+        }
+
+        .comparison-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e5e5e7;
+            font-size: 14px;
+            color: #1d1d1f;
+        }
+
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .comparison-table tr:hover {
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT" class="logo-image">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">25</span>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Portada -->
+        <div class="slide cover-slide active">
+            <h1 class="cover-title">Privacidad y protección de datos personales</h1>
+            <p class="cover-subtitle">Semana 4: Marcos regulatorios, derechos fundamentales y desafíos en IA</p>
+            <div class="cover-info">
+                <p>Microcredencial en Inteligencia Artificial y Análisis de Datos<br>
+                Universidad Latinoamericana de Ciencia y Tecnología<br>
+                Febrero 2026</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Agenda -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Agenda de hoy</h2>
+                <p class="slide-subtitle">Contenidos de la sesión</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Parte 1: Marcos regulatorios globales</h3>
+                        <ul>
+                            <li>GDPR: evolución y estado actual (2026)</li>
+                            <li>CCPA y regulación californiana de IA</li>
+                            <li>Enforcement: multas y casos significativos</li>
+                            <li>Regulaciones emergentes (Brasil, Canadá, UK, China)</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Parte 2: Costa Rica y contexto latinoamericano</h3>
+                        <ul>
+                            <li>Ley 8968: análisis crítico y deficiencias</li>
+                            <li>Proyecto de reforma 23097</li>
+                            <li>PRODHAB: capacidad institucional</li>
+                            <li>Estrategia Nacional de IA 2024-2027</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Parte 3: Derechos y principios</h3>
+                        <ul>
+                            <li>Derechos ARCO y sus desafíos en IA</li>
+                            <li>Principios de protección de datos</li>
+                            <li>Privacy by Design y by Default</li>
+                            <li>Consentimiento en la era de IA</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Parte 4: Riesgos y soluciones técnicas</h3>
+                        <ul>
+                            <li>Re-identificación y ataques de privacidad</li>
+                            <li>Técnicas de anonimización y seudonimización</li>
+                            <li>Conflictos fundamentales con IA</li>
+                            <li>Caso práctico en equipos</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Contexto global de privacidad -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">El momento crítico de la privacidad en IA</h2>
+                <p class="slide-subtitle">Convergencia de regulación, tecnología y enforcement (2026)</p>
+            </div>
+            <div class="slide-content">
+                <div class="warning-box">
+                    <p>Febrero 2026 marca un punto de inflexión: €100+ millones en multas ignoradas por una sola empresa de reconocimiento facial, el primer framework de IA completo del mundo (EU AI Act) en plena vigencia, y Costa Rica como pionero centroamericano con su Estrategia Nacional de IA mientras su Ley 8968 permanece significativamente desactualizada.</p>
+                </div>
+                <div class="three-columns">
+                    <div class="stat-box">
+                        <div class="stat-number">€5.88B</div>
+                        <div class="stat-label">Total de multas GDPR desde mayo 2018</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">€1.2B</div>
+                        <div class="stat-label">Multas GDPR solo durante 2024</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">Agosto 2026</div>
+                        <div class="stat-label">Aplicación principal del EU AI Act</div>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>La protección de datos personales en sistemas de IA representa uno de los desafíos regulatorios más complejos de nuestra era. La convergencia de machine learning con datos personales masivos crea tensiones fundamentales entre innovación tecnológica y derechos fundamentales.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: GDPR - Evolución 2024-2026 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">GDPR: evolución hacia regulación específica de IA</h2>
+                <p class="slide-subtitle">Nuevas directrices y propuestas de reforma</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="key-point">
+                        <h4>Recomendaciones CNIL (enero 2026)</h4>
+                        <p>Primera guía comprehensiva sobre aplicación del GDPR al desarrollo de sistemas de IA: definición de propósitos para IA de propósito general, bases legales (interés legítimo como la más común), minimización de datos aplicada a conjuntos masivos de entrenamiento, y tratamiento legal de modelos de IA como potenciales datos personales.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>EDPB Opinión 28/2024</h4>
+                        <p>Los LLMs raramente alcanzan estándares de anonimización. Los controladores que despliegan LLMs de terceros deben conducir evaluaciones comprehensivas de interés legítimo. Los modelos de IA entrenados con datos personales deben considerarse sujetos al GDPR en la mayoría de casos.</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 20px;">
+                    <h4>Propuesta Digital Omnibus (noviembre 2025)</h4>
+                    <p>Reforma significativa con implementación proyectada para 2031: expansión de exenciones de ROPAs para organizaciones hasta 750 empleados, estandarización de banners de cookies con rechazo de un clic, y clarificación explícita permitiendo uso de interés legítimo para procesamiento relacionado con IA.</p>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>La consulta pública sobre Digital Omnibus cierra el 11 de marzo de 2026. Esta es la reforma más significativa del GDPR desde su entrada en vigor en 2018.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Multas GDPR significativas -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Enforcement GDPR: multas significativas 2024-2025</h2>
+                <p class="slide-subtitle">Casos relevantes para IA y protección de datos</p>
+            </div>
+            <div class="slide-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Empresa</th>
+                            <th>Multa</th>
+                            <th>Autoridad</th>
+                            <th>Fecha</th>
+                            <th>Violación</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>TikTok</strong></td>
+                            <td>€530M</td>
+                            <td>DPC Irlanda</td>
+                            <td>Mayo 2025</td>
+                            <td>Transferencias ilegales de datos de usuarios EEA a China</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LinkedIn</strong></td>
+                            <td>€310M</td>
+                            <td>DPC Irlanda</td>
+                            <td>Octubre 2024</td>
+                            <td>Análisis conductual y publicidad dirigida sin base legal</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OpenAI/ChatGPT</strong></td>
+                            <td>€15M</td>
+                            <td>Garante Italia</td>
+                            <td>Diciembre 2024</td>
+                            <td>Procesamiento sin base legal, fallas de transparencia, verificación de edad</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Clearview AI</strong></td>
+                            <td>€30.5M</td>
+                            <td>AP Países Bajos</td>
+                            <td>Septiembre 2024</td>
+                            <td>Base de datos ilegal de biométricos, procesamiento sin consentimiento</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Meta</strong></td>
+                            <td>€251M</td>
+                            <td>DPC Irlanda</td>
+                            <td>2024</td>
+                            <td>Brecha de seguridad "View As" afectando 29 millones de usuarios</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <p>Clearview AI ha acumulado más de €100 millones en multas europeas combinadas (Francia €20M, Italia €20M, Grecia €20M, Países Bajos €30.5M, Reino Unido £7.5M) y no ha pagado ninguna.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: CCPA y California -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">California lidera regulación de IA en Estados Unidos</h2>
+                <p class="slide-subtitle">ADMT y framework más detallado del país</p>
+            </div>
+            <div class="slide-content">
+                <div class="success-box">
+                    <h4>Regulaciones ADMT (septiembre 2025)</h4>
+                    <p>California Privacy Protection Agency finalizó el marco más comprehensivo de EE.UU. para Tecnología de Toma de Decisiones Automatizada, creando obligaciones sin precedentes para sistemas de IA en servicios financieros, vivienda, educación, empleo y salud.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Obligaciones fundamentales ADMT</h3>
+                        <ul>
+                            <li>Aviso previo al uso informando propósito, lógica y supervisión humana</li>
+                            <li>Derecho de opt-out para consumidores</li>
+                            <li>Solicitudes de acceso con explicación de decisiones</li>
+                            <li>Aviso especial de decisión adversa</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Fechas de implementación críticas</h3>
+                        <ul>
+                            <li><strong>1 enero 2026:</strong> Provisiones generales y evaluaciones de riesgo</li>
+                            <li><strong>1 enero 2027:</strong> Requisitos específicos de ADMT</li>
+                            <li><strong>1 abril 2028:</strong> Presentación de attestations al CPPA</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 20px;">
+                    <h4>Legislación adicional 2026</h4>
+                    <p>SB-942 AI Transparency Act (efectiva enero 2026): divulgación obligatoria cuando consumidores interactúan con IA generativa. AB 2013: desarrolladores de modelos a gran escala deben documentar datos de entrenamiento y conducir evaluaciones de impacto.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: EU AI Act -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">EU AI Act: primer marco comprehensivo del mundo</h2>
+                <p class="slide-subtitle">Implementación escalonada y aplicación principal agosto 2026</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="content-box">
+                        <h3>Cronograma de implementación</h3>
+                        <ul>
+                            <li><strong>2 feb 2025:</strong> Prohibiciones y alfabetización en IA efectivas</li>
+                            <li><strong>2 ago 2025:</strong> Gobernanza y modelos GPAI aplicables</li>
+                            <li><strong>2 feb 2026:</strong> Directrices de cumplimiento disponibles</li>
+                            <li><strong>2 ago 2026:</strong> Fecha principal de aplicación</li>
+                            <li><strong>2 ago 2027:</strong> Sistemas integrados en productos regulados</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Sistemas de alto riesgo (Anexo III)</h3>
+                        <ul>
+                            <li>Identificación y categorización biométrica</li>
+                            <li>Infraestructura crítica</li>
+                            <li>Educación y formación vocacional</li>
+                            <li>Empleo (reclutamiento, promoción, terminación)</li>
+                            <li>Servicios esenciales (scoring crediticio, seguros)</li>
+                            <li>Aplicación de la ley y administración de justicia</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <p>Penalidades máximas: €35 millones o 7% de facturación global para prácticas prohibidas. Para sistemas de alto riesgo: €15 millones o 3% de facturación global.</p>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Interacción GDPR-AI Act: Ambas regulaciones aplican cuando sistemas de IA procesan datos personales. GDPR gobierna la protección de datos mientras AI Act gobierna la tecnología. Las DPIAs bajo GDPR pueden incorporar documentación del AI Act.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Regulaciones emergentes globales -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Regulaciones emergentes: Brasil, Canadá, UK y China</h2>
+                <p class="slide-subtitle">Panorama global de protección de datos en IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="case-box">
+                        <h4>Brasil: Proyecto de Ley 2338/2023</h4>
+                        <p>Basado en riesgo similar al EU AI Act. Pasó el Senado en diciembre 2024, bajo revisión en Cámara de Diputados. Prohíbe sistemas de riesgo excesivo, requiere evaluaciones de impacto algorítmico para alto riesgo, y establece derechos de explicación y revisión humana.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Canadá: AIDA en pausa</h4>
+                        <p>Bill C-27 murió con prorogación parlamentaria (6 enero 2025). Tras elecciones de abril 2025, Primer Ministro Carney enfoca innovación sobre regulación estricta. AIDA será reintroducido pero posiblemente desacoplado de reforma de privacidad.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="case-box">
+                        <h4>Reino Unido: Data (Use and Access) Act 2025</h4>
+                        <p>Asentimiento real 19 junio 2025. Expande circunstancias para toma de decisiones automatizada legal: prohibición ahora aplica solo para datos de categoría especial y donde no hay "involucramiento humano significativo". Nuevos "intereses legítimos reconocidos" como base legal.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>China: enmiendas Ley de Ciberseguridad</h4>
+                        <p>Efectivas 1 enero 2026: apoyo estatal para investigación de IA, normas éticas de IA, monitoreo de riesgos y evaluación de seguridad. Penalidades hasta RMB 10 millones. Nuevas reglas de etiquetado de contenido IA (septiembre 2025). 302 servicios de IA generativa registrados con CAC hasta diciembre 2024.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Ley 8968 Costa Rica -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Ley 8968 de Costa Rica: pionera pero desactualizada</h2>
+                <p class="slide-subtitle">Análisis crítico 15 años después</p>
+            </div>
+            <div class="slide-content">
+                <div class="success-box">
+                    <h4>Logro histórico</h4>
+                    <p>Promulgada el 7 de septiembre de 2011, Costa Rica se convirtió en el primer país centroamericano y uno de los primeros en Latinoamérica en establecer legislación comprehensiva de protección de datos, modelada según la Directiva EU 95/46/EC (pre-GDPR).</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="warning-box">
+                        <h4>Deficiencias críticas para IA</h4>
+                        <p style="color: #991b1b;">NO existe derecho a portabilidad de datos<br>
+                        NO hay derecho a no ser sujeto de decisiones automatizadas (brecha crítica)<br>
+                        NO hay derecho de oposición/opt-out comparable al GDPR<br>
+                        Sanciones limitadas: $3,000-$18,000 USD; suspensión 1-6 meses<br>
+                        NO requiere Oficiales de Protección de Datos (DPOs)<br>
+                        Mecanismos de enforcement débiles</p>
+                    </div>
+                    <div class="content-box">
+                        <h3>Reconocimiento oficial</h3>
+                        <p>La Estrategia Nacional de Inteligencia Artificial (ENIA) reconoce explícitamente:</p>
+                        <p style="font-style: italic; margin-top: 10px;">"La Ley de Protección de Datos (Ley No. 8968) no establece las medidas cautelares o sanciones necesarias para tratar infracciones por el mal uso de los datos personales."</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Proyecto de reforma 23097 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Proyecto de Ley 23097: modernización pendiente</h2>
+                <p class="slide-subtitle">Reforma para alineación con estándares GDPR</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Proyecto de modernización (introducido enero 2021)</h3>
+                    <p>Busca derogar completamente la Ley 8968 para alinear Costa Rica con estándares internacionales contemporáneos.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>Cambios principales propuestos</h4>
+                        <p>Aplicación extraterritorial similar a GDPR<br>
+                        Reglas de transferencia transfronteriza con determinaciones de adecuación<br>
+                        Requisitos obligatorios de DPO para actividades de alto riesgo<br>
+                        Regulación explícita de datos biométricos<br>
+                        Fortalecimiento de PRODHAB con poderes expandidos<br>
+                        Sanciones incrementadas significativamente</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Estado actual</h4>
+                        <p>Pasó dictamen en Comisión de Ciencia y Tecnología el 23 de enero 2023<br>
+                        Pendiente aprobación en plenario legislativo<br>
+                        Potencial entrada en vigor: 2026<br>
+                        Fecha exacta de aprobación: incierta</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>La aprobación de esta reforma colocaría a Costa Rica entre los países latinoamericanos con legislación de protección de datos más avanzada, comparable a Chile (Ley 21.719, diciembre 2024) y Brasil (LGPD, 2018).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: PRODHAB -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">PRODHAB: capacidad institucional limitada</h2>
+                <p class="slide-subtitle">Desafíos de la autoridad de protección de datos</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Estructura institucional</h3>
+                    <p>PRODHAB (Agencia de Protección de Datos de los Habitantes) es una agencia administrativa con desconcentración máxima adscrita al Ministerio de Justicia y Paz.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="warning-box">
+                        <h4>Debilidades estructurales identificadas</h4>
+                        <p style="color: #991b1b;">Recursos humanos muy limitados<br>
+                        Expertise tecnológico limitado para supervisar IA<br>
+                        Restricciones presupuestarias significativas<br>
+                        Falta de independencia institucional completa<br>
+                        Track record de enforcement históricamente débil</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Reconocimiento oficial de limitaciones</h4>
+                        <p>La ENIA y múltiples análisis legales notan que PRODHAB "no tiene las capacidades ni independencia necesarias para hacer su trabajo" efectivamente en el contexto de sistemas de IA complejos y datos a gran escala.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>El Proyecto 23097 busca fortalecer significativamente a PRODHAB con poderes de investigación expandidos, capacidad de imponer sanciones mayores, y mayor independencia institucional. Sin embargo, la capacidad técnica para supervisar IA requerirá inversión sustancial adicional en talento especializado.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Caso UPAD -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Caso UPAD: catalizador de consciencia pública</h2>
+                <p class="slide-subtitle">El caso de protección de datos más significativo de Costa Rica</p>
+            </div>
+            <div class="slide-content">
+                <div class="warning-box">
+                    <h4>Unidad Presidencial de Análisis de Datos (UPAD)</h4>
+                    <p style="color: #991b1b;">Operó durante 18 meses dentro de Casa Presidencial sin conocimiento público, accediendo a datos sensibles de Migración, Ministerio de Educación e INEC sin bases legales claras ni consentimiento de ciudadanos.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="case-box">
+                        <h4>Resolución de la Sala Constitucional</h4>
+                        <p>17 de septiembre 2022 (Resolución N.º 2022019110): UPAD declarada <strong>inconstitucional</strong> por:<br>
+                        • Violar el derecho a autodeterminación informativa<br>
+                        • Violar el principio de reserva legal<br>
+                        • Exceder poderes reglamentarios del Ejecutivo</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Estado actual</h4>
+                        <p>El caso criminal contra el expresidente Carlos Alvarado y otros funcionarios involucrados continúa pendiente en tribunales.<br><br>
+                        UPAD representa un ejemplo paradigmático de los riesgos de procesamiento de datos personales sin marco legal robusto.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>El caso UPAD catalizó el debate público costarricense sobre protección de datos en la era digital y subrayó la urgencia de modernizar la Ley 8968 y fortalecer PRODHAB para el siglo XXI.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Estrategia Nacional de IA -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Estrategia Nacional de IA 2024-2027</h2>
+                <p class="slide-subtitle">Costa Rica como pionero centroamericano</p>
+            </div>
+            <div class="slide-content">
+                <div class="success-box">
+                    <h4>Logro histórico regional</h4>
+                    <p>Lanzada el 24 de octubre 2024 por MICITT, Costa Rica se convirtió en el <strong>primer país de Centroamérica y el Caribe</strong> en publicar una Estrategia Nacional de IA comprehensiva.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Principios clave (alineados con UNESCO y OCDE)</h3>
+                        <ul>
+                            <li>Dignidad humana</li>
+                            <li>Igualdad y no discriminación</li>
+                            <li>Supervisión humana</li>
+                            <li>Transparencia y acceso a información</li>
+                            <li>Confidencialidad y protección de datos personales</li>
+                            <li>Protección de propiedad intelectual</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Compromisos de privacidad y gobernanza</h3>
+                        <ul>
+                            <li>Identifica PRODHAB como stakeholder clave</li>
+                            <li>Gobernanza de datos y ciberseguridad como pilares fundacionales</li>
+                            <li>Énfasis en anonimización, minimización de datos</li>
+                            <li>Cifrado y controles de acceso robustos</li>
+                            <li>Auditorías periódicas de sesgo en algoritmos de IA</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 20px;">
+                    <h4>Proyectos de ley de IA pendientes</h4>
+                    <p>Proyecto 23771 (mayo 2023): propone principios éticos, registro obligatorio de sistemas de IA, evaluación de impacto para alto riesgo, medidas anti-sesgo, garantía de derechos ARCO, y creación de ARIA (Autoridad Reguladora de Inteligencia Artificial). Ninguno promulgado hasta febrero 2026.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Derechos ARCO -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Derechos ARCO: desafíos técnicos fundamentales con IA</h2>
+                <p class="slide-subtitle">Acceso, Rectificación, Cancelación, Oposición</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Los derechos ARCO bajo Ley 8968 y marcos equivalentes</h3>
+                    <p>Estos derechos fundamentales enfrentan obstáculos técnicos sin precedentes cuando se aplican a sistemas de IA modernos, especialmente Large Language Models.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="warning-box">
+                        <h4>Acceso: LLMs no son bases de datos</h4>
+                        <p style="color: #991b1b;">Los LLMs no almacenan datos personales en registros discretos y recuperables. OpenAI indicó a NOYB que no pueden proporcionar qué datos específicos se procesan sobre individuos. La DPA de Hamburgo clarificó que los LLMs "no son bases de datos de las cuales se extraen outputs".</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Rectificación: corrección virtualmente imposible</h4>
+                        <p style="color: #991b1b;">No se puede simplemente "actualizar" un hecho en un LLM—requeriría reentrenamiento o machine unlearning. OpenAI indicó que la única opción es "bloquear cualquier información concerniente al sujeto de datos".</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 20px;">
+                    <h4>Cancelación y el problema del "Machine Unlearning"</h4>
+                    <p>Una vez que datos personales se integran en parámetros del modelo, la remoción es prácticamente inviable sin reentrenamiento costoso. GPT-4 tiene 1.8 trillones de parámetros y datasets a escala de petabytes. El entrenamiento de GPT-4 costó >$100M. La evaluación de CSA concluye: "No hay soluciones probadas y escalables para garantizar cumplimiento con el derecho de borrado".</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Principios de protección de datos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Principios fundamentales de protección de datos</h2>
+                <p class="slide-subtitle">Minimización, propósito y consentimiento</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="key-point">
+                        <h4>Minimización de datos</h4>
+                        <p>Datos deben ser "adecuados, relevantes, limitados a lo necesario" (GDPR Art. 5.1.c). Tensión fundamental: sistemas de IA requieren datasets masivos para entrenamiento efectivo. El ICO clarificó que minimización "no significa 'no procesar datos personales'".</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Limitación de propósito</h4>
+                        <p>Datos deben ser usados solo para propósitos especificados (GDPR Art. 5.1.b). Conflicto: foundation models son entrenados para usos futuros amplios y no especificados. Future of Privacy Forum (2025) documenta cambio a minimización "sustantiva".</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Exactitud</h4>
+                        <p>Datos personales deben ser exactos y actualizados (GDPR Art. 5.1.d). Problema: LLMs producen "alucinaciones"—información falsa expresada con confianza. NOYB presentó queja (abril 2024) por ChatGPT proporcionando fechas de nacimiento incorrectas.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="case-box">
+                        <h4>Consentimiento: crisis en la era de IA</h4>
+                        <p>GDPR requiere consentimiento incluso para datos públicamente disponibles (CNIL 2020). "Dado el vasto número de individuos involucrados, obtener consentimiento de cada persona es prácticamente imposible" (California Law Review). Data Provenance Initiative documentó restricciones crecientes de crawling web: robots.txt y TOS aumentan 6-10% anualmente.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Fatiga de consentimiento en IA agéntica</h4>
+                        <p>Ashley Zlatinov de Anthropic notó que solicitar consentimiento "cada 15 o 20 segundos" lleva a fatiga—el fenómeno de banner de cookies se repite para agentes de IA. Se necesita un "enfoque de queso suizo" con múltiples capas de seguridad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: Privacy by Design y by Default -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Privacy by Design y Privacy by Default</h2>
+                <p class="slide-subtitle">Frameworks y desafíos de implementación en IA</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>Principios fundacionales (Ann Cavoukian, 2009)</h3>
+                    <p>Privacy by Design requiere que privacidad sea incorporada desde el diseño inicial de sistemas, no añadida posteriormente. Privacy by Default significa que configuraciones más protectoras de privacidad deben ser las predeterminadas.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="success-box">
+                        <h4>Frameworks actualizados disponibles</h4>
+                        <p><strong>NIST Privacy Framework 1.1</strong> (abril 2025): añade nueva sección sobre IA y gestión de riesgo de privacidad<br><br>
+                        <strong>ISO/IEC 42001:2023:</strong> primer estándar de sistema de gestión específico para IA, con Microsoft, Google y AWS certificados<br><br>
+                        <strong>CSA AI Controls Matrix</strong> (julio 2025): framework vendor-agnostic con mapeos a ISO 42001, ISO 27001, NIST AI RMF y EU AI Act</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Desafíos de implementación en LLMs</h4>
+                        <p style="color: #991b1b;"><strong>Escala del procesamiento:</strong> billones de parámetros hacen imposible revisión manual<br><br>
+                        <strong>Problema de caja negra:</strong> desarrolladores no pueden explicar completamente outputs<br><br>
+                        <strong>Aprendizaje continuo:</strong> flujos de datos ongoing y largamente invisibles<br><br>
+                        <strong>Complejidad cross-funcional:</strong> requiere coordinación legal, ciencia de datos y ética</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Riesgos de re-identificación -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Riesgos de re-identificación documentados</h2>
+                <p class="slide-subtitle">Estadísticas alarmantes de identificabilidad</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="stat-box">
+                        <div class="stat-number">87%</div>
+                        <div class="stat-label">De estadounidenses identificables vía código postal + género + fecha de nacimiento (Sweeney, 1997)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">99.98%</div>
+                        <div class="stat-label">De estadounidenses correctamente re-identificables usando solo 15 atributos demográficos (2019)</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-number">63%</div>
+                        <div class="stat-label">De estadounidenses identificables solo con género, fecha de nacimiento y código postal (Georgetown, 2024)</div>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="case-box">
+                        <h4>Brecha de datos AT&T (abril 2024)</h4>
+                        <p>Expuso registros de llamadas/textos de casi todos los clientes. Aunque carece de PII directa, el enlace de números telefónicos permite re-identificación. Las acciones de FTC contra X-Mode, InMarket y Kochava (2024-2025) por vender datos de ubicación sensibles recibieron apoyo bipartidista.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>IA puede inferir identidad de imágenes médicas "anonimizadas"</h4>
+                        <p>Investigación PMC/Nature Digital Medicine (marzo 2025): IA puede ahora inferir identidad de radiografías de tórax anonimizadas, ECGs, imágenes de MRI cerebral y patrones de marcha, socavando supuestos de anonimización en investigación médica.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Ataques de privacidad contra ML -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Ataques de privacidad contra modelos de ML</h2>
+                <p class="slide-subtitle">Amenazas sofisticadas emergentes</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="warning-box">
+                        <h4>Ataques de inferencia de membresía (MIA)</h4>
+                        <p style="color: #991b1b;">Investigación fundacional de Shokri et al. (IEEE S&P 2017): ataques contra Google Prediction API y Amazon ML con <strong>precisión hasta 97%</strong> en algunas clases. Investigación de marzo 2025 presenta primer survey comprehensivo de MIAs en LLMs y LMMs. NDSS 2025: ataque usando envenenamiento de código logra éxito casi perfecto.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Ataques de inversión de gradiente (GIA)</h4>
+                        <p style="color: #991b1b;">USENIX Security 2025: sistematización comprehensiva de ataques y defensas GIA. COLING 2025: inversión de gradiente de datos de texto logrando <strong>39% de mejora</strong> en tasas de coincidencia exacta. ICCV 2025 "Geminio": ataques de inversión guiados por lenguaje usando descripciones en lenguaje natural.</p>
+                    </div>
+                </div>
+                <div class="case-box" style="margin-top: 20px;">
+                    <h4>Extracción de datos de entrenamiento de LLMs</h4>
+                    <p>arXiv 2507.05578 (julio 2025): "The Landscape of Memorization in LLMs" cubre extracción basada en prefijos, inferencia de membresía y prompting adversarial. <strong>Ataques de divergencia</strong> (Nasr et al., 2025): hacer que modelos repitan tokens causa emisión de datos memorizados. <strong>PII-Compass:</strong> tasa de extracción de números telefónicos del 6.86% con 2,308 consultas—1 de cada 15 números de individuos es extraíble.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Técnicas de anonimización -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Técnicas de anonimización y seudonimización</h2>
+                <p class="slide-subtitle">Estado del arte 2026</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="success-box">
+                        <h4>Privacidad diferencial madura como estándar</h4>
+                        <p>Implementaciones principales: Google TensorFlow Privacy, IBM Differential Privacy Library, Microsoft SmartNoise, OpenDP. Despliegues: Apple (uso de emojis, predicciones de teclado a ε=2/día/usuario), Google RAPPOR para telemetría de Chrome, Meta para datos conductuales publicitarios. <strong>NIST SP 800-226</strong> (marzo 2025): "una configuración conservadora de ε ≤ 1 proporciona privacidad fuerte del mundo real".</p>
+                    </div>
+                    <div class="success-box">
+                        <h4>Aprendizaje federado alcanza madurez comercial</h4>
+                        <p>Mercado de FL alcanzó $138.6M en 2024 con proyección a $1.6B para 2035 (27.3% CAGR). Despliegues notables: Google Gboard con millones de dispositivos mejorando predicciones, modelos multi-hospital COVID-19, detección de fraude cross-institucional. EDPS destacó FL (junio 2025) como crucial para cumplimiento GDPR y privacy-by-design.</p>
+                    </div>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="key-point">
+                        <h4>Datos sintéticos emergen como alternativa</h4>
+                        <p>Microsoft Phi-3 entrenado con datos sintéticos sin datos personales reales. DHS/S&T financia startups como MOSTLY AI, Datacebo y Rockfish Data. Beneficio: datos sintéticos no contienen PII real por diseño, habilitando cumplimiento GDPR/HIPAA. Riesgos: ataques de inversión de modelo y amplificación de sesgo persisten.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>K-anonimidad considerada insuficiente</h4>
+                        <p style="color: #991b1b;">Scientific Reports 2025: "Los métodos tradicionales como k-anonimidad y l-diversidad han probado ser inadecuados contra ataques sofisticados de re-identificación." NIST y ENISA confirman insuficiencia para datos de alta dimensionalidad. La privacidad diferencial es ahora preferida.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Conflictos fundamentales -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Conflictos fundamentales entre principios de protección y IA</h2>
+                <p class="slide-subtitle">Tensiones irresolubles</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="warning-box">
+                        <h4>Minimización vs. necesidades de entrenamiento</h4>
+                        <p style="color: #991b1b;">GDPR requiere datos "adecuados, relevantes, limitados" mientras sistemas de IA requieren datasets masivos. Conflicto adicional: minimización desalienta recolección de atributos sensibles (raza, género), pero testing de sesgo los requiere.</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Limitación de propósito vs. IA de propósito general</h4>
+                        <p style="color: #991b1b;">Limitación de propósito requiere propósitos especificados, pero foundation models son entrenados para usos futuros amplios y no especificados. Future of Privacy Forum (2025) documenta cambio a minimización "sustantiva".</p>
+                    </div>
+                    <div class="warning-box">
+                        <h4>Exactitud vs. alucinaciones de IA</h4>
+                        <p style="color: #991b1b;">GDPR Artículo 5(1)(d) requiere exactitud. LLMs producen "alucinaciones". Tasas 2025: Gemini 2.0 Flash 0.7%, o3 mini 0.8%, Mistral 7B 9.5%. DPA de Hamburgo: aplicar exactitud en forma tradicional puede ser inapropiado para LLMs.</p>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p>Estos no son problemas técnicos temporales que se resolverán con mejores algoritmos. Representan tensiones fundamentales entre dos paradigmas: uno diseñado para proteger derechos individuales mediante limitación y control, el otro optimizado para aprendizaje de patrones mediante procesamiento masivo y generalización estadística.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Incidentes de privacidad LLMs -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Riesgos específicos de LLMs: incidentes documentados</h2>
+                <p class="slide-subtitle">ChatGPT, OpenAI y filtración empresarial</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="case-box">
+                        <h4>Incidentes ChatGPT/OpenAI</h4>
+                        <p><strong>Bug de Redis (marzo 2023):</strong> expuso historial de chat de otros usuarios<br>
+                        <strong>Incidente Samsung (2023):</strong> empleados filtraron código fuente, notas de reuniones y datos de hardware en tres ocasiones—Samsung prohibió herramientas de IA generativa<br>
+                        <strong>Julio 2025:</strong> miles de conversaciones indexadas por Google por característica "Make this chat discoverable" habilitada por defecto<br>
+                        <strong>Noviembre 2025:</strong> brecha de Mixpanel (vendor tercero) exponiendo analíticas de uso</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>OmniGPT (febrero 2025)</h4>
+                        <p>Expuso 30,000 emails/números de teléfono de usuarios, 34 millones de líneas de conversaciones de chat, y claves API y credenciales comprometidas. Demuestra que incluso plataformas menores manejan volúmenes masivos de datos sensibles.</p>
+                    </div>
+                </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <h4>Filtración de datos empresariales por GenAI</h4>
+                    <p style="color: #991b1b;">LayerX Security Report 2025: 18% de empleados empresariales pegan datos en herramientas GenAI, con >50% de eventos de pegado incluyendo información corporativa. 77% del acceso online a LLM es a ChatGPT. 40% de archivos subidos contienen PII o datos PCI. 71.6% del acceso a IA generativa es vía cuentas no corporativas.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Contexto latinoamericano -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Contexto latinoamericano y Red Iberoamericana</h2>
+                <p class="slide-subtitle">RIPD prioriza intersección IA-privacidad</p>
+            </div>
+            <div class="slide-content">
+                <div class="success-box">
+                    <h4>XXII Encuentro Iberoamericano de Protección de Datos (junio 2025, Cartagena)</h4>
+                    <p>Plan Estratégico 2026-2030 con prioridades: intersección de IA y protección de datos, datos biométricos, protección de grupos vulnerables. Creación del Observatorio Iberoamericano de Protección de Datos. Recomendaciones RIPD para IA aplicables a todos los países miembros incluyendo Costa Rica.</p>
+                </div>
+                <table class="comparison-table" style="margin-top: 20px;">
+                    <thead>
+                        <tr>
+                            <th>País</th>
+                            <th>Ley de Protección de Datos</th>
+                            <th>Estado Regulación IA</th>
+                            <th>Características clave</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Brasil</strong></td>
+                            <td>LGPD (2018)</td>
+                            <td>Bill 2338/2023 aprobado Senado</td>
+                            <td>Framework IA regional más avanzado</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Chile</strong></td>
+                            <td>Ley 21.719 (dic 2024, efectiva dic 2026)</td>
+                            <td>Proyecto en Congreso</td>
+                            <td>Ley actualizada alineada a GDPR</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Colombia</strong></td>
+                            <td>Ley 1581 (2012)</td>
+                            <td>Bill 059/2023; CONPES 4144 (2025)</td>
+                            <td>Registro bases datos; mandatos DPO</td>
+                        </tr>
+                        <tr>
+                            <td><strong>México</strong></td>
+                            <td>Ley Federal (2010/2017)</td>
+                            <td>Múltiples proyectos; Agenda IA 2024-2030</td>
+                            <td>Supervisión INAI</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Costa Rica</strong></td>
+                            <td>Ley 8968 (2011)</td>
+                            <td>ENIA 2024-2027; Bills pendientes</td>
+                            <td>Primero en Centroamérica; PRODHAB débil</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 23: Tendencias actuales -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Tendencias actuales y debates 2025-2026</h2>
+                <p class="slide-subtitle">Agentes de IA, biométricos y transparencia</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="case-box">
+                        <h4>2025: "Año de los Agentes de IA"</h4>
+                        <p>OpenAI, Google y Anthropic lanzaron versiones tempranas. <strong>Riesgos de privacidad novedosos:</strong> agentes requieren acceso a "todo" (cuentas bancarias, registros médicos, calendario, historial de ubicación). Filtración de datos ocurre a través de comunicación autónoma agente-a-agente. 80% de organizaciones reportan comportamientos riesgosos de agentes. Gartner predice que 1 de cada 4 brechas empresariales involucrará mal uso de IA agéntica.</p>
+                    </div>
+                    <div class="case-box">
+                        <h4>Biométricos bajo escrutinio intensificado</h4>
+                        <p><strong>Prohibiciones del EU AI Act</strong> (efectivas 2 feb 2025): scraping no dirigido de internet/CCTV, identificación biométrica remota en tiempo real en espacios públicos, categorización biométrica infiriendo raza/religión/orientación sexual, y reconocimiento de emociones en lugares de trabajo/educación. En EE.UU.: 23 estados con leyes de privacidad biométrica. Illinois BIPA es la más estricta. Al menos 100 acciones de clase BIPA presentadas en 2025.</p>
+                    </div>
+                </div>
+                <div class="key-point" style="margin-top: 20px;">
+                    <h4>Transparencia de datos de entrenamiento requerida legalmente</h4>
+                    <p>California AB 2013 (efectivo 1 enero 2026): desarrolladores de GenAI deben divulgar públicamente información de datos de entrenamiento—datasets usados, si datos personales están incluidos, si material con copyright está incluido. Orden Ejecutiva de Trump (11 diciembre 2025) propone preempción federal de leyes estatales de IA inconsistentes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Comparación GDPR-CCPA-Ley 8968 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Comparación: GDPR vs. CCPA vs. Ley 8968</h2>
+                <p class="slide-subtitle">Análisis de marcos regulatorios clave</p>
+            </div>
+            <div class="slide-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Aspecto</th>
+                            <th>GDPR (UE)</th>
+                            <th>CCPA/CPRA (California)</th>
+                            <th>Ley 8968 (Costa Rica)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Alcance territorial</strong></td>
+                            <td>Extraterritorial (afecta cualquier org. procesando datos de residentes UE)</td>
+                            <td>Residentes de California; negocios con ingresos >$25M</td>
+                            <td>Territorial (Costa Rica); sin extraterritorialidad</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Decisiones automatizadas</strong></td>
+                            <td>Derecho a no ser sujeto (Art. 22); explicación requerida</td>
+                            <td>ADMT regs (2026): aviso, opt-out, explicación</td>
+                            <td>NO existe derecho explícito</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Portabilidad de datos</strong></td>
+                            <td>Sí (Art. 20)</td>
+                            <td>Sí (desde CPRA 2020)</td>
+                            <td>NO existe</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DPO/Privacy Officer</strong></td>
+                            <td>Obligatorio para procesamiento de alto riesgo</td>
+                            <td>No obligatorio</td>
+                            <td>NO requerido</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Sanciones máximas</strong></td>
+                            <td>€20M o 4% facturación global (lo mayor)</td>
+                            <td>$7,500 por violación intencional</td>
+                            <td>$3,000-$18,000 USD; suspensión 1-6 meses</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DPIA/Evaluación impacto</strong></td>
+                            <td>Obligatoria para alto riesgo (Art. 35)</td>
+                            <td>Obligatoria para ADMT desde 1 enero 2026</td>
+                            <td>NO requerida explícitamente</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Regulación específica IA</strong></td>
+                            <td>EU AI Act (aplicación ago 2026)</td>
+                            <td>ADMT regs (aplicación ene 2026-2028)</td>
+                            <td>Proyectos pendientes; ENIA 2024-2027</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Slide 25: Conclusiones y transición -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Conclusiones: el camino adelante</h2>
+                <p class="slide-subtitle">De la teoría a la práctica</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>Lo que hemos aprendido</h4>
+                    <p>La protección de datos personales en sistemas de IA representa uno de los desafíos regulatorios más complejos de nuestra era. Los marcos legales desarrollados para bases de datos tradicionales enfrentan tensiones fundamentales cuando se aplican a machine learning, donde los datos se integran en parámetros del modelo de forma no recuperable.</p>
+                </div>
+                <div class="two-columns" style="margin-top: 20px;">
+                    <div class="content-box">
+                        <h3>Desafíos persistentes</h3>
+                        <ul>
+                            <li>Derechos ARCO virtualmente inoperables en LLMs actuales</li>
+                            <li>Conflictos irresolubles: minimización vs. datasets masivos</li>
+                            <li>Re-identificación es más fácil de lo que creíamos</li>
+                            <li>Consentimiento significativo es prácticamente imposible a escala de web</li>
+                        </ul>
+                    </div>
+                    <div class="content-box">
+                        <h3>Oportunidades para Costa Rica</h3>
+                        <ul>
+                            <li>Reforma Ley 8968 (Proyecto 23097) pendiente de aprobación</li>
+                            <li>ENIA posiciona al país como líder regional</li>
+                            <li>Fortalecimiento de PRODHAB es crítico</li>
+                            <li>Momento de aprender de errores de otras jurisdicciones</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="highlight-box" style="margin-top: 20px;">
+                    <p style="text-align: center; font-size: 20px;">El panorama regulatorio muestra divergencia significativa: la UE avanza con AI Act de aplicación estricta, Estados Unidos experimenta retrocesos con Orden Ejecutiva de Trump, y Latinoamérica tiene la oportunidad de posicionarse como líder regional en gobernanza ética de IA. Costa Rica, con su ENIA y pionerismo histórico, está en posición privilegiada.</p>
+                </div>
+                <div class="warning-box" style="margin-top: 20px;">
+                    <p style="text-align: center; font-size: 18px;">A continuación: Trabajo en equipos para analizar un caso real que cristaliza estas tensiones entre protección de datos, innovación tecnológica y derechos fundamentales.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            } else if (n < 0) {
+                currentSlide = 0;
+            } else {
+                currentSlide = n;
+            }
+            
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

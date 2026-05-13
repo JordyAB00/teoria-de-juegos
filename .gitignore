@@ -1,0 +1,47 @@
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+*.temp
+~$*
+
+# Archivos de editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Archivos de respaldo
+*.bak
+*.backup
+
+# Carpetas de node (si se usan herramientas de desarrollo)
+node_modules/
+package-lock.json
+
+# Archivos de logs
+*.log
+logs/
+
+# Archivos privados o sensibles
+datos-privados/
+*-privado.*
+*.key
+*.env
+
+# Archivos muy grandes (videos largos, datasets grandes)
+*.mp4
+*.mov
+*.avi
+*.csv
+*.xlsx
+*.zip
+*.rar
+
+# Excepciones: permitir archivos pequeños necesarios
+!recursos/videos/*.mp4
+!recursos/lecturas/*.pdf
