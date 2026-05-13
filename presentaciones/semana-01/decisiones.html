@@ -1,0 +1,1384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 1 - Toma de decisiones bajo certeza y bajo riesgo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 50px 80px 140px 80px;
+            background: #f5f5f7;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .slide-header {
+            margin-bottom: 30px;
+        }
+
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 19px;
+            color: #6e6e73;
+            font-weight: 300;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 18px;
+            overflow-y: auto;
+            max-height: calc(100vh - 260px);
+            padding-right: 8px;
+        }
+
+        .slide-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .slide-content::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 10px;
+        }
+
+        .slide-content::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #2d1b4e, #00d4ff);
+            border-radius: 10px;
+        }
+
+        .content-box {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .content-box h3 {
+            font-size: 22px;
+            color: #2d1b4e;
+            margin-bottom: 12px;
+        }
+
+        .content-box p {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.55;
+            margin-bottom: 8px;
+        }
+
+        .content-box p:last-child {
+            margin-bottom: 0;
+        }
+
+        .content-box ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .content-box li {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.6;
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        .content-box li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 20px;
+            top: -2px;
+        }
+
+        .highlight-box {
+            background: linear-gradient(135deg, #f0f0f2, #ffffff);
+            border-left: 4px solid #00d4ff;
+            padding: 16px 18px;
+            border-radius: 10px;
+            margin: 12px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .highlight-box p {
+            font-size: 16.5px;
+            color: #2d1b4e;
+            font-style: italic;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .key-point {
+            background: #ffffff;
+            border-left: 4px solid #00d4ff;
+            padding: 16px 18px;
+            border-radius: 8px;
+            margin: 8px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-top: 1px solid #e5e5e7;
+            border-right: 1px solid #e5e5e7;
+            border-bottom: 1px solid #e5e5e7;
+        }
+
+        .key-point h4 {
+            color: #2d1b4e;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .key-point p {
+            color: #1d1d1f;
+            font-size: 15.5px;
+            line-height: 1.55;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-top: 10px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #00d4ff;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .stat-card .number {
+            font-size: 34px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #6e6e73;
+            line-height: 1.4;
+        }
+
+        .comparison-card {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 18px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(45, 27, 78, 0.15);
+            border-color: #00d4ff;
+        }
+
+        .comparison-card h4 {
+            font-size: 19px;
+            color: #2d1b4e;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card p {
+            font-size: 14.5px;
+            color: #1d1d1f;
+            line-height: 1.5;
+            margin-bottom: 6px;
+        }
+
+        .two-columns {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .three-columns {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .industry-section {
+            background: #ffffff;
+            border-radius: 15px;
+            padding: 18px 20px;
+            border: 1px solid #e5e5e7;
+            margin-bottom: 14px;
+            border-left: 4px solid #00d4ff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .industry-section h4 {
+            color: #2d1b4e;
+            margin-bottom: 10px;
+            font-size: 1.25em;
+            font-weight: 600;
+        }
+
+        .industry-section p {
+            color: #1d1d1f;
+            line-height: 1.6;
+            margin-bottom: 6px;
+        }
+
+        .industry-section ul {
+            color: #1d1d1f;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .industry-section li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 6px;
+            line-height: 1.55;
+        }
+
+        .industry-section li::before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 18px;
+            top: -1px;
+        }
+
+        strong {
+            color: #2d1b4e;
+            font-weight: 600;
+        }
+
+        .cover-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 50%, #ffffff 100%);
+            padding: 60px 80px 140px 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 600;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+
+        .cover-title {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            animation: gradient 3s ease infinite;
+            background-size: 200% 200%;
+            line-height: 1.15;
+            max-width: 1100px;
+        }
+
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 26px;
+            color: #6e6e73;
+            margin-bottom: 25px;
+            font-weight: 300;
+        }
+
+        .cover-info {
+            font-size: 17px;
+            color: #1d1d1f;
+            margin-top: 25px;
+            line-height: 1.6;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 18px 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid #00d4ff;
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+        }
+
+        .question-number {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            flex-shrink: 0;
+            line-height: 1;
+        }
+
+        .question-text {
+            font-size: 16.5px;
+            color: #1d1d1f;
+            line-height: 1.55;
+            padding-top: 4px;
+        }
+
+        table.comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #ffffff;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            font-size: 14.5px;
+        }
+
+        table.comparison-table th {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        table.comparison-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e5e7;
+            color: #1d1d1f;
+            line-height: 1.5;
+            vertical-align: top;
+        }
+
+        table.comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        table.comparison-table tr:nth-child(even) td {
+            background: #f9f9fb;
+        }
+
+        .axiom-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px 18px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .axiom-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(180deg, #2d1b4e, #00d4ff);
+        }
+
+        .axiom-card h4 {
+            color: #2d1b4e;
+            font-size: 17px;
+            margin-bottom: 8px;
+            padding-left: 10px;
+        }
+
+        .axiom-card p {
+            color: #1d1d1f;
+            font-size: 15px;
+            line-height: 1.55;
+            padding-left: 10px;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 18px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #7c3aed, #00d4ff);
+            border: none;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slide-number {
+            position: fixed;
+            top: 22px;
+            right: 30px;
+            color: #6e6e73;
+            font-size: 15px;
+            z-index: 1000;
+            font-weight: 500;
+            background: rgba(255,255,255,0.85);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .logo-area {
+            position: fixed;
+            top: 20px;
+            left: 28px;
+            z-index: 1000;
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+
+        .citation {
+            font-size: 13px;
+            color: #6e6e73;
+            font-style: italic;
+            margin-top: 6px;
+        }
+
+        @media (max-width: 768px) {
+            .slide {
+                padding: 30px 24px 140px 24px;
+            }
+
+            .slide-title {
+                font-size: 28px;
+            }
+
+            .slide-subtitle {
+                font-size: 15px;
+            }
+
+            .cover-title {
+                font-size: 38px;
+            }
+
+            .cover-subtitle {
+                font-size: 20px;
+            }
+
+            .nav-button {
+                padding: 11px 18px;
+                font-size: 13px;
+            }
+
+            .stats-grid,
+            .two-columns,
+            .three-columns {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-card .number {
+                font-size: 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">ULACIT</div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">26</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- Slide 1: Portada -->
+        <div class="slide cover-slide active">
+            <div class="cover-eyebrow">Semana 1</div>
+            <h1 class="cover-title">Toma de decisiones bajo certeza y bajo riesgo</h1>
+            <p class="cover-subtitle">Fundamentos para el profesional de inteligencia de negocios</p>
+            <div class="cover-info">
+                <p>Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información<br>
+                Universidad Latinoamericana de Ciencia y Tecnología</p>
+            </div>
+        </div>
+
+        <!-- Slide 2: Preguntas generadoras -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Preguntas generadoras de la sesión</h2>
+                <p class="slide-subtitle">Tres interrogantes que guían el aprendizaje de hoy</p>
+            </div>
+            <div class="slide-content">
+                <div class="question-card">
+                    <div class="question-number">01</div>
+                    <div class="question-text">
+                        ¿Qué distingue una decisión bajo <strong>certeza</strong>, bajo <strong>riesgo</strong> y bajo <strong>incertidumbre</strong>, y por qué esta distinción es relevante para un profesional de inteligencia de negocios?
+                    </div>
+                </div>
+                <div class="question-card">
+                    <div class="question-number">02</div>
+                    <div class="question-text">
+                        ¿Cómo permiten los axiomas de <strong>von Neumann y Morgenstern</strong> derivar la utilidad esperada como criterio racional para elegir entre loterías?
+                    </div>
+                </div>
+                <div class="question-card">
+                    <div class="question-number">03</div>
+                    <div class="question-text">
+                        ¿De qué manera un <strong>árbol de decisión</strong> estructura visualmente un problema de elección con incertidumbre y cómo se calcula el valor esperado de cada rama?
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>Estas preguntas no son retóricas: deben quedar respondidas con claridad al final de la sesión. La calidad de sus respuestas es el primer indicador del éxito del aprendizaje.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Ruta de la sesión -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Ruta de la sesión</h2>
+                <p class="slide-subtitle">Qué exploraremos en las próximas horas</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="comparison-card">
+                        <h4>Bloque 1: Ambientes decisionales</h4>
+                        <p>Certeza, riesgo e incertidumbre profunda. Diferencias formales, casos reales 2024 a 2026 y el marco DMDU de Walker y Marchau.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Bloque 2: Axiomas vNM y utilidad esperada</h4>
+                        <p>Completitud, transitividad, continuidad e independencia. Derivación intuitiva, paradojas de Allais y Ellsberg, prospect theory.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Bloque 3: Árboles de decisión</h4>
+                        <p>Estructura visual, valor monetario esperado, EVPI, análisis de sensibilidad y herramientas modernas en BI.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Bloque 4: Aversión al riesgo</h4>
+                        <p>Funciones de utilidad cóncavas, lineales y convexas. Coeficientes de Arrow y Pratt. Sensibilidad cultural en Costa Rica y Latinoamérica.</p>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>El profesional de BI que egresa en 2026 debe dominar dos lenguajes: la teoría clásica de la decisión y el moderno <em>decision intelligence</em> apoyado en IA. La Semana 1 instala la primera mitad de ese andamiaje.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Los tres ambientes decisionales -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Los tres ambientes decisionales</h2>
+                <p class="slide-subtitle">Un espectro continuo, no compartimentos estancos (Knight, 1921; Luce y Raiffa, 1957)</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="comparison-card">
+                        <h4>Bajo certeza</h4>
+                        <p><strong>Conocimiento:</strong> el decisor conoce con precisión el resultado de cada alternativa.</p>
+                        <p><strong>Criterio:</strong> optimización determinista.</p>
+                        <p><strong>Instrumento:</strong> programación matemática.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Bajo riesgo</h4>
+                        <p><strong>Conocimiento:</strong> conoce estados posibles y puede asignarles probabilidades objetivas.</p>
+                        <p><strong>Criterio:</strong> valor monetario o de utilidad esperada.</p>
+                        <p><strong>Instrumento:</strong> árboles, Monte Carlo.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Bajo incertidumbre</h4>
+                        <p><strong>Conocimiento:</strong> conoce estados, pero no probabilidades confiables.</p>
+                        <p><strong>Criterio:</strong> maximin, Hurwicz, Savage, Laplace.</p>
+                        <p><strong>Instrumento:</strong> escenarios, robustez.</p>
+                    </div>
+                </div>
+                <div class="content-box">
+                    <h3>Ejemplos cotidianos por categoría</h3>
+                    <ul>
+                        <li><strong>Certeza:</strong> programación de rutas con datos de tráfico estables, cálculo del costo de capital en una emisión de bonos a tasa fija, planificación de inventarios de productos maduros.</li>
+                        <li><strong>Riesgo:</strong> tarificación de seguros de auto con tablas actuariales, scoring crediticio en poblaciones estables, decisiones de stock óptimo con demanda aleatoria conocida.</li>
+                        <li><strong>Incertidumbre:</strong> entrada a un mercado geográfico nuevo, lanzamiento de un producto disruptivo, planificación ante eventos climáticos atípicos.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Por qué importa para BI -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Por qué la distinción es crítica para BI en 2026</h2>
+                <p class="slide-subtitle">La trampa de la "ilusión de control numérico"</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>El error más común del analista junior</h4>
+                    <p>Presentar como <strong>decisión bajo riesgo</strong> un problema que en realidad es de <strong>incertidumbre profunda</strong>, fabricando probabilidades sintéticas a partir de modelos predictivos cuyos datos de entrenamiento no representan el régimen futuro. Gartner denomina a esto, en su agenda de <em>decision intelligence</em>, la ilusión de control numérico.</p>
+                </div>
+                <div class="content-box">
+                    <h3>Tres preguntas obligatorias para todo entregable de BI</h3>
+                    <ul>
+                        <li>¿Este problema es de certeza, riesgo o incertidumbre profunda?</li>
+                        <li>¿Cuál es la calidad de las probabilidades que estoy ofreciendo, y cuánto pesa el componente no estimable?</li>
+                        <li>¿Mi recomendación sobrevive si el régimen subyacente cambia, o estoy asumiendo estacionariedad?</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p>El Hype Cycle for AI 2025 de Gartner ubica <em>decision intelligence</em> como pieza central de la próxima generación de plataformas analíticas, precisamente para reducir esa brecha entre datos y decisiones.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Cómo big data e IA redibujan el mapa -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Cómo big data e IA redibujan las categorías</h2>
+                <p class="slide-subtitle">Tres efectos sobre la frontera entre riesgo e incertidumbre</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>1. Reducción de zonas de incertidumbre</h4>
+                    <p>Datos transaccionales, geoespaciales, IoT y redes sociales han movido muchas decisiones desde incertidumbre hacia riesgo. <strong>Nubank</strong> (95 millones de usuarios mensuales en 2024) y <strong>Mercado Pago</strong> (61 millones) demuestran la microsegmentación de riesgo crediticio. Mercado Libre reportó una cartera total de crédito de 6 mil millones de dólares en 2024.</p>
+                </div>
+                <div class="key-point">
+                    <h4>2. Aparición de nuevas zonas de incertidumbre profunda</h4>
+                    <p>Los mismos modelos que reducen incertidumbre la generan en otro nivel: comportamiento de LLMs, dinámica de cadenas de suministro frente a aranceles cambiantes, efectos de la IA generativa sobre la mano de obra. PYMNTS Intelligence documentó en 2025 cómo empresas medianas estadounidenses pasaron de tratar aranceles como ruido a tratarlos como variables centrales de planificación.</p>
+                </div>
+                <div class="key-point">
+                    <h4>3. Asimetrías por sector</h4>
+                    <p>En manufactura y energía persisten amplias zonas de incertidumbre profunda (transición energética, geopolítica de minerales críticos). En telecomunicaciones y retail digital, la frontera se ha movido a favor del riesgo cuantificable gracias a la telemetría y el clickstream.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Casos de mala clasificación -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Casos recientes de mala clasificación</h2>
+                <p class="slide-subtitle">Cuando tratar incertidumbre como riesgo cuesta millones</p>
+            </div>
+            <div class="slide-content">
+                <div class="industry-section">
+                    <h4>Republic First Bank, abril 2024</h4>
+                    <p>Quebró por exposición a bienes raíces comerciales de oficinas. Los modelos internos trataban la valuación como <strong>problema de riesgo</strong> (probabilidades históricas de impago), cuando el régimen post pandemia introdujo un <strong>cambio estructural</strong> en la demanda de espacios de oficina, propio de incertidumbre profunda.</p>
+                    <p class="citation">La provisión por pérdidas crediticias de la banca estadounidense subió 67,2 por ciento en 2023 respecto a 2022 (FDIC, 2024).</p>
+                </div>
+                <div class="industry-section">
+                    <h4>TD Bank y Starling Bank, 2024</h4>
+                    <p>Ambas instituciones recibieron sanciones multimillonarias (TD Bank, 3 mil millones de dólares) por escalar operaciones bajo arquitecturas de monitoreo diseñadas con supuestos estáticos. Tratar el riesgo de fraude como estacionario cuando era altamente no estacionario llevó a que <strong>el 92 por ciento de transacciones sospechosas eludieran los sistemas de TD Bank</strong>.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Generative AI en operaciones, 2024 a 2025</h4>
+                    <p>Trabajo reciente sobre el problema del <em>newsvendor</em> aplicado a LLMs (arXiv, diciembre 2025) muestra que cuando los gerentes delegan decisiones de inventario en modelos como GPT sin estructurar el <em>prompt</em>, <strong>los sesgos cognitivos no solo no desaparecen sino que se amplifican</strong>. Esto generó decisiones fallidas de <em>demand planning</em> en retail medio.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: Casos exitosos -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Casos exitosos de clasificación correcta</h2>
+                <p class="slide-subtitle">Disciplina analítica que genera valor sostenido</p>
+            </div>
+            <div class="slide-content">
+                <div class="industry-section">
+                    <h4>Nubank y Mercado Libre, 2023 a 2024</h4>
+                    <p>Ambas extendieron crédito a segmentos desbancarizados aplicando con disciplina el <strong>marco de decisión bajo riesgo</strong>, apoyándose en señales conductuales de su ecosistema (pagos, e-commerce, geolocalización). Mercado Pago procesó 197 mil millones de dólares en pagos en 2024.</p>
+                    <ul>
+                        <li>Cartera de crédito de Mercado Libre: <strong>creció 77 por ciento interanual</strong> al tercer trimestre de 2024.</li>
+                        <li>NPL 15 a 90 días estable en <strong>7,8 por ciento</strong>, indicador de buena calibración.</li>
+                    </ul>
+                </div>
+                <div class="industry-section">
+                    <h4>Ecopetrol y operadoras petroleras, 2024 a 2025</h4>
+                    <p>Uso disciplinado de árboles de decisión combinados con escenarios de precio del crudo permitió diferir inversiones de alto costo en zonas marginales y priorizar <em>tie-backs</em> de campos en producción. La decisión se trató como <strong>riesgo cuantificable con bandas de incertidumbre explícitas</strong>.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Pfizer, Roche y otras farmacéuticas, 2024</h4>
+                    <p>El caso publicado por Lumivero con PrecisionTree para un fármaco antiinflamatorio en asma, enfermedad inflamatoria intestinal y lupus muestra cómo el tratamiento riguroso del problema como <strong>decisión bajo riesgo con análisis de sensibilidad</strong> condujo a reasignación de presupuestos de I+D que aumentó el valor esperado del portafolio.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Deep Uncertainty -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Decisión bajo incertidumbre profunda</h2>
+                <p class="slide-subtitle">El programa DMDU de Walker, Marchau y colaboradores</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>Cuándo aplica el marco DMDU</h4>
+                    <p>Cuando los actores no se ponen de acuerdo sobre: (i) el modelo apropiado, (ii) las distribuciones de probabilidad de las variables, o (iii) la valoración de los resultados. En lugar de buscar la decisión óptima, el enfoque diseña <strong>planes robustos y adaptativos</strong>.</p>
+                </div>
+                <div class="two-columns">
+                    <div class="comparison-card">
+                        <h4>Robust Decision Making (RAND)</h4>
+                        <p>Busca estrategias que se desempeñen razonablemente bien en miles de escenarios.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Dynamic Adaptive Pathways</h4>
+                        <p>Define rutas con "señales de disparo" que activan ajustes preestablecidos, en vez de una decisión única.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Info-Gap Decision Theory</h4>
+                        <p>Mide cuánta variación respecto a un modelo central tolera una decisión sin perder su atractivo.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Assumption-Based Planning</h4>
+                        <p>Identifica los supuestos críticos cuya falla destruiría el plan.</p>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>Aplicaciones actuales: inversión en capacidad de cómputo IA, electrificación de flotas, expansión a mercados emergentes con marcos regulatorios cambiantes, ciberseguridad frente a amenazas adversarias, planeación hídrica y de infraestructura crítica frente al cambio climático.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Axiomas vNM -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Axiomas de von Neumann y Morgenstern</h2>
+                <p class="slide-subtitle">Los cuatro principios que fundamentan la decisión racional bajo riesgo (1944)</p>
+            </div>
+            <div class="slide-content">
+                <div class="axiom-card">
+                    <h4>Completitud</h4>
+                    <p>Frente a dos alternativas A y B, el decisor <strong>siempre puede decir cuál prefiere o si le son indiferentes</strong>. No se queda sin opinión, no hay zonas de "no sé".</p>
+                </div>
+                <div class="axiom-card">
+                    <h4>Transitividad</h4>
+                    <p>Si prefiere A sobre B y B sobre C, entonces <strong>prefiere A sobre C</strong>. La preferencia es coherente y no genera ciclos.</p>
+                </div>
+                <div class="axiom-card">
+                    <h4>Continuidad</h4>
+                    <p>Si A es mejor que B y B mejor que C, <strong>existe alguna mezcla probabilística entre A y C que es exactamente equivalente a B</strong>. No hay saltos cualitativos imposibles de equilibrar con probabilidades.</p>
+                </div>
+                <div class="axiom-card">
+                    <h4>Independencia</h4>
+                    <p>Si A se prefiere a B, entonces "A con probabilidad p, X con probabilidad 1−p" se prefiere a "B con probabilidad p, X con probabilidad 1−p" para cualquier X. <strong>Lo común a ambas opciones no debe alterar la preferencia entre lo distintivo</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Derivación de utilidad esperada -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Derivación intuitiva de la utilidad esperada</h2>
+                <p class="slide-subtitle">El teorema de representación en lenguaje ejecutivo</p>
+            </div>
+            <div class="slide-content">
+                <div class="content-box">
+                    <h3>El resultado central</h3>
+                    <p>Bajo los cuatro axiomas, existe una función de utilidad u tal que la alternativa preferida es siempre la que tiene mayor utilidad esperada:</p>
+                    <div style="text-align: center; padding: 20px; background: linear-gradient(135deg, #f0f0f2, #ffffff); border-radius: 12px; margin: 12px 0;">
+                        <span style="font-size: 28px; font-weight: 700; color: #2d1b4e;">U = Σ p<sub>i</sub> · u(x<sub>i</sub>)</span>
+                    </div>
+                    <p>donde u es la función de utilidad del decisor y p<sub>i</sub> las probabilidades de cada resultado x<sub>i</sub>.</p>
+                </div>
+                <div class="key-point">
+                    <h4>Construcción intuitiva de la escala</h4>
+                    <p>Se anclan dos resultados extremos en utilidades 0 (peor) y 1 (mejor). El valor de cualquier resultado intermedio x se identifica con la <strong>probabilidad p tal que el decisor es indiferente</strong> entre "x seguro" y "la mejor opción con probabilidad p o la peor con probabilidad 1−p". Ese número p es u(x).</p>
+                </div>
+                <div class="highlight-box">
+                    <p>Interpretación ejecutiva: <strong>cualquier decisor coherente con esos cuatro principios actúa como si tuviera una función de utilidad</strong>, aunque no la haga explícita. La utilidad esperada se convierte en el lenguaje común para valorar proyectos, contratos y portafolios bajo riesgo.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Paradojas Allais y Ellsberg -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Las paradojas que rompen la teoría</h2>
+                <p class="slide-subtitle">Allais (1953) y Ellsberg (1961): cuando la realidad contradice los axiomas</p>
+            </div>
+            <div class="slide-content">
+                <div class="industry-section">
+                    <h4>Paradoja de Allais (Econometrica, 1953)</h4>
+                    <p>Mostró experimentalmente que sujetos racionales <strong>violan sistemáticamente el axioma de independencia</strong> cuando intervienen resultados de alta probabilidad o "certeza psicológica". Las personas dan un peso especial a la diferencia entre "seguro" y "casi seguro".</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Paradoja de Ellsberg (Quarterly Journal of Economics, 1961)</h4>
+                    <p>Evidenció que las personas son <strong>aversas a la ambigüedad</strong>: prefieren loterías con probabilidades conocidas frente a loterías con probabilidades desconocidas, aun cuando el cálculo formal las haga equivalentes. No solo importa el riesgo: importa la <em>calidad</em> de la información sobre el riesgo.</p>
+                </div>
+                <div class="highlight-box">
+                    <p>La evidencia experimental acumulada en <em>Econometrica</em>, <em>American Economic Review</em>, <em>Management Science</em> y <em>Journal of Risk and Uncertainty</em> desde los noventa hasta 2024 confirma que la utilidad esperada <strong>falla como teoría descriptiva del comportamiento individual</strong>, pero <strong>sigue siendo defendible como referente normativo</strong>: cómo debería decidir un agente coherente.</p>
+                </div>
+                <div class="content-box">
+                    <h3>Lección para el profesional de BI</h3>
+                    <p>Diseñar productos, pricing y comunicación exige conocer ambas teorías: la utilidad esperada (cómo debería actuar la empresa) y la <em>prospect theory</em> (cómo actúan clientes, empleados y ejecutivos).</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Prospect Theory -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Prospect theory de Kahneman y Tversky</h2>
+                <p class="slide-subtitle">La teoría descriptiva que cambió la economía del comportamiento (1979, 1992)</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="comparison-card">
+                        <h4>Punto de referencia</h4>
+                        <p>Las personas valoran <strong>cambios relativos</strong> a un punto de referencia, no riqueza final absoluta. Un ingreso de 1.000 dólares es ganancia o pérdida según el ancla.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Función de valor asimétrica</h4>
+                        <p><strong>Cóncava para ganancias, convexa para pérdidas</strong>, con pendiente más empinada en pérdidas. La aversión a la pérdida tiene un factor cercano a 2.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Ponderación no lineal</h4>
+                        <p>Las probabilidades se transforman: las personas <strong>sobrepondoran eventos raros</strong> y subpondoran eventos de probabilidad moderada.</p>
+                    </div>
+                </div>
+                <div class="content-box">
+                    <h3>Avances 2023 a 2026 en la frontera teórica</h3>
+                    <ul>
+                        <li><strong>Laeven y Stadje (arXiv, 2026):</strong> marco <em>rank-dependent</em> que unifica utilidad esperada, dual theory de Yaari, RDU de Quiggin y maxmin de Gilboa-Schmeidler.</li>
+                        <li><strong>Wakker (Management Science, 2025):</strong> <em>source theory</em> como ampliación tratable para preferencias bajo ambigüedad.</li>
+                        <li><strong>Berger y Eeckhoudt (Management Science, 2021):</strong> la aversión a la ambigüedad no siempre incrementa el valor de la diversificación.</li>
+                        <li><strong>Maccheroni, Marinacci, Wang y Wu (2025):</strong> aversión al riesgo caracterizada a partir de la propensión a contratar seguros.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 14: Aplicaciones de utilidad esperada -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Aplicaciones empresariales de la utilidad esperada</h2>
+                <p class="slide-subtitle">Valuación, pricing y construcción de portafolios</p>
+            </div>
+            <div class="slide-content">
+                <div class="industry-section">
+                    <h4>Valuación de proyectos</h4>
+                    <p>El criterio de valor esperado, integrado con tasas de descuento ajustadas por riesgo y simulación Monte Carlo, sigue siendo el estándar en <strong>M&amp;A, capex y exploración</strong>. En petroleras como Shell, Equinor y Ecopetrol, los árboles de decisión combinados con utilidad esperada deciden entre perforar, comprar sísmica o abandonar bloques.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Pricing y diseño de ofertas</h4>
+                    <p>La <strong>aversión a la pérdida</strong> explica por qué los clientes responden más a un descuento enmarcado como "evita pagar el recargo" que como "obtén un beneficio". Aerolíneas, telcos y retailers latinoamericanos calibran sus precios y empaques de oferta con base en este principio.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Construcción de portafolios</h4>
+                    <p>La teoría moderna integra utilidad esperada con <em>prospect theory</em> acumulativa para explicar fenómenos como <strong>la prima de capital</strong>, <strong>la baja participación en bolsa</strong> o <strong>la concentración excesiva en acciones del empleador</strong>. Estos sesgos abren oportunidades de diseño de producto para asesores robotizados y fintechs de inversión.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 15: Árboles de decisión - estructura -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Árboles de decisión: estructura visual</h2>
+                <p class="slide-subtitle">Representación gráfica de problemas secuenciales bajo incertidumbre</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="comparison-card">
+                        <h4>Nodos de decisión</h4>
+                        <p>Representados como <strong>cuadrados</strong>. Puntos donde el decisor elige una alternativa.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Nodos de azar</h4>
+                        <p>Representados como <strong>círculos</strong>. Puntos donde la naturaleza determina el estado, con probabilidades asociadas a cada rama.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Nodos terminales</h4>
+                        <p>Representados como <strong>triángulos</strong> o ramas finales. Resultados monetarios o de utilidad.</p>
+                    </div>
+                </div>
+                <div class="content-box">
+                    <h3>Técnica de resolución: <em>backward induction</em> o <em>roll-back</em></h3>
+                    <p>Opera de derecha a izquierda en el árbol:</p>
+                    <ul>
+                        <li>En cada <strong>nodo de azar</strong> se calcula el valor esperado de sus ramas, ponderando cada resultado por su probabilidad.</li>
+                        <li>En cada <strong>nodo de decisión</strong> se selecciona la alternativa con mayor valor esperado.</li>
+                        <li>El recorrido termina en el nodo inicial, identificando la estrategia óptima completa.</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p>El árbol no solo computa una decisión: también <strong>visualiza</strong> el problema completo de modo que un equipo gerencial puede discutir supuestos, probabilidades y pagos uno a uno.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 16: EMV y EVPI -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">EMV y EVPI: dos métricas clave</h2>
+                <p class="slide-subtitle">Cómo cuantificar el valor de la información</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>EMV: Expected Monetary Value</h4>
+                    <p>Suma ponderada por probabilidad de los pagos de las ramas que salen de un nodo de azar. Es la métrica de elección estándar para decisiones bajo riesgo.</p>
+                </div>
+                <div class="key-point">
+                    <h4>EVPI: Expected Value of Perfect Information</h4>
+                    <p>Diferencia entre el valor esperado <strong>bajo información perfecta</strong> (eligiendo siempre la mejor alternativa para cada estado, ponderada por la probabilidad de ese estado) y el valor esperado de la mejor decisión sin esa información.</p>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Utilidad ejecutiva del EVPI:</strong> fija el techo de lo que la empresa debería pagar por un estudio de mercado, una prueba piloto o una consultoría. Si el costo del estudio supera al EVPI, no se justifica encargarlo.</p>
+                </div>
+                <div class="content-box">
+                    <h3>EVSI: Expected Value of Sample Information</h3>
+                    <p>Complemento práctico del EVPI. Mide el valor agregado de <strong>información imperfecta</strong> (resultados de prueba con sensibilidad y especificidad conocidas) y requiere actualización bayesiana de probabilidades.</p>
+                    <p>Es la métrica relevante cuando el estudio que se evalúa no entrega certeza total sino una señal con ruido, que es lo habitual en investigación de mercado, pruebas A/B y pilotos comerciales.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 17: Análisis de sensibilidad y herramientas -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Análisis de sensibilidad y software moderno</h2>
+                <p class="slide-subtitle">Cómo blindar la recomendación frente al ejecutivo</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>El análisis de sensibilidad como buena práctica</h4>
+                    <p>Varía probabilidades y pagos para identificar los umbrales donde la recomendación cambia. Los <strong>diagramas de tornado</strong> son la herramienta visual estándar. Nunca presente un árbol sin su análisis de sensibilidad: anticipa la pregunta inevitable "¿qué pasa si esa probabilidad no es 30 sino 40 por ciento?".</p>
+                </div>
+                <div class="two-columns">
+                    <div class="comparison-card">
+                        <h4>TreeAge Pro</h4>
+                        <p>Estándar en salud, farmacología y bioestadística. EVPI, EVSI y análisis Markov para decisiones secuenciales largas.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Lumivero (DecisionTools)</h4>
+                        <p>Suite con @RISK (Monte Carlo) y PrecisionTree. Caso documentado 2024: secuenciación de indicaciones para fármaco antiinflamatorio.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Python</h4>
+                        <p>scikit-learn, dtreeviz, pyAgrum (redes bayesianas) y pymc (inferencia bayesiana) cubren desde árbol clásico hasta árbol probabilístico actualizable.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Power BI y Azure ML</h4>
+                        <p>Power BI integra árboles vía visuales personalizados. Azure ML escala árboles, random forests y boosted trees en pipelines productivos con MLOps.</p>
+                    </div>
+                </div>
+                <div class="highlight-box">
+                    <p>Gartner pronosticó en 2025 que <strong>para 2027 el 50 por ciento de las decisiones empresariales</strong> estarán aumentadas o automatizadas por agentes de IA que usan <em>decision intelligence</em>. Plataformas como Aera Technology, Pyramid Analytics y FICO encarnan esta convergencia.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 18: Casos por sector -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Árboles de decisión en la práctica empresarial</h2>
+                <p class="slide-subtitle">Aplicaciones por sector, 2024 a 2026</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="industry-section">
+                        <h4>Farmacéutica</h4>
+                        <p>Lumivero con PrecisionTree (2024) modela secuencias multifase. Árboles determinan el costo máximo justificable de un estudio de prueba de concepto.</p>
+                    </div>
+                    <div class="industry-section">
+                        <h4>Petrolera y minera</h4>
+                        <p>Decisiones de perforación exploratoria con costo de sísmica, probabilidad de hallazgo, tamaño esperado de reservas y volatilidad de precios.</p>
+                    </div>
+                    <div class="industry-section">
+                        <h4>Tecnología y M&amp;A</h4>
+                        <p>Adquisiciones de fintechs por bancos tradicionales o de startups de IA por <em>hyperscalers</em>: opciones reales de comprar, esperar o construir.</p>
+                    </div>
+                    <div class="industry-section">
+                        <h4>Salud y biotech</h4>
+                        <p>Aprobación de medicamentos por aseguradoras y reguladores, combinando eficacia, seguridad y costo-efectividad incremental.</p>
+                    </div>
+                    <div class="industry-section">
+                        <h4>Retail y bienes de consumo</h4>
+                        <p>Decisiones de lanzamiento: pilotar en una ciudad, lanzar nacional o no lanzar. EVPI fija presupuesto de investigación de mercado.</p>
+                    </div>
+                    <div class="industry-section">
+                        <h4>Manufactura y nearshoring</h4>
+                        <p>Decisiones de relocalización en México, Centroamérica y Costa Rica con costos laborales, riesgo arancelario, fluctuación cambiaria y logística.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 19: Árboles clásicos vs ML -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Árboles clásicos vs árboles de machine learning</h2>
+                <p class="slide-subtitle">Misma metáfora visual, propósitos muy diferentes</p>
+            </div>
+            <div class="slide-content">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Dimensión</th>
+                            <th>Árbol clásico de decisión</th>
+                            <th>Árbol de ML / Random Forest / Gradient Boosting</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Objetivo</strong></td>
+                            <td>Elegir la mejor acción bajo riesgo</td>
+                            <td>Predecir una etiqueta o un valor a partir de datos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Construcción</strong></td>
+                            <td>Diseñado manualmente por el analista a partir del problema</td>
+                            <td>Aprendido automáticamente del conjunto de datos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Probabilidades</strong></td>
+                            <td>Asignadas por expertos, datos históricos o Bayes</td>
+                            <td>Estimadas implícitamente por frecuencias en los nodos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Resultado</strong></td>
+                            <td>EMV, EVPI, recomendación de acción</td>
+                            <td>Predicción individual y métricas como AUC</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Uso ejecutivo</strong></td>
+                            <td>Soporte a decisión específica</td>
+                            <td>Insumo masivo para decisiones operativas automatizadas</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="highlight-box">
+                    <p>En flujos modernos de BI un modelo de <em>gradient boosting</em> (XGBoost, LightGBM, CatBoost) estima la probabilidad individual de churn, default o respuesta a campaña; esas probabilidades alimentan un <strong>árbol clásico que decide</strong>, por cliente o segmento, si conviene retener, ofrecer descuento o no actuar.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 20: Aversión al riesgo -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Aversión al riesgo y funciones de utilidad</h2>
+                <p class="slide-subtitle">La forma de u(w) revela la actitud frente al riesgo</p>
+            </div>
+            <div class="slide-content">
+                <div class="three-columns">
+                    <div class="comparison-card">
+                        <h4>Cóncava: averso al riesgo</h4>
+                        <p><strong>u''(w) &lt; 0</strong></p>
+                        <p>Prefiere recibir el valor esperado con certeza antes que jugar la lotería. Es la actitud más común entre individuos y empresas establecidas.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Lineal: neutral al riesgo</h4>
+                        <p><strong>u''(w) = 0</strong></p>
+                        <p>Solo mira el valor esperado. Razonable para grandes corporaciones bien diversificadas frente a decisiones de magnitud moderada respecto a su patrimonio.</p>
+                    </div>
+                    <div class="comparison-card">
+                        <h4>Convexa: propenso al riesgo</h4>
+                        <p><strong>u''(w) &gt; 0</strong></p>
+                        <p>Prefiere la lotería al valor esperado seguro. Aparece en jugadores, startups en etapa temprana o ejecutivos con incentivos asimétricos.</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <h4>Prima de riesgo y equivalente cierto</h4>
+                    <p>Un decisor averso al riesgo está dispuesto a pagar una <strong>prima de riesgo π</strong> por evitar la lotería. El <strong>equivalente cierto (CE)</strong> es la cantidad segura que lo deja indiferente respecto a la lotería, con π = E[w] − CE. Estos dos números son la moneda con la que se compran seguros, garantías y derivados financieros.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 21: Arrow-Pratt -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Coeficiente de Arrow y Pratt</h2>
+                <p class="slide-subtitle">Cuantificar la curvatura de la función de utilidad (Arrow 1965; Pratt 1964)</p>
+            </div>
+            <div class="slide-content">
+                <div class="two-columns">
+                    <div class="key-point">
+                        <h4>Aversión absoluta al riesgo (ARA)</h4>
+                        <p style="text-align: center; padding: 12px; background: #f0f0f2; border-radius: 8px; margin: 8px 0;"><strong style="font-size: 18px;">A(w) = −u''(w) / u'(w)</strong></p>
+                        <p>Mide cuánto se reduce la disposición a tomar apuestas <strong>de tamaño fijo</strong> cuando cambia la riqueza. Evidencia empírica: predomina la versión <strong>decreciente</strong> (DARA): a mayor riqueza, menor aversión absoluta.</p>
+                    </div>
+                    <div class="key-point">
+                        <h4>Aversión relativa al riesgo (RRA)</h4>
+                        <p style="text-align: center; padding: 12px; background: #f0f0f2; border-radius: 8px; margin: 8px 0;"><strong style="font-size: 18px;">R(w) = w · A(w)</strong></p>
+                        <p>Mide la actitud frente a apuestas <strong>proporcionales a la riqueza</strong>. Las funciones isoelásticas (CRRA) con coeficiente entre 1 y 4 son el caso de uso estándar en macroeconomía y finanzas.</p>
+                    </div>
+                </div>
+                <div class="content-box">
+                    <h3>Avances recientes en medición</h3>
+                    <ul>
+                        <li><strong>Deck, Huang, Tzeng y Zhao (Management Science, 2024):</strong> miden coeficientes de Arrow y Pratt de segundo, tercer y cuarto orden en laboratorio. Son positivos, pequeños y correlacionados entre órdenes.</li>
+                        <li><strong>Baillon y L'Haridon:</strong> índices discretos directamente observables, que amplían el alcance del concepto a contextos de ambigüedad.</li>
+                        <li><strong>Samartzis y Pittis (2022):</strong> estimación de aversión implícita en precios de opciones, con DARA consistente y RRA oscilante según ciclo de mercado.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 22: Medición empírica -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Cómo se mide la aversión al riesgo en la práctica</h2>
+                <p class="slide-subtitle">Cuatro métodos complementarios usados en empresa, banca y regulación</p>
+            </div>
+            <div class="slide-content">
+                <div class="industry-section">
+                    <h4>Loterías incentivadas: Holt y Laury (AER, 2002)</h4>
+                    <p>El sujeto elige entre pares de loterías de creciente riesgo. El punto de cambio revela su coeficiente de aversión. Es el experimento <strong>canónico</strong> en investigación experimental.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Equivalente cierto</h4>
+                    <p>Se pregunta al decisor qué cantidad segura aceptaría a cambio de una lotería específica. Directo, intuitivo y útil en sesiones con ejecutivos.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Inferencia revelada de mercado</h4>
+                    <p>Aït-Sahalia y Lo, y trabajos posteriores, estiman la aversión <strong>implícita en precios de opciones y portafolios reales</strong>. Permite calibrar modelos para valoración de derivados.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Cuestionarios psicométricos</h4>
+                    <p>Usados en <em>suitability</em> de productos financieros bajo MiFID y FINRA. Su validez predictiva es modesta, pero su valor regulatorio es alto.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 23: Aplicaciones empresariales -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Aplicaciones empresariales de la aversión al riesgo</h2>
+                <p class="slide-subtitle">Diseño de productos, contratos y estructura de capital</p>
+            </div>
+            <div class="slide-content">
+                <div class="industry-section">
+                    <h4>Productos financieros y seguros</h4>
+                    <p>El diseño de coberturas y deducibles parte de modelos de aversión al riesgo. Maccheroni y colegas (2025) demuestran que <strong>la aversión al riesgo equivale a la propensión a contratar seguros a primas actuarialmente justas</strong>: el fundamento teórico de toda la industria aseguradora.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Contratos laborales</h4>
+                    <p>El trade-off entre salario fijo y bonos variables se modela como <strong>compartición de riesgo entre principal (empresa neutral) y agente (empleado averso)</strong>. Empleados altamente aversos prefieren salarios fijos altos; emprendedores y comerciales prefieren bonos elevados con base baja.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Pricing y promociones</h4>
+                    <p>Garantías de devolución, pruebas gratuitas y planes <em>freemium</em> funcionan porque <strong>reducen la pérdida potencial percibida</strong> del cliente averso. Son aplicaciones directas de la asimetría ganancia–pérdida.</p>
+                </div>
+                <div class="industry-section">
+                    <h4>Estructura de capital</h4>
+                    <p>Empresas con accionistas controladores aversos al riesgo tienden a <strong>usar menos deuda y diversificar más</strong>. Fenómeno particularmente visible en <strong>grupos empresariales latinoamericanos familiares</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 24: Cultura y Costa Rica -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Cultura, aversión al riesgo y BI en Costa Rica</h2>
+                <p class="slide-subtitle">La dimensión Uncertainty Avoidance de Hofstede aplicada al ejercicio profesional</p>
+            </div>
+            <div class="slide-content">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">86</div>
+                        <div class="label">Costa Rica - Uncertainty Avoidance Index</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">101</div>
+                        <div class="label">Guatemala - el más alto de la región</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">82</div>
+                        <div class="label">México - similar puntaje regional</div>
+                    </div>
+                </div>
+                <div class="content-box">
+                    <h3>Rasgos asociados y consecuencias para BI</h3>
+                    <ul>
+                        <li>Preferencia por <strong>formalidad, reglas escritas y procedimientos detallados</strong>; dashboards deben incluir intervalos de confianza y bandas de incertidumbre.</li>
+                        <li>Mayor demanda de estructuras jerárquicas claras; las decisiones automatizadas requieren <strong>explicabilidad y human-in-the-loop</strong>.</li>
+                        <li>Menor disposición a tomar decisiones con información incompleta; adopción de IA generativa <strong>más lenta y con gobernanza visible</strong>.</li>
+                        <li>Productos financieros con componente de <strong>seguro y garantía</strong> son particularmente bien recibidos.</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p>Matiz importante: los fundadores y ejecutivos de fintechs latinoamericanas exitosas (Nubank, Mercado Libre, Kavak, Ualá, Stori) muestran una <strong>propensión al riesgo claramente superior al promedio cultural</strong>. La cultura nacional fija un punto de partida, no un destino.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 25: Frontera 2024-2026 -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">La frontera 2024 a 2026: LLMs y decision intelligence</h2>
+                <p class="slide-subtitle">Cómo la IA está transformando la práctica de la decisión</p>
+            </div>
+            <div class="slide-content">
+                <div class="key-point">
+                    <h4>LLMs como agentes decisores</h4>
+                    <p>Empresas tecnológicas, financieras y de retail despliegan agentes basados en GPT, Claude y Gemini para microdecisiones operativas. El estudio <em>Large Language Newsvendor</em> (arXiv, diciembre 2025) muestra que <strong>los LLMs presentan sesgos cognitivos sistemáticos</strong> al resolver problemas clásicos de decisión, y que estos sesgos se <strong>amplifican respecto a humanos no entrenados</strong>.</p>
+                </div>
+                <div class="key-point">
+                    <h4>Composite AI y Decision Intelligence</h4>
+                    <p>Gartner destaca que las soluciones efectivas <strong>combinan LLMs con técnicas tradicionales</strong>: programación matemática, simulación, árboles bayesianos y grafos de conocimiento. La IA generativa por sí sola no toma decisiones empresariales robustas: necesita anclarse a un marco normativo.</p>
+                </div>
+                <div class="content-box">
+                    <h3>Riesgos identificados en la literatura</h3>
+                    <ul>
+                        <li><strong>Alucinaciones:</strong> producen probabilidades y razonamientos plausibles pero inventados.</li>
+                        <li><strong>Sesgos amplificados:</strong> heredados de los datos de entrenamiento, afectan decisiones de crédito, contratación y atención sanitaria.</li>
+                        <li><strong>Riesgos de gobernanza:</strong> conexiones a CRMs y bases sensibles abren vectores de exfiltración (Google Threat Intelligence Group, 2025).</li>
+                        <li><strong>Personalidad y toma de riesgos:</strong> los LLMs exhiben rasgos consistentes que influyen en su tolerancia al riesgo. Hay que auditar el "carácter" del modelo antes de delegarle decisiones.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 26: Síntesis y discusión -->
+        <div class="slide">
+            <div class="slide-header">
+                <h2 class="slide-title">Síntesis y preguntas para la discusión grupal</h2>
+                <p class="slide-subtitle">Cierre de la Semana 1 y preparación para la Semana 2</p>
+            </div>
+            <div class="slide-content">
+                <div class="highlight-box">
+                    <p>El profesional de inteligencia de negocios que egresa en 2026 necesita dominar <strong>dos lenguajes simultáneamente</strong>: el de la teoría clásica de la decisión (axiomas vNM, utilidad esperada, árboles, aversión al riesgo, Arrow y Pratt) y el del moderno <em>decision intelligence</em> (predicción con ML, agentes LLM, plataformas de DI, decisión robusta y adaptativa bajo incertidumbre profunda).</p>
+                </div>
+                <div class="content-box">
+                    <h3>Tres ideas que deben quedar</h3>
+                    <ul>
+                        <li><strong>Clasificar bien el ambiente decisional</strong> es el primer entregable analítico: certeza, riesgo o incertidumbre profunda exigen herramientas distintas.</li>
+                        <li>La <strong>utilidad esperada es normativa</strong>; <em>prospect theory</em> es <strong>descriptiva</strong>. Se necesitan ambas para diseñar productos y comunicar recomendaciones.</li>
+                        <li>El <strong>árbol de decisión</strong> es la herramienta visual que conecta teoría, datos y decisión gerencial; sin análisis de sensibilidad está incompleto.</li>
+                    </ul>
+                </div>
+                <div class="content-box">
+                    <h3>Preguntas para la siguiente sesión</h3>
+                    <ul>
+                        <li>Cuando no existen probabilidades objetivas asignables, ¿qué criterios racionales puede emplear un decisor y bajo qué supuestos cada uno resulta defendible?</li>
+                        <li>¿Cómo se aplican los criterios de maximin, minimax regret, Hurwicz, Laplace y Savage a una decisión real de inversión o de pricing en un entorno con datos limitados?</li>
+                        <li>¿Qué muestran las paradojas de Allais y Ellsberg sobre los límites descriptivos y normativos de la utilidad esperada?</li>
+                    </ul>
+                </div>
+                <div class="highlight-box">
+                    <p><strong>Lectura para la Semana 2:</strong> Tadelis (2013), capítulos 1 y 2. Kahneman (2011), capítulo introductorio sobre los dos sistemas. Resolver dos ejercicios cortos de árboles de decisión en Canvas.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+
+            if (n >= totalSlides) {
+                currentSlide = totalSlides - 1;
+            } else if (n < 0) {
+                currentSlide = 0;
+            } else {
+                currentSlide = n;
+            }
+
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+
+            const content = slides[currentSlide].querySelector('.slide-content');
+            if (content) content.scrollTop = 0;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') {
+                changeSlide(-1);
+            } else if (event.key === 'ArrowRight') {
+                changeSlide(1);
+            }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
