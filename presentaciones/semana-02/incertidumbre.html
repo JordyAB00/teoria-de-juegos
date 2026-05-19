@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 2 - Incertidumbre profunda y ambigüedad</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            padding: 60px 90px 120px 90px;
+            background: #f5f5f7;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 1;
+        }
+
+        .slide-header { margin-bottom: 30px; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 42px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 60px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 24px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        .cover-meta {
+            margin-top: 50px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS GUÍA ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-top: 20px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 28px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 15px;
+        }
+
+        .question-text {
+            font-size: 16px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        /* ============== ESPECTRO EXTENDIDO ============== */
+        .spectrum-bar {
+            position: relative;
+            height: 110px;
+            background: linear-gradient(90deg, #d4f1f9 0%, #a3d8ed 25%, #6caec7 50%, #4a6fb0 75%, #2d1b4e 100%);
+            border-radius: 16px;
+            margin-bottom: 22px;
+            display: flex;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .spectrum-zone {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 12px;
+            text-align: center;
+            position: relative;
+        }
+
+        .spectrum-zone:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 22%;
+            bottom: 22%;
+            width: 1px;
+            background: rgba(255,255,255,0.4);
+        }
+
+        .spectrum-zone h3 {
+            font-size: 19px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 4px;
+        }
+
+        .spectrum-zone p {
+            font-size: 12px;
+            color: #2d1b4e;
+            font-weight: 500;
+        }
+
+        .spectrum-zone.dark h3 { color: #ffffff; }
+        .spectrum-zone.dark p { color: rgba(255,255,255,0.9); }
+
+        .spectrum-detail {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .detail-card {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .detail-card h4 {
+            color: #2d1b4e;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #00d4ff;
+        }
+
+        .detail-card p {
+            font-size: 13px;
+            color: #1d1d1f;
+            line-height: 1.45;
+        }
+
+        .spectrum-callout {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border-radius: 14px;
+            padding: 16px 24px;
+            color: white;
+            text-align: center;
+        }
+
+        .spectrum-callout strong { font-size: 16px; }
+        .spectrum-callout span { font-size: 14px; opacity: 0.92; }
+
+        /* ============== CINCO CRITERIOS ============== */
+        .criteria-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 14px;
+            margin-top: 16px;
+        }
+
+        .criterion-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 20px 16px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .criterion-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .criterion-icon {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            display: flex; align-items: center; justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .criterion-name {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d1b4e;
+            margin-bottom: 4px;
+        }
+
+        .criterion-author {
+            font-size: 11px;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+
+        .criterion-personality {
+            font-size: 14px;
+            font-weight: 700;
+            color: #2d1b4e;
+            background: #f0f0f2;
+            padding: 4px 12px;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .criterion-desc {
+            font-size: 12.5px;
+            color: #1d1d1f;
+            line-height: 1.4;
+        }
+
+        /* ============== MATRIZ Y CRITERIOS APLICADOS ============== */
+        .matrix-section {
+            display: grid;
+            grid-template-columns: 1.4fr 1fr;
+            gap: 24px;
+            margin-top: 16px;
+            align-items: start;
+        }
+
+        .matrix-table {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .matrix-table h3 {
+            color: #2d1b4e;
+            font-size: 16px;
+            margin-bottom: 12px;
+        }
+
+        .matrix-table table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .matrix-table thead th {
+            background: #2d1b4e;
+            color: white;
+            padding: 10px 8px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .matrix-table thead th:first-child {
+            text-align: left;
+            border-radius: 6px 0 0 0;
+        }
+
+        .matrix-table thead th:last-child {
+            border-radius: 0 6px 0 0;
+        }
+
+        .matrix-table tbody td {
+            padding: 10px 8px;
+            text-align: center;
+            border-bottom: 1px solid #e5e5e7;
+        }
+
+        .matrix-table tbody td:first-child {
+            text-align: left;
+            font-weight: 600;
+            color: #2d1b4e;
+            background: #f0f0f2;
+        }
+
+        .matrix-table tbody tr:last-child td { border-bottom: none; }
+
+        .matrix-table .negative { color: #c73e6e; font-weight: 600; }
+        .matrix-table .best { background: #d4f1d4; font-weight: 700; }
+
+        .criteria-results {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .criteria-results h3 {
+            color: #2d1b4e;
+            font-size: 16px;
+            margin-bottom: 14px;
+        }
+
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            background: #f0f0f2;
+            border-radius: 8px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .result-name {
+            font-size: 13px;
+            color: #2d1b4e;
+            font-weight: 600;
+        }
+
+        .result-pick {
+            font-size: 14px;
+            font-weight: 800;
+            color: #2d1b4e;
+            background: linear-gradient(135deg, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .key-insight {
+            margin-top: 18px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border-radius: 12px;
+            color: white;
+            font-size: 14px;
+            line-height: 1.5;
+            text-align: center;
+        }
+
+        .key-insight strong { font-weight: 700; }
+
+        /* ============== HURWICZ ALFA ============== */
+        .alpha-container {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 30px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .alpha-chart {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .alpha-explanation h3 {
+            color: #2d1b4e;
+            font-size: 20px;
+            margin-bottom: 14px;
+        }
+
+        .alpha-zone {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            border: 1px solid #e5e5e7;
+            margin-bottom: 12px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .alpha-zone .marker {
+            font-weight: 800;
+            color: #00d4ff;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .alpha-zone p {
+            font-size: 14px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        /* ============== PARADOJAS ============== */
+        .paradox-fullcard {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 30px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-top: 10px;
+        }
+
+        .paradox-fullcard h3 {
+            color: #2d1b4e;
+            font-size: 22px;
+            margin-bottom: 4px;
+        }
+
+        .paradox-fullcard .who {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .lottery-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin: 16px 0;
+        }
+
+        .lottery-pair {
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 18px;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .lottery-pair h4 {
+            color: #2d1b4e;
+            font-size: 15px;
+            margin-bottom: 12px;
+        }
+
+        .lottery-option {
+            background: white;
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            font-size: 13.5px;
+            color: #1d1d1f;
+            line-height: 1.4;
+        }
+
+        .lottery-option strong { color: #2d1b4e; }
+
+        .pattern-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 14px 18px;
+            border-radius: 12px;
+            margin-top: 14px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .pattern-box strong { font-size: 15px; }
+
+        /* ============== ELLSBERG URNA ============== */
+        .ellsberg-container {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 30px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .urn-visual {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 30px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .urn-visual svg { width: 100%; height: auto; max-width: 320px; }
+
+        .urn-visual h3 {
+            color: #2d1b4e;
+            font-size: 18px;
+            margin-top: 10px;
+            margin-bottom: 6px;
+        }
+
+        .urn-visual p {
+            font-size: 13px;
+            color: #6e6e73;
+        }
+
+        .ellsberg-bets {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .bet-pair {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .bet-pair h4 {
+            color: #2d1b4e;
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .bet-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f0f0f2;
+            border-radius: 6px;
+            margin-bottom: 6px;
+            font-size: 13px;
+            color: #1d1d1f;
+        }
+
+        .bet-row .pref { font-weight: 700; color: #2d8659; }
+
+        /* ============== MODELOS MODERNOS ============== */
+        .modern-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-top: 14px;
+        }
+
+        .modern-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+        }
+
+        .modern-card .year {
+            position: absolute;
+            top: 14px;
+            right: 18px;
+            font-size: 11px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .modern-card h4 {
+            color: #2d1b4e;
+            font-size: 17px;
+            margin-bottom: 6px;
+            padding-right: 60px;
+        }
+
+        .modern-card .authors {
+            font-size: 12px;
+            color: #6e6e73;
+            margin-bottom: 12px;
+            font-style: italic;
+        }
+
+        .modern-card .body-text {
+            font-size: 13.5px;
+            color: #1d1d1f;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .modern-card .bi-tag {
+            font-size: 12px;
+            color: #2d1b4e;
+            background: #f0f0f2;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+            display: block;
+        }
+
+        .ml-bridge {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border-radius: 14px;
+            padding: 18px 26px;
+            color: white;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .ml-bridge strong { font-size: 15px; }
+
+        /* ============== COSTA RICA CASO ============== */
+        .cr-container {
+            display: grid;
+            grid-template-columns: 1fr 1.4fr;
+            gap: 30px;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .cr-headline {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border-radius: 24px;
+            padding: 40px 28px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 8px 24px rgba(45,27,78,0.2);
+        }
+
+        .cr-headline .stat {
+            font-size: 64px;
+            font-weight: 800;
+            line-height: 1;
+            margin-bottom: 8px;
+        }
+
+        .cr-headline .unit {
+            font-size: 18px;
+            opacity: 0.92;
+            margin-bottom: 18px;
+        }
+
+        .cr-headline .context {
+            font-size: 13px;
+            opacity: 0.85;
+            padding-top: 16px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            line-height: 1.45;
+        }
+
+        .cr-details h3 {
+            color: #2d1b4e;
+            font-size: 20px;
+            margin-bottom: 14px;
+        }
+
+        .cr-fact {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin-bottom: 10px;
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+        }
+
+        .cr-fact p {
+            font-size: 14px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .cr-fact strong { color: #2d1b4e; }
+
+        /* ============== TRABAJO EN CLASE ============== */
+        .exercise-container {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 28px;
+            border: 2px solid #00d4ff;
+            box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
+            margin-top: 10px;
+        }
+
+        .exercise-container h3 {
+            color: #2d1b4e;
+            font-size: 22px;
+            margin-bottom: 14px;
+        }
+
+        .exercise-context {
+            font-size: 14.5px;
+            color: #1d1d1f;
+            line-height: 1.55;
+            margin-bottom: 18px;
+        }
+
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-bottom: 16px;
+        }
+
+        .exercise-panel h4 {
+            color: #00d4ff;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .exercise-panel ul { list-style: none; padding: 0; }
+
+        .exercise-panel li {
+            font-size: 14px;
+            color: #1d1d1f;
+            line-height: 1.5;
+            padding-left: 18px;
+            position: relative;
+            margin-bottom: 7px;
+        }
+
+        .exercise-panel li::before {
+            content: '▸';
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+        }
+
+        .exercise-deliverables {
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: #2d1b4e;
+            line-height: 1.5;
+        }
+
+        /* ============== CIERRE ============== */
+        .closing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 18px;
+        }
+
+        .closing-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 26px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .closing-card .icon {
+            font-size: 38px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Georgia', serif;
+            margin-bottom: 10px;
+        }
+
+        .closing-card h4 {
+            color: #2d1b4e;
+            font-size: 17px;
+            margin-bottom: 8px;
+        }
+
+        .closing-card p {
+            font-size: 14px;
+            color: #1d1d1f;
+            line-height: 1.5;
+        }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 16px;
+            padding: 18px 24px;
+            margin-top: 22px;
+            text-align: center;
+        }
+
+        .next-week-box .label {
+            font-size: 12px;
+            opacity: 0.85;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
+        }
+
+        .next-week-box .content {
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* ============== UI COMÚN ============== */
+        .navigation {
+            position: fixed;
+            bottom: 35px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 18px;
+            z-index: 1000;
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border: none;
+            color: white;
+            padding: 13px 26px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 14px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed;
+            top: 25px;
+            right: 30px;
+            color: #6e6e73;
+            font-size: 14px;
+            z-index: 1000;
+            font-weight: 600;
+            background: rgba(255,255,255,0.9);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e5e5e7;
+        }
+
+        .logo-area {
+            position: fixed;
+            top: 20px;
+            left: 28px;
+            z-index: 1000;
+        }
+
+        .logo-area img { max-width: 130px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 30px 120px 30px; }
+            .slide-title { font-size: 30px; }
+            .cover-title { font-size: 42px; }
+            .questions-grid,
+            .criteria-grid,
+            .spectrum-detail,
+            .matrix-section,
+            .alpha-container,
+            .lottery-grid,
+            .ellsberg-container,
+            .modern-grid,
+            .cr-container,
+            .closing-grid,
+            .exercise-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 2</div>
+            <h1 class="cover-title">Cuando ni las probabilidades se conocen</h1>
+            <p class="cover-subtitle">Decidir bajo incertidumbre profunda y ambigüedad: los cinco criterios clásicos y las dos paradojas que cambian todo</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: TRES PREGUNTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta</div>
+                <h2 class="slide-title">Tres preguntas que vamos a responder</h2>
+            </div>
+            <div class="slide-body">
+                <div class="questions-grid">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <p class="question-text">Sin probabilidades objetivas, ¿qué criterios racionales puede usar el decisor y bajo qué supuestos cada uno es defendible?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <p class="question-text">¿Qué muestran las paradojas de <strong>Allais</strong> y <strong>Ellsberg</strong> sobre los límites de la utilidad esperada?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <p class="question-text">¿Cómo se aplican los cinco criterios a una decisión real de inversión o de pricing con datos limitados?</p>
+                    </div>
+                </div>
+                <p style="text-align:center; margin-top:30px; color:#6e6e73; font-size:15px; font-style:italic;">La semana pasada teníamos probabilidades. Hoy ya no.</p>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: ESPECTRO EXTENDIDO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, parte 1</div>
+                <h2 class="slide-title">El espectro decisional se extiende</h2>
+            </div>
+            <div class="slide-body">
+                <div class="spectrum-bar">
+                    <div class="spectrum-zone">
+                        <h3>Certeza</h3>
+                        <p>Sé qué pasará</p>
+                    </div>
+                    <div class="spectrum-zone">
+                        <h3>Riesgo</h3>
+                        <p>Probabilidades conocidas</p>
+                    </div>
+                    <div class="spectrum-zone dark">
+                        <h3>Incert. profunda</h3>
+                        <p>Probabilidades disputadas</p>
+                    </div>
+                    <div class="spectrum-zone dark">
+                        <h3>Ambigüedad</h3>
+                        <p>Probabilidades desconocidas</p>
+                    </div>
+                </div>
+                <div class="spectrum-detail">
+                    <div class="detail-card">
+                        <h4>Certeza</h4>
+                        <p>Ruta óptima de entrega. Costo de un bono a tasa fija.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Riesgo</h4>
+                        <p>Scoring crediticio. Tarifa actuarial de un seguro.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Incert. profunda</h4>
+                        <p>Precio del carbono al 2050. Demanda post pandemia.</p>
+                    </div>
+                    <div class="detail-card">
+                        <h4>Ambigüedad</h4>
+                        <p>Entrar a un país nuevo. Lanzar tecnología disruptiva.</p>
+                    </div>
+                </div>
+                <div class="spectrum-callout">
+                    <strong>El cambio clave</strong><br>
+                    <span>En incertidumbre profunda no se puede calcular utilidad esperada porque no hay probabilidades para promediar. Hace falta un criterio distinto.</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: CINCO CRITERIOS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, parte 2</div>
+                <h2 class="slide-title">Cinco perfiles psicológicos, cinco criterios</h2>
+            </div>
+            <div class="slide-body">
+                <div class="criteria-grid">
+                    <div class="criterion-card">
+                        <div class="criterion-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M8 10L16 22L24 10" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="6" y1="22" x2="26" y2="22" stroke="white" stroke-width="2.5"/>
+                            </svg>
+                        </div>
+                        <div class="criterion-name">Wald</div>
+                        <div class="criterion-author">Maximin · 1950</div>
+                        <div class="criterion-personality">El pesimista</div>
+                        <p class="criterion-desc">Asume el peor escenario. Elige la estrategia cuyo piso es más alto.</p>
+                    </div>
+
+                    <div class="criterion-card">
+                        <div class="criterion-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M8 22L16 10L24 22" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                <line x1="6" y1="10" x2="26" y2="10" stroke="white" stroke-width="2.5"/>
+                            </svg>
+                        </div>
+                        <div class="criterion-name">Maximax</div>
+                        <div class="criterion-author">Optimista puro</div>
+                        <div class="criterion-personality">El apostador</div>
+                        <p class="criterion-desc">Asume el mejor escenario. Elige la estrategia cuyo techo es máximo.</p>
+                    </div>
+
+                    <div class="criterion-card">
+                        <div class="criterion-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <circle cx="16" cy="16" r="10" stroke="white" stroke-width="2.5"/>
+                                <line x1="16" y1="6" x2="16" y2="26" stroke="white" stroke-width="2.5"/>
+                            </svg>
+                        </div>
+                        <div class="criterion-name">Hurwicz</div>
+                        <div class="criterion-author">α-mixto · 1951</div>
+                        <div class="criterion-personality">El calibrable</div>
+                        <p class="criterion-desc">Mezcla mejor caso (peso α) y peor caso (peso 1-α). Calibra el temperamento.</p>
+                    </div>
+
+                    <div class="criterion-card">
+                        <div class="criterion-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <rect x="6" y="12" width="5" height="8" fill="white" rx="1"/>
+                                <rect x="13.5" y="12" width="5" height="8" fill="white" rx="1"/>
+                                <rect x="21" y="12" width="5" height="8" fill="white" rx="1"/>
+                            </svg>
+                        </div>
+                        <div class="criterion-name">Laplace</div>
+                        <div class="criterion-author">Razón insuficiente</div>
+                        <div class="criterion-personality">El equiprobabilista</div>
+                        <p class="criterion-desc">Si no hay razón para distinguir, asumir todos los escenarios igual de probables.</p>
+                    </div>
+
+                    <div class="criterion-card">
+                        <div class="criterion-icon">
+                            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                <path d="M16 6L8 14L16 22L24 14L16 6Z" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
+                                <path d="M12 26L20 26" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div class="criterion-name">Savage</div>
+                        <div class="criterion-author">Minimax regret · 1951</div>
+                        <div class="criterion-personality">El no-arrepentido</div>
+                        <p class="criterion-desc">Minimiza el peor arrepentimiento. Costo de oportunidad explícito.</p>
+                    </div>
+                </div>
+                <p style="text-align:center; margin-top:25px; color:#6e6e73; font-size:15px; font-style:italic;">No hay un criterio "correcto" universal. Cada uno responde una pregunta distinta sobre el riesgo.</p>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: MATRIZ Y RECOMENDACIONES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 3, demostración</div>
+                <h2 class="slide-title">Los cinco criterios pueden discrepar</h2>
+            </div>
+            <div class="slide-body">
+                <div class="matrix-section">
+                    <div class="matrix-table">
+                        <h3>Decisión de inversión: 3 estrategias × 4 escenarios (millones $)</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Estrategia</th>
+                                    <th>S1</th>
+                                    <th>S2</th>
+                                    <th>S3</th>
+                                    <th>S4</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>E1: Surge agresivo</td>
+                                    <td class="negative">-800</td>
+                                    <td>1,500</td>
+                                    <td class="best">2,200</td>
+                                    <td class="best">2,400</td>
+                                </tr>
+                                <tr>
+                                    <td>E2: Moderado</td>
+                                    <td class="best">600</td>
+                                    <td>1,200</td>
+                                    <td>1,400</td>
+                                    <td>1,500</td>
+                                </tr>
+                                <tr>
+                                    <td>E3: Pricing fijo</td>
+                                    <td class="best">800</td>
+                                    <td>700</td>
+                                    <td>650</td>
+                                    <td>600</td>
+                                </tr>
+                                <tr>
+                                    <td>E4: Diferir</td>
+                                    <td>500</td>
+                                    <td>400</td>
+                                    <td>300</td>
+                                    <td>200</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p style="margin-top:12px; font-size:12px; color:#6e6e73; font-style:italic;">Sin probabilidades sobre S1, S2, S3, S4. Verde = mejor pago por escenario.</p>
+                    </div>
+                    <div class="criteria-results">
+                        <h3>Qué recomienda cada criterio</h3>
+                        <div class="result-row">
+                            <span class="result-name">Wald (peor caso)</span>
+                            <span class="result-pick">E2</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-name">Maximax</span>
+                            <span class="result-pick">E1</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-name">Hurwicz α=0.5</span>
+                            <span class="result-pick">E2</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-name">Laplace</span>
+                            <span class="result-pick">E1</span>
+                        </div>
+                        <div class="result-row">
+                            <span class="result-name">Savage</span>
+                            <span class="result-pick">E2</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="key-insight">
+                    <strong>La elección del criterio ES la decisión gerencial.</strong> No es una elección técnica que el analista pueda tomar a solas.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: BARRIDO DE ALFA HURWICZ ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Buena práctica analítica</div>
+                <h2 class="slide-title">El barrido de α en Hurwicz</h2>
+            </div>
+            <div class="slide-body">
+                <div class="alpha-container">
+                    <div class="alpha-chart">
+                        <svg viewBox="0 0 500 320" style="width:100%; height:auto;">
+                            <!-- Ejes -->
+                            <line x1="50" y1="280" x2="470" y2="280" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="50" y1="280" x2="50" y2="30" stroke="#6e6e73" stroke-width="2"/>
+
+                            <!-- Etiquetas de ejes -->
+                            <text x="260" y="312" text-anchor="middle" fill="#6e6e73" font-size="13" font-weight="600">α (coeficiente de optimismo)</text>
+                            <text x="20" y="155" text-anchor="middle" fill="#6e6e73" font-size="13" font-weight="600" transform="rotate(-90 20 155)">Valor Hurwicz</text>
+
+                            <!-- Marcas en eje X -->
+                            <text x="50" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">0</text>
+                            <text x="155" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">0.25</text>
+                            <text x="260" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">0.5</text>
+                            <text x="365" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">0.75</text>
+                            <text x="470" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">1</text>
+
+                            <!-- Zona de cruce -->
+                            <rect x="160" y="40" width="80" height="240" fill="#00d4ff" opacity="0.08"/>
+                            <text x="200" y="50" text-anchor="middle" fill="#00d4ff" font-size="11" font-weight="700">Zona de cambio</text>
+
+                            <!-- Línea E1: y = -800 + alpha*3200, partiendo bajo y subiendo alto -->
+                            <!-- x: 50 + alpha*420, y va de -800 a 2400 escalado: min=-800 (y=280), max=2400 (y=30) -->
+                            <!-- y = 280 - (val+800)/(3200) * 250 -->
+                            <!-- α=0: val=-800, y=280; α=1: val=2400, y=30 -->
+                            <line x1="50" y1="280" x2="470" y2="30" stroke="#c73e6e" stroke-width="3"/>
+                            <text x="430" y="48" fill="#c73e6e" font-size="13" font-weight="700">E1</text>
+
+                            <!-- E2: min=600, max=1500, así que val(α)=600+900α -->
+                            <!-- α=0: val=600, y = 280 - 1400/3200*250 = 280 - 109 = 171 -->
+                            <!-- α=1: val=1500, y = 280 - 2300/3200*250 = 280 - 180 = 100 -->
+                            <line x1="50" y1="171" x2="470" y2="100" stroke="#2d8659" stroke-width="3"/>
+                            <text x="430" y="92" fill="#2d8659" font-size="13" font-weight="700">E2</text>
+
+                            <!-- E3: min=600, max=800, val(α)=600+200α -->
+                            <!-- α=0: 600, y=171; α=1: 800, y= 280 - 1600/3200*250 = 280 - 125 = 155 -->
+                            <line x1="50" y1="171" x2="470" y2="155" stroke="#2d1b4e" stroke-width="3" stroke-dasharray="4 4"/>
+                            <text x="430" y="148" fill="#2d1b4e" font-size="13" font-weight="700">E3</text>
+
+                            <!-- E4: min=200, max=500, val(α)=200+300α -->
+                            <!-- α=0: 200, y=280-1000/3200*250 = 280-78=202; α=1: 500, y=280-1300/3200*250=280-102=178 -->
+                            <line x1="50" y1="202" x2="470" y2="178" stroke="#6e6e73" stroke-width="3" stroke-dasharray="4 4"/>
+                            <text x="430" y="172" fill="#6e6e73" font-size="13" font-weight="700">E4</text>
+
+                            <!-- Punto de cruce E1 y E2 aprox α≈0.59 -->
+                            <circle cx="298" cy="129" r="5" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="306" y="125" fill="#2d1b4e" font-size="11" font-weight="700">α≈0.59</text>
+
+                            <!-- Anotaciones -->
+                            <text x="60" y="50" fill="#2d1b4e" font-size="11" font-weight="600">E2 gana</text>
+                            <text x="380" y="50" fill="#2d1b4e" font-size="11" font-weight="600">E1 gana</text>
+                        </svg>
+                    </div>
+                    <div class="alpha-explanation">
+                        <h3>Cómo se lee</h3>
+                        <div class="alpha-zone">
+                            <span class="marker">α &lt; 0.59</span>
+                            <p><strong>E2 (moderado) gana.</strong> El decisor relativamente prudente prefiere proteger el piso.</p>
+                        </div>
+                        <div class="alpha-zone">
+                            <span class="marker">α &gt; 0.59</span>
+                            <p><strong>E1 (agresivo) gana.</strong> El decisor optimista se permite apostar al techo alto.</p>
+                        </div>
+                        <div class="alpha-zone">
+                            <span class="marker">Regla</span>
+                            <p>Si la decisión es la misma para α ∈ [0.3, 0.7], es robusta. Si cambia, el α se vuelve la decisión real.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: PARADOJA DE ALLAIS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, parte 1</div>
+                <h2 class="slide-title">Paradoja de Allais: el efecto certeza</h2>
+            </div>
+            <div class="slide-body">
+                <div class="paradox-fullcard">
+                    <h3>¿Qué elegirían en cada caso?</h3>
+                    <p class="who">Maurice Allais · 1953 · Premio Nobel de Economía 1988</p>
+                    <div class="lottery-grid">
+                        <div class="lottery-pair">
+                            <h4>Caso 1</h4>
+                            <div class="lottery-option"><strong>1A:</strong> 1 millón con probabilidad 100%</div>
+                            <div class="lottery-option"><strong>1B:</strong> 1 millón con 89%, 5 millones con 10%, 0 con 1%</div>
+                        </div>
+                        <div class="lottery-pair">
+                            <h4>Caso 2</h4>
+                            <div class="lottery-option"><strong>2A:</strong> 1 millón con 11%, 0 con 89%</div>
+                            <div class="lottery-option"><strong>2B:</strong> 5 millones con 10%, 0 con 90%</div>
+                        </div>
+                    </div>
+                    <div class="pattern-box">
+                        <strong>Patrón empírico replicado por 70 años:</strong> la mayoría elige 1A y 2B. Esta combinación es <em>imposible</em> bajo el axioma de independencia de von Neumann-Morgenstern. <br><br>
+                        <strong>Implicación para BI:</strong> el marketing de garantías 100%, devoluciones aseguradas y cero riesgo vende más que cualquier promesa estadísticamente equivalente. La gente sobrevalora la certeza.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: PARADOJA DE ELLSBERG ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, parte 2</div>
+                <h2 class="slide-title">Paradoja de Ellsberg: aversión a la ambigüedad</h2>
+            </div>
+            <div class="slide-body">
+                <div class="ellsberg-container">
+                    <div class="urn-visual">
+                        <svg viewBox="0 0 280 280">
+                            <!-- Urna -->
+                            <ellipse cx="140" cy="265" rx="100" ry="10" fill="#6e6e73" opacity="0.3"/>
+                            <path d="M 50 80 Q 50 60 70 60 L 210 60 Q 230 60 230 80 L 220 250 Q 220 260 210 260 L 70 260 Q 60 260 60 250 Z" fill="#e5e5e7" stroke="#2d1b4e" stroke-width="2.5"/>
+                            <ellipse cx="140" cy="80" rx="80" ry="14" fill="#2d1b4e" opacity="0.3" stroke="#2d1b4e" stroke-width="1.5"/>
+
+                            <!-- Bolas rojas (30, conocidas) -->
+                            <circle cx="100" cy="120" r="9" fill="#c73e6e"/>
+                            <circle cx="125" cy="130" r="9" fill="#c73e6e"/>
+                            <circle cx="155" cy="125" r="9" fill="#c73e6e"/>
+                            <circle cx="180" cy="135" r="9" fill="#c73e6e"/>
+                            <circle cx="110" cy="145" r="9" fill="#c73e6e"/>
+                            <circle cx="140" cy="155" r="9" fill="#c73e6e"/>
+                            <circle cx="170" cy="158" r="9" fill="#c73e6e"/>
+                            <circle cx="90" cy="165" r="9" fill="#c73e6e"/>
+
+                            <!-- Bolas mezcladas negras/amarillas (60, ambiguas) -->
+                            <circle cx="125" cy="175" r="9" fill="#2d1b4e"/>
+                            <circle cx="155" cy="180" r="9" fill="#f2c244"/>
+                            <circle cx="185" cy="178" r="9" fill="#2d1b4e"/>
+                            <circle cx="100" cy="190" r="9" fill="#f2c244"/>
+                            <circle cx="135" cy="200" r="9" fill="#2d1b4e"/>
+                            <circle cx="165" cy="205" r="9" fill="#f2c244"/>
+                            <circle cx="195" cy="200" r="9" fill="#2d1b4e"/>
+                            <circle cx="115" cy="215" r="9" fill="#f2c244"/>
+                            <circle cx="145" cy="225" r="9" fill="#2d1b4e"/>
+                            <circle cx="175" cy="225" r="9" fill="#f2c244"/>
+                            <circle cx="120" cy="240" r="9" fill="#2d1b4e"/>
+                            <circle cx="155" cy="248" r="9" fill="#f2c244"/>
+                        </svg>
+                        <h3>La urna de Ellsberg</h3>
+                        <p>30 rojas (conocido) · 60 entre negras y amarillas (proporción desconocida)</p>
+                    </div>
+                    <div class="ellsberg-bets">
+                        <div class="bet-pair">
+                            <h4>Apuesta 1</h4>
+                            <div class="bet-row">
+                                <span>A) Apostar a <strong style="color:#c73e6e;">roja</strong> · P = 1/3 conocida</span>
+                                <span class="pref">Mayoría elige</span>
+                            </div>
+                            <div class="bet-row">
+                                <span>B) Apostar a <strong style="color:#2d1b4e;">negra</strong> · P entre 0 y 2/3</span>
+                                <span></span>
+                            </div>
+                        </div>
+                        <div class="bet-pair">
+                            <h4>Apuesta 2</h4>
+                            <div class="bet-row">
+                                <span>C) Apostar a <strong>roja o amarilla</strong> · P entre 1/3 y 1</span>
+                                <span></span>
+                            </div>
+                            <div class="bet-row">
+                                <span>D) Apostar a <strong>negra o amarilla</strong> · P = 2/3 conocida</span>
+                                <span class="pref">Mayoría elige</span>
+                            </div>
+                        </div>
+                        <div class="pattern-box">
+                            <strong>El resultado:</strong> la gente prefiere lo conocido sobre lo ambiguo, aunque sea matemáticamente equivalente. Es <em>aversión a la ambigüedad</em>, distinta de la aversión al riesgo.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: MODELOS MODERNOS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">La frontera del campo</div>
+                <h2 class="slide-title">Tres modelos que extienden la utilidad esperada</h2>
+            </div>
+            <div class="slide-body">
+                <div class="modern-grid">
+                    <div class="modern-card">
+                        <span class="year">1989</span>
+                        <h4>Maxmin EU</h4>
+                        <p class="authors">Gilboa y Schmeidler</p>
+                        <p class="body-text">El decisor tiene <strong>un conjunto</strong> de distribuciones plausibles y optimiza contra la <em>peor</em> de ellas. Es Wald aplicado a creencias, no a estados.</p>
+                        <span class="bi-tag">Robust portfolio en finanzas</span>
+                    </div>
+                    <div class="modern-card">
+                        <span class="year">2005</span>
+                        <h4>Smooth ambiguity</h4>
+                        <p class="authors">Klibanoff, Marinacci, Mukerji</p>
+                        <p class="body-text">Separa <strong>creencias</strong> (qué priors son plausibles) de <strong>actitudes</strong> (cuán averso a la ambigüedad). Calibrable.</p>
+                        <span class="bi-tag">Pricing de seguros, decisiones bayesianas robustas</span>
+                    </div>
+                    <div class="modern-card">
+                        <span class="year">2024</span>
+                        <h4>DRO</h4>
+                        <p class="authors">Kuhn, Shafiee, Wiesemann</p>
+                        <p class="body-text"><em>Distributionally Robust Optimization.</em> Aplica maxmin EU a problemas de machine learning con un <strong>conjunto de ambigüedad</strong> Wasserstein.</p>
+                        <span class="bi-tag">Generaliza dropout, weight decay, adversarial training</span>
+                    </div>
+                </div>
+                <div class="ml-bridge">
+                    <strong>El puente con su carrera:</strong> cuando hacen dropout, weight decay, data augmentation o adversarial training, están aplicando maxmin EU <em>sin saberlo</em>.<br>
+                    La regularización en machine learning <strong>es</strong> teoría de decisión bajo ambigüedad.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: COSTA RICA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Aplicación local</div>
+                <h2 class="slide-title">Costa Rica decarboniza bajo Wald</h2>
+            </div>
+            <div class="slide-body">
+                <div class="cr-container">
+                    <div class="cr-headline">
+                        <div class="stat">USD 41 mil M</div>
+                        <div class="unit">beneficios netos al 2050</div>
+                        <div class="context">Bajo escenario base del Plan Nacional de Descarbonización (NDP) costarricense, con tasa de descuento de 5%</div>
+                    </div>
+                    <div class="cr-details">
+                        <h3>Robust Decision Making en acción</h3>
+                        <div class="cr-fact">
+                            <p>RAND, IDB, Universidad de Costa Rica y MINAE simularon <strong>más de 3,000 futuros plausibles</strong> sobre precios de baterías, demanda eléctrica, crecimiento y regulación.</p>
+                        </div>
+                        <div class="cr-fact">
+                            <p>El NDP genera <strong>beneficios netos positivos en todos menos 22 de esos 3,000 futuros</strong>. Es decir, la estrategia es robusta bajo Wald.</p>
+                        </div>
+                        <div class="cr-fact">
+                            <p>La pregunta no fue <em>"¿cuál es el futuro más probable?"</em> sino <strong>"¿en cuántos futuros plausibles mi estrategia sigue siendo defendible?"</strong>.</p>
+                        </div>
+                        <p style="margin-top:14px; font-size:13px; color:#6e6e73; font-style:italic;">Reporte RAND RR-A633-1 · Groves, Syme, Molina-Pérez et al.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 11: TRABAJO EN CLASE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Trabajo en clase · Caso 1</div>
+                <h2 class="slide-title">FintechCR: pricing bajo incertidumbre regulatoria</h2>
+            </div>
+            <div class="slide-body">
+                <div class="exercise-container">
+                    <p class="exercise-context">PagoTico, una fintech costarricense con 1.2 millones de usuarios, debe definir su estrategia de pricing para 2026-2027. El entorno regulatorio es ambiguo: BCCR, SUGEF y la Asamblea discuten cuatro caminos sin que ninguno tenga probabilidad objetiva asignable.</p>
+                    <div class="exercise-grid">
+                        <div class="exercise-panel">
+                            <h4>Cuatro estrategias</h4>
+                            <ul>
+                                <li><strong>E1:</strong> Surge pricing agresivo (1.8x en horas pico)</li>
+                                <li><strong>E2:</strong> Dinámico moderado (±15%, con divulgación)</li>
+                                <li><strong>E3:</strong> Pricing fijo (sin variación)</li>
+                                <li><strong>E4:</strong> Diferir 12 meses</li>
+                            </ul>
+                        </div>
+                        <div class="exercise-panel">
+                            <h4>Cuatro escenarios regulatorios</h4>
+                            <ul>
+                                <li><strong>S1:</strong> Regulación restrictiva</li>
+                                <li><strong>S2:</strong> Regulación de transparencia</li>
+                                <li><strong>S3:</strong> Auto-regulación industrial</li>
+                                <li><strong>S4:</strong> Sin nueva regulación</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="exercise-deliverables">
+                        <strong>Lo que debe entregar el equipo en 50 minutos:</strong> aplicar los cinco criterios en la plantilla Excel, hacer el barrido de α en Hurwicz, construir la matriz de arrepentimiento de Savage, recomendar una estrategia única y anticipar el contraditor. La ruleta seleccionará un equipo para presentar.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 12: CIERRE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis</div>
+                <h2 class="slide-title">Tres ideas para llevarse hoy</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Elegir el criterio es la decisión</h4>
+                        <p>Sin probabilidades, no hay "criterio óptimo". La elección entre Wald, Hurwicz, Savage o Laplace ES la decisión gerencial.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>La gente real es aversa a la ambigüedad</h4>
+                        <p>Allais y Ellsberg muestran que las personas prefieren lo conocido. Es información valiosa para diseñar productos y dashboards.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>Robustez sobre predicción</h4>
+                        <p>El estándar moderno (RDM, DRO) ya no pregunta "¿cuál es el futuro?" sino "¿en cuántos futuros mi estrategia funciona?".</p>
+                    </div>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 3</div>
+                    <div class="content">Kahneman y Tversky (1979), Prospect Theory · Camerer, Behavioral Game Theory, introducción · Caso de pricing en e-commerce vía Canvas</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) {
+            showSlide(currentSlide + direction);
+        }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
