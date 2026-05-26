@@ -22,7 +22,7 @@
 
         .slide {
             width: 100%;
-            height: 100%;
+            height: 100vh;
             position: absolute;
             top: 0;
             left: 0;
@@ -30,8 +30,10 @@
             transition: opacity 0.5s ease-in-out;
             display: flex;
             flex-direction: column;
-            padding: 60px 90px 120px 90px;
+            padding: 56px 80px 140px 80px;
             background: #f5f5f7;
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .slide.active {
@@ -39,7 +41,13 @@
             z-index: 1;
         }
 
-        .slide-header { margin-bottom: 28px; }
+        /* Scrollbar styling */
+        .slide::-webkit-scrollbar { width: 8px; }
+        .slide::-webkit-scrollbar-track { background: transparent; }
+        .slide::-webkit-scrollbar-thumb { background: #d0d0d4; border-radius: 4px; }
+        .slide::-webkit-scrollbar-thumb:hover { background: #b0b0b4; }
+
+        .slide-header { margin-bottom: 24px; flex-shrink: 0; }
 
         .slide-eyebrow {
             font-size: 13px;
@@ -51,7 +59,7 @@
         }
 
         .slide-title {
-            font-size: 40px;
+            font-size: 38px;
             font-weight: 700;
             color: #2d1b4e;
             line-height: 1.15;
@@ -62,6 +70,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            min-height: 0;
         }
 
         /* ============== PORTADA ============== */
@@ -70,6 +79,8 @@
             align-items: center;
             text-align: center;
             background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
         }
 
         .cover-eyebrow {
@@ -82,7 +93,7 @@
         }
 
         .cover-title {
-            font-size: 60px;
+            font-size: 58px;
             font-weight: 800;
             background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
             -webkit-background-clip: text;
@@ -101,14 +112,14 @@
         }
 
         .cover-subtitle {
-            font-size: 23px;
+            font-size: 22px;
             color: #6e6e73;
             font-weight: 300;
             max-width: 900px;
         }
 
         .cover-meta {
-            margin-top: 50px;
+            margin-top: 40px;
             font-size: 15px;
             color: #6e6e73;
             line-height: 1.7;
@@ -118,14 +129,14 @@
         .questions-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 24px;
-            margin-top: 18px;
+            gap: 22px;
+            margin-top: 14px;
         }
 
         .question-card {
             background: #ffffff;
             border-radius: 18px;
-            padding: 26px;
+            padding: 24px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             position: relative;
@@ -141,24 +152,24 @@
         }
 
         .question-num {
-            font-size: 52px;
+            font-size: 48px;
             font-weight: 800;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             line-height: 1;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .question-text {
-            font-size: 16px;
+            font-size: 15.5px;
             color: #1d1d1f;
             line-height: 1.5;
         }
 
         .questions-footer {
-            margin-top: 28px;
+            margin-top: 22px;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             color: white;
             padding: 14px 22px;
@@ -172,14 +183,14 @@
         .valuefn-container {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
-            gap: 30px;
+            gap: 26px;
             align-items: center;
         }
 
         .valuefn-chart {
             background: #ffffff;
             border-radius: 18px;
-            padding: 24px;
+            padding: 20px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
@@ -187,13 +198,13 @@
         .valuefn-props {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .prop-card {
             background: #ffffff;
             border-radius: 14px;
-            padding: 18px 20px;
+            padding: 16px 18px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 6px rgba(0,0,0,0.04);
             border-left: 5px solid #00d4ff;
@@ -201,22 +212,22 @@
 
         .prop-card h4 {
             color: #2d1b4e;
-            font-size: 17px;
-            margin-bottom: 6px;
+            font-size: 16px;
+            margin-bottom: 4px;
         }
 
         .prop-card p {
-            font-size: 13.5px;
+            font-size: 13px;
             color: #1d1d1f;
             line-height: 1.5;
         }
 
         .vs-vnm {
-            margin-top: 22px;
+            margin-top: 18px;
             background: #f0f0f2;
             border-radius: 12px;
-            padding: 14px 18px;
-            font-size: 14px;
+            padding: 12px 18px;
+            font-size: 13.5px;
             color: #2d1b4e;
             line-height: 1.5;
             text-align: center;
@@ -227,14 +238,14 @@
         .loss-aversion-container {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 30px;
+            gap: 26px;
             align-items: center;
         }
 
         .loss-stage {
             background: linear-gradient(135deg, #2d1b4e, #4a3680);
             border-radius: 20px;
-            padding: 32px;
+            padding: 28px;
             color: white;
             text-align: center;
         }
@@ -248,9 +259,9 @@
         }
 
         .loss-stage .lottery {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             line-height: 1.4;
         }
 
@@ -258,103 +269,103 @@
             width: 100%;
             display: flex;
             justify-content: center;
-            margin-bottom: 20px;
-            font-size: 24px;
+            margin-bottom: 16px;
+            font-size: 22px;
             opacity: 0.6;
         }
 
         .loss-calc {
             background: rgba(255,255,255,0.1);
             border-radius: 14px;
-            padding: 20px;
+            padding: 18px;
             font-family: 'Georgia', serif;
             border: 1px solid rgba(255,255,255,0.2);
         }
 
         .loss-calc .row {
-            font-size: 17px;
-            line-height: 1.8;
+            font-size: 16px;
+            line-height: 1.7;
         }
 
         .loss-calc .total {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 700;
             color: #00d4ff;
-            margin-top: 10px;
-            padding-top: 12px;
+            margin-top: 8px;
+            padding-top: 10px;
             border-top: 1px solid rgba(255,255,255,0.3);
         }
 
         .loss-insight h3 {
             color: #2d1b4e;
-            font-size: 22px;
-            margin-bottom: 14px;
+            font-size: 21px;
+            margin-bottom: 12px;
         }
 
         .loss-insight p {
-            font-size: 15px;
+            font-size: 14.5px;
             color: #1d1d1f;
             line-height: 1.55;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .loss-insight .highlight {
             background: linear-gradient(135deg, #00d4ff, #2d1b4e);
             color: white;
-            padding: 14px 18px;
+            padding: 13px 18px;
             border-radius: 12px;
-            font-size: 14.5px;
+            font-size: 14px;
             line-height: 1.5;
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
         .loss-insight .footnote {
             font-size: 12px;
             color: #6e6e73;
             font-style: italic;
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
         /* ============== PONDERACIÓN DE PROBABILIDADES ============== */
         .weight-container {
             display: grid;
             grid-template-columns: 1.3fr 1fr;
-            gap: 28px;
+            gap: 26px;
             align-items: center;
         }
 
         .weight-chart {
             background: #ffffff;
             border-radius: 18px;
-            padding: 24px;
+            padding: 20px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .weight-text h3 {
             color: #2d1b4e;
-            font-size: 22px;
-            margin-bottom: 14px;
+            font-size: 21px;
+            margin-bottom: 12px;
         }
 
         .weight-text p {
-            font-size: 15px;
+            font-size: 14.5px;
             color: #1d1d1f;
             line-height: 1.55;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .duality-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
-            margin-top: 18px;
+            margin-top: 14px;
         }
 
         .duality-card {
             background: #ffffff;
             border-radius: 12px;
-            padding: 16px;
+            padding: 14px;
             border: 1px solid #e5e5e7;
             text-align: center;
         }
@@ -364,11 +375,11 @@
             font-size: 13px;
             letter-spacing: 1px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .duality-card p {
-            font-size: 13.5px;
+            font-size: 13px;
             color: #1d1d1f;
             line-height: 1.4;
             margin: 0;
@@ -378,25 +389,25 @@
         .bias-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 18px;
-            margin-top: 14px;
+            gap: 16px;
+            margin-top: 10px;
         }
 
         .bias-card {
             background: #ffffff;
             border-radius: 16px;
-            padding: 22px;
+            padding: 20px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
-            gap: 16px;
+            gap: 14px;
             align-items: flex-start;
         }
 
         .bias-icon {
             flex-shrink: 0;
-            width: 54px;
-            height: 54px;
+            width: 50px;
+            height: 50px;
             border-radius: 12px;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             display: flex;
@@ -406,22 +417,22 @@
 
         .bias-content h4 {
             color: #2d1b4e;
-            font-size: 18px;
-            margin-bottom: 4px;
+            font-size: 17px;
+            margin-bottom: 3px;
         }
 
         .bias-content .what {
-            font-size: 13.5px;
+            font-size: 13px;
             color: #1d1d1f;
             line-height: 1.45;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .bias-content .example {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #2d1b4e;
             background: #f0f0f2;
-            padding: 8px 12px;
+            padding: 7px 11px;
             border-radius: 8px;
             border-left: 3px solid #00d4ff;
             line-height: 1.4;
@@ -435,14 +446,14 @@
         .cases-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 18px;
-            margin-top: 14px;
+            gap: 16px;
+            margin-top: 10px;
         }
 
         .case-card {
             background: #ffffff;
             border-radius: 16px;
-            padding: 22px;
+            padding: 20px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             position: relative;
@@ -478,7 +489,7 @@
             font-weight: 700;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .case-card.dark .case-label { color: #c73e6e; }
@@ -487,19 +498,19 @@
 
         .case-card h4 {
             color: #2d1b4e;
-            font-size: 19px;
-            margin-bottom: 6px;
+            font-size: 18px;
+            margin-bottom: 4px;
         }
 
         .case-card .year {
             font-size: 12px;
             color: #6e6e73;
             font-style: italic;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .case-card .metric {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: 800;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             -webkit-background-clip: text;
@@ -512,27 +523,27 @@
         .case-card .metric-unit {
             font-size: 12px;
             color: #6e6e73;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
         .case-card .description {
-            font-size: 13.5px;
+            font-size: 13px;
             color: #1d1d1f;
             line-height: 1.5;
         }
 
         .spectrum-line {
-            margin-top: 22px;
+            margin-top: 18px;
             background: linear-gradient(90deg, #2d8659 0%, #f2c244 50%, #c73e6e 100%);
-            height: 50px;
-            border-radius: 25px;
+            height: 44px;
+            border-radius: 22px;
             display: flex;
             align-items: center;
             position: relative;
             padding: 0 30px;
             color: white;
             font-weight: 600;
-            font-size: 13px;
+            font-size: 12.5px;
         }
 
         .spectrum-line .point {
@@ -553,10 +564,10 @@
         }
 
         .transition-question {
-            font-size: 30px;
+            font-size: 28px;
             color: #2d1b4e;
             font-weight: 600;
-            margin-bottom: 30px;
+            margin-bottom: 26px;
             max-width: 900px;
             line-height: 1.3;
         }
@@ -564,7 +575,7 @@
         .transition-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 28px;
+            gap: 26px;
             width: 100%;
             max-width: 900px;
         }
@@ -572,7 +583,7 @@
         .transition-card {
             background: #ffffff;
             border-radius: 18px;
-            padding: 30px;
+            padding: 26px;
             border: 2px solid #00d4ff;
             box-shadow: 0 4px 14px rgba(0, 212, 255, 0.15);
             text-align: left;
@@ -587,24 +598,24 @@
             font-size: 11px;
             font-weight: 700;
             letter-spacing: 2px;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
         }
 
         .transition-card h3 {
             color: #2d1b4e;
-            font-size: 26px;
-            margin-bottom: 10px;
+            font-size: 25px;
+            margin-bottom: 8px;
         }
 
         .transition-card .full-name {
             font-size: 13px;
             color: #6e6e73;
-            margin-bottom: 14px;
+            margin-bottom: 12px;
             font-style: italic;
         }
 
         .transition-card p {
-            font-size: 14.5px;
+            font-size: 14px;
             color: #1d1d1f;
             line-height: 1.5;
         }
@@ -614,7 +625,8 @@
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 14px;
-            margin-bottom: 22px;
+            margin-bottom: 20px;
+            margin-top: 20px;
             position: relative;
         }
 
@@ -632,7 +644,7 @@
         .ahp-step {
             background: #ffffff;
             border-radius: 14px;
-            padding: 60px 16px 18px;
+            padding: 50px 14px 16px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             text-align: center;
@@ -644,15 +656,15 @@
             position: absolute;
             top: 0; left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
+            width: 54px;
+            height: 54px;
             border-radius: 50%;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 24px;
             font-weight: 800;
             border: 4px solid #f5f5f7;
             box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
@@ -660,12 +672,12 @@
 
         .ahp-step h4 {
             color: #2d1b4e;
-            font-size: 16px;
+            font-size: 15px;
             margin-bottom: 6px;
         }
 
         .ahp-step p {
-            font-size: 13px;
+            font-size: 12.5px;
             color: #1d1d1f;
             line-height: 1.4;
         }
@@ -673,15 +685,15 @@
         .ahp-example {
             background: #ffffff;
             border-radius: 14px;
-            padding: 18px;
+            padding: 16px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
 
         .ahp-example h4 {
             color: #2d1b4e;
-            font-size: 15px;
-            margin-bottom: 12px;
+            font-size: 14.5px;
+            margin-bottom: 10px;
             text-align: center;
         }
 
@@ -694,7 +706,7 @@
         .weight-pill {
             background: #f0f0f2;
             border-radius: 10px;
-            padding: 12px;
+            padding: 10px;
             text-align: center;
             border-left: 4px solid #00d4ff;
         }
@@ -706,7 +718,7 @@
         }
 
         .weight-pill .val {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #2d1b4e;
         }
@@ -723,32 +735,32 @@
         .topsis-container {
             display: grid;
             grid-template-columns: 1.2fr 1fr;
-            gap: 30px;
+            gap: 26px;
             align-items: center;
         }
 
         .topsis-viz {
             background: #ffffff;
             border-radius: 18px;
-            padding: 24px;
+            padding: 20px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         .topsis-text h3 {
             color: #2d1b4e;
-            font-size: 22px;
-            margin-bottom: 14px;
+            font-size: 21px;
+            margin-bottom: 12px;
         }
 
         .topsis-step {
             background: #ffffff;
             border-radius: 12px;
-            padding: 12px 16px;
-            margin-bottom: 10px;
+            padding: 10px 14px;
+            margin-bottom: 8px;
             border: 1px solid #e5e5e7;
             border-left: 4px solid #00d4ff;
-            font-size: 13.5px;
+            font-size: 13px;
             color: #1d1d1f;
             line-height: 1.5;
         }
@@ -758,10 +770,10 @@
         }
 
         .topsis-formula {
-            margin-top: 18px;
+            margin-top: 14px;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             color: white;
-            padding: 16px;
+            padding: 14px;
             border-radius: 14px;
             text-align: center;
             font-family: 'Georgia', serif;
@@ -772,12 +784,12 @@
             opacity: 0.85;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-family: 'Segoe UI', sans-serif;
         }
 
         .topsis-formula .eq {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 600;
         }
 
@@ -785,53 +797,59 @@
         .demo-container {
             display: grid;
             grid-template-columns: 1fr 1.1fr;
-            gap: 24px;
+            gap: 22px;
         }
 
-        .code-block {
+        pre.code-block {
             background: #1d1d1f;
             border-radius: 14px;
-            padding: 20px;
+            padding: 18px;
             color: #e5e5e7;
-            font-family: 'Consolas', 'Monaco', monospace;
-            font-size: 12.5px;
-            line-height: 1.6;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 11.5px;
+            line-height: 1.55;
             box-shadow: 0 4px 14px rgba(0,0,0,0.15);
-            overflow: hidden;
+            white-space: pre;
+            overflow-x: auto;
+            margin: 0;
+            tab-size: 4;
         }
 
-        .code-block .comment { color: #6e6e73; font-style: italic; }
-        .code-block .keyword { color: #ff79c6; }
-        .code-block .string { color: #f1fa8c; }
-        .code-block .func { color: #00d4ff; }
-        .code-block .var { color: #f8f8f2; }
-        .code-block .num { color: #bd93f9; }
+        pre.code-block::-webkit-scrollbar { height: 6px; }
+        pre.code-block::-webkit-scrollbar-track { background: #2d1b4e; }
+        pre.code-block::-webkit-scrollbar-thumb { background: #00d4ff; border-radius: 3px; }
+
+        pre.code-block .comment { color: #8e8e93; font-style: italic; }
+        pre.code-block .keyword { color: #ff79c6; }
+        pre.code-block .string { color: #f1fa8c; }
+        pre.code-block .func { color: #00d4ff; }
+        pre.code-block .num { color: #bd93f9; }
 
         .demo-results {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .ranking-card {
             background: #ffffff;
             border-radius: 14px;
-            padding: 18px 20px;
+            padding: 16px 18px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 14px;
         }
 
         .ranking-card .position {
-            width: 48px;
-            height: 48px;
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: white;
             flex-shrink: 0;
@@ -847,7 +865,7 @@
 
         .ranking-card .name h4 {
             color: #2d1b4e;
-            font-size: 17px;
+            font-size: 16px;
             margin-bottom: 2px;
         }
 
@@ -857,7 +875,7 @@
         }
 
         .ranking-card .score {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 800;
             color: #2d1b4e;
         }
@@ -866,55 +884,55 @@
             grid-column: 1 / -1;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             color: white;
-            padding: 14px 22px;
+            padding: 13px 22px;
             border-radius: 14px;
             text-align: center;
-            font-size: 14px;
+            font-size: 13.5px;
             line-height: 1.5;
-            margin-top: 14px;
+            margin-top: 12px;
         }
 
         /* ============== CASO DE LA SESIÓN ============== */
         .exercise-container {
             background: #ffffff;
             border-radius: 18px;
-            padding: 30px;
+            padding: 24px;
             border: 2px solid #00d4ff;
             box-shadow: 0 4px 20px rgba(0, 212, 255, 0.15);
-            margin-top: 12px;
+            margin-top: 10px;
         }
 
         .exercise-header {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .exercise-container h3 {
             color: #2d1b4e;
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .exercise-context {
-            font-size: 14.5px;
+            font-size: 14px;
             color: #1d1d1f;
             line-height: 1.55;
-            margin-bottom: 18px;
+            margin-bottom: 14px;
         }
 
         .exercise-tasks {
             background: #f0f0f2;
             border-radius: 12px;
-            padding: 16px 22px;
+            padding: 14px 20px;
         }
 
         .exercise-tasks h4 {
             color: #00d4ff;
-            font-size: 13px;
+            font-size: 12.5px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .exercise-tasks ul {
@@ -922,11 +940,11 @@
             padding: 0;
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 6px;
         }
 
         .exercise-tasks li {
-            font-size: 13.5px;
+            font-size: 13px;
             color: #1d1d1f;
             line-height: 1.45;
             padding-left: 18px;
@@ -944,38 +962,38 @@
         .closing-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 22px;
-            margin-top: 16px;
+            gap: 18px;
+            margin-top: 10px;
         }
 
         .closing-card {
             background: #ffffff;
             border-radius: 18px;
-            padding: 26px;
+            padding: 22px;
             border: 1px solid #e5e5e7;
             box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             text-align: center;
         }
 
         .closing-card .icon {
-            font-size: 38px;
+            font-size: 34px;
             font-weight: 800;
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             font-family: 'Georgia', serif;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
         }
 
         .closing-card h4 {
             color: #2d1b4e;
-            font-size: 17px;
-            margin-bottom: 8px;
+            font-size: 16px;
+            margin-bottom: 6px;
         }
 
         .closing-card p {
-            font-size: 14px;
+            font-size: 13.5px;
             color: #1d1d1f;
             line-height: 1.5;
         }
@@ -984,82 +1002,90 @@
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             color: white;
             border-radius: 16px;
-            padding: 18px 24px;
-            margin-top: 22px;
+            padding: 14px 22px;
+            margin-top: 14px;
             text-align: center;
         }
 
         .next-week-box .label {
-            font-size: 12px;
+            font-size: 11px;
             opacity: 0.85;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 4px;
         }
 
         .next-week-box .content {
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.5;
         }
 
-        /* ============== UI COMÚN ============== */
+        /* ============== UI COMÚN: navegación con fondo blur ============== */
         .navigation {
             position: fixed;
-            bottom: 35px;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
-            gap: 18px;
+            gap: 14px;
             z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.10);
         }
 
         .nav-button {
             background: linear-gradient(135deg, #2d1b4e, #00d4ff);
             border: none;
             color: white;
-            padding: 13px 26px;
+            padding: 12px 24px;
             border-radius: 50px;
             cursor: pointer;
-            font-size: 14px;
+            font-size: 13.5px;
             font-weight: 600;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 14px rgba(0, 212, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
         }
 
         .nav-button:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 18px rgba(0, 212, 255, 0.4);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
         }
 
         .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
 
         .slide-number {
             position: fixed;
-            top: 25px;
-            right: 30px;
+            top: 22px;
+            right: 28px;
             color: #6e6e73;
-            font-size: 14px;
+            font-size: 13px;
             z-index: 1000;
             font-weight: 600;
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.92);
             padding: 6px 14px;
             border-radius: 20px;
             border: 1px solid #e5e5e7;
+            backdrop-filter: blur(8px);
         }
 
         .logo-area {
             position: fixed;
-            top: 20px;
-            left: 28px;
+            top: 18px;
+            left: 26px;
             z-index: 1000;
         }
 
-        .logo-area img { max-width: 130px; height: auto; }
+        .logo-area img { max-width: 120px; height: auto; }
 
         @media (max-width: 900px) {
-            .slide { padding: 40px 30px 120px 30px; }
-            .slide-title { font-size: 28px; }
-            .cover-title { font-size: 42px; }
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 26px; }
+            .cover-title { font-size: 40px; }
             .questions-grid,
             .valuefn-container,
             .loss-aversion-container,
@@ -1136,44 +1162,27 @@
             <div class="slide-body">
                 <div class="valuefn-container">
                     <div class="valuefn-chart">
-                        <svg viewBox="0 0 450 340" style="width:100%; height:auto;">
-                            <!-- Ejes -->
-                            <line x1="225" y1="20" x2="225" y2="320" stroke="#6e6e73" stroke-width="2"/>
-                            <line x1="30" y1="170" x2="420" y2="170" stroke="#6e6e73" stroke-width="2"/>
-
-                            <!-- Etiquetas ejes -->
-                            <text x="430" y="174" fill="#6e6e73" font-size="12" font-style="italic">x</text>
+                        <svg viewBox="0 0 450 320" style="width:100%; height:auto;">
+                            <line x1="225" y1="20" x2="225" y2="300" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="30" y1="160" x2="420" y2="160" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="430" y="164" fill="#6e6e73" font-size="12" font-style="italic">x</text>
                             <text x="232" y="18" fill="#6e6e73" font-size="12" font-style="italic">v(x)</text>
-
-                            <!-- Sectores -->
-                            <text x="320" y="320" fill="#2d8659" font-size="13" font-weight="700">Ganancias</text>
-                            <text x="60" y="320" fill="#c73e6e" font-size="13" font-weight="700">Pérdidas</text>
-
-                            <!-- Punto de referencia -->
-                            <circle cx="225" cy="170" r="6" fill="#00d4ff" stroke="white" stroke-width="2"/>
-                            <text x="232" y="190" fill="#2d1b4e" font-size="11" font-weight="700">Punto de referencia</text>
-
-                            <!-- Curva en ganancias: cóncava -->
-                            <!-- y = 170 - (x-225)^0.88 * factor, en pantalla -->
-                            <path d="M 225 170 Q 280 130 340 105 T 415 75" stroke="#2d8659" stroke-width="4" fill="none"/>
-
-                            <!-- Curva en pérdidas: convexa, más empinada -->
-                            <path d="M 225 170 Q 200 220 165 265 T 35 320" stroke="#c73e6e" stroke-width="4" fill="none"/>
-
-                            <!-- Líneas de referencia para mostrar asimetría -->
-                            <line x1="290" y1="170" x2="290" y2="135" stroke="#2d8659" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <line x1="290" y1="135" x2="225" y2="135" stroke="#2d8659" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <text x="298" y="158" fill="#2d8659" font-size="11" font-weight="700">+$100</text>
-                            <text x="180" y="131" fill="#2d8659" font-size="11" font-weight="700">v(+)</text>
-
-                            <line x1="160" y1="170" x2="160" y2="245" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <line x1="160" y1="245" x2="225" y2="245" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="3 3"/>
-                            <text x="105" y="160" fill="#c73e6e" font-size="11" font-weight="700">−$100</text>
-                            <text x="232" y="248" fill="#c73e6e" font-size="11" font-weight="700">v(−) ≈ 2× v(+)</text>
-
-                            <!-- Comparación con utilidad esperada (línea de referencia) -->
-                            <line x1="30" y1="320" x2="420" y2="20" stroke="#6e6e73" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
-                            <text x="350" y="40" fill="#6e6e73" font-size="11" font-style="italic">Utilidad lineal (vNM)</text>
+                            <text x="320" y="300" fill="#2d8659" font-size="13" font-weight="700">Ganancias</text>
+                            <text x="60" y="300" fill="#c73e6e" font-size="13" font-weight="700">Pérdidas</text>
+                            <circle cx="225" cy="160" r="6" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="232" y="180" fill="#2d1b4e" font-size="11" font-weight="700">Punto de referencia</text>
+                            <path d="M 225 160 Q 280 120 340 95 T 415 65" stroke="#2d8659" stroke-width="4" fill="none"/>
+                            <path d="M 225 160 Q 200 210 165 255 T 35 305" stroke="#c73e6e" stroke-width="4" fill="none"/>
+                            <line x1="290" y1="160" x2="290" y2="125" stroke="#2d8659" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <line x1="290" y1="125" x2="225" y2="125" stroke="#2d8659" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <text x="298" y="148" fill="#2d8659" font-size="11" font-weight="700">+$100</text>
+                            <text x="180" y="121" fill="#2d8659" font-size="11" font-weight="700">v(+)</text>
+                            <line x1="160" y1="160" x2="160" y2="235" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <line x1="160" y1="235" x2="225" y2="235" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="3 3"/>
+                            <text x="105" y="150" fill="#c73e6e" font-size="11" font-weight="700">−$100</text>
+                            <text x="232" y="238" fill="#c73e6e" font-size="11" font-weight="700">v(−) ≈ 2× v(+)</text>
+                            <line x1="30" y1="305" x2="420" y2="20" stroke="#6e6e73" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.5"/>
+                            <text x="345" y="38" fill="#6e6e73" font-size="11" font-style="italic">Utilidad lineal (vNM)</text>
                         </svg>
                     </div>
                     <div class="valuefn-props">
@@ -1239,42 +1248,26 @@
             <div class="slide-body">
                 <div class="weight-container">
                     <div class="weight-chart">
-                        <svg viewBox="0 0 400 320" style="width:100%; height:auto;">
-                            <!-- Ejes -->
-                            <line x1="50" y1="280" x2="380" y2="280" stroke="#6e6e73" stroke-width="2"/>
-                            <line x1="50" y1="280" x2="50" y2="30" stroke="#6e6e73" stroke-width="2"/>
-
-                            <!-- Etiquetas -->
-                            <text x="215" y="310" text-anchor="middle" fill="#6e6e73" font-size="13" font-weight="600">Probabilidad objetiva (p)</text>
-                            <text x="22" y="155" text-anchor="middle" fill="#6e6e73" font-size="13" font-weight="600" transform="rotate(-90 22 155)">Peso decisional w(p)</text>
-
-                            <!-- Marcas -->
-                            <text x="50" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">0</text>
-                            <text x="380" y="296" text-anchor="middle" fill="#6e6e73" font-size="11">1</text>
-                            <text x="40" y="284" text-anchor="end" fill="#6e6e73" font-size="11">0</text>
+                        <svg viewBox="0 0 400 300" style="width:100%; height:auto;">
+                            <line x1="50" y1="260" x2="380" y2="260" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="50" y1="260" x2="50" y2="30" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="215" y="290" text-anchor="middle" fill="#6e6e73" font-size="12" font-weight="600">Probabilidad objetiva (p)</text>
+                            <text x="22" y="145" text-anchor="middle" fill="#6e6e73" font-size="12" font-weight="600" transform="rotate(-90 22 145)">Peso decisional w(p)</text>
+                            <text x="50" y="276" text-anchor="middle" fill="#6e6e73" font-size="11">0</text>
+                            <text x="380" y="276" text-anchor="middle" fill="#6e6e73" font-size="11">1</text>
+                            <text x="40" y="264" text-anchor="end" fill="#6e6e73" font-size="11">0</text>
                             <text x="40" y="34" text-anchor="end" fill="#6e6e73" font-size="11">1</text>
-
-                            <!-- Diagonal (utilidad esperada): w(p) = p -->
-                            <line x1="50" y1="280" x2="380" y2="30" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 5" opacity="0.5"/>
-                            <text x="280" y="120" fill="#6e6e73" font-size="11" font-style="italic">Lineal (vNM)</text>
-
-                            <!-- Curva CPT: sobre-pondera probabilidades bajas, sub-pondera altas -->
-                            <!-- Cruza diagonal alrededor de p=0.35 -->
-                            <path d="M 50 280 C 100 200 130 175 170 165 C 230 150 270 130 320 75 C 350 50 365 40 380 30" stroke="#2d1b4e" stroke-width="4" fill="none"/>
-
-                            <!-- Zonas resaltadas -->
-                            <rect x="50" y="160" width="60" height="120" fill="#00d4ff" opacity="0.08"/>
-                            <text x="80" y="305" fill="#00d4ff" font-size="10" font-weight="700" text-anchor="middle">sobreponderada</text>
-
-                            <rect x="280" y="30" width="100" height="170" fill="#c73e6e" opacity="0.08"/>
-                            <text x="330" y="218" fill="#c73e6e" font-size="10" font-weight="700" text-anchor="middle">subponderada</text>
-
-                            <!-- Puntos clave -->
-                            <circle cx="85" cy="230" r="5" fill="#00d4ff" stroke="white" stroke-width="2"/>
-                            <text x="92" y="226" fill="#2d1b4e" font-size="11" font-weight="600">p = 0.01 → w ≈ 0.06</text>
-
+                            <line x1="50" y1="260" x2="380" y2="30" stroke="#6e6e73" stroke-width="2" stroke-dasharray="5 5" opacity="0.5"/>
+                            <text x="280" y="115" fill="#6e6e73" font-size="11" font-style="italic">Lineal (vNM)</text>
+                            <path d="M 50 260 C 100 185 130 165 170 155 C 230 140 270 120 320 75 C 350 55 365 42 380 30" stroke="#2d1b4e" stroke-width="4" fill="none"/>
+                            <rect x="50" y="150" width="60" height="110" fill="#00d4ff" opacity="0.08"/>
+                            <text x="80" y="284" fill="#00d4ff" font-size="10" font-weight="700" text-anchor="middle">sobreponderada</text>
+                            <rect x="280" y="30" width="100" height="160" fill="#c73e6e" opacity="0.08"/>
+                            <text x="330" y="208" fill="#c73e6e" font-size="10" font-weight="700" text-anchor="middle">subponderada</text>
+                            <circle cx="85" cy="215" r="5" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="92" y="211" fill="#2d1b4e" font-size="11" font-weight="600">p = 0.01 → w ≈ 0.06</text>
                             <circle cx="330" cy="65" r="5" fill="#c73e6e" stroke="white" stroke-width="2"/>
-                            <text x="200" y="80" fill="#2d1b4e" font-size="11" font-weight="600">p = 0.90 → w ≈ 0.71</text>
+                            <text x="200" y="78" fill="#2d1b4e" font-size="11" font-weight="600">p = 0.90 → w ≈ 0.71</text>
                         </svg>
                     </div>
                     <div class="weight-text">
@@ -1305,7 +1298,7 @@
                 <div class="bias-grid">
                     <div class="bias-card">
                         <div class="bias-icon">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
                                 <path d="M14 4V24M4 14H24" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
                                 <rect x="9" y="9" width="10" height="10" rx="1" stroke="white" stroke-width="2.5"/>
                             </svg>
@@ -1318,7 +1311,7 @@
                     </div>
                     <div class="bias-card">
                         <div class="bias-icon">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
                                 <circle cx="14" cy="9" r="4" stroke="white" stroke-width="2.5"/>
                                 <line x1="14" y1="13" x2="14" y2="24" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
                                 <line x1="9" y1="24" x2="19" y2="24" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
@@ -1332,7 +1325,7 @@
                     </div>
                     <div class="bias-card">
                         <div class="bias-icon">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
                                 <rect x="5" y="9" width="18" height="14" rx="2" stroke="white" stroke-width="2.5"/>
                                 <path d="M9 9V6C9 4.9 9.9 4 11 4H17C18.1 4 19 4.9 19 6V9" stroke="white" stroke-width="2.5"/>
                             </svg>
@@ -1345,7 +1338,7 @@
                     </div>
                     <div class="bias-card">
                         <div class="bias-icon">
-                            <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+                            <svg width="26" height="26" viewBox="0 0 28 28" fill="none">
                                 <path d="M14 4L18 12L26 13L20 19L22 27L14 23L6 27L8 19L2 13L10 12L14 4Z" stroke="white" stroke-width="2.5" stroke-linejoin="round"/>
                             </svg>
                         </div>
@@ -1356,7 +1349,7 @@
                         </div>
                     </div>
                 </div>
-                <p style="text-align:center; margin-top:18px; color:#6e6e73; font-size:14px; font-style:italic;">Todos estos son corolarios de la función de valor que vimos. La aversión a la pérdida los unifica.</p>
+                <p style="text-align:center; margin-top:14px; color:#6e6e73; font-size:13.5px; font-style:italic;">Todos estos son corolarios de la función de valor que vimos. La aversión a la pérdida los unifica.</p>
             </div>
         </div>
 
@@ -1398,7 +1391,7 @@
                     <div class="point mid">SLUDGE<br>(zona gris)</div>
                     <div class="point right">DARK PATTERN<br>(ilegal)</div>
                 </div>
-                <p style="text-align:center; margin-top:14px; color:#6e6e73; font-size:13.5px; font-style:italic;">La diferencia entre nudge, sludge y dark pattern no es la técnica usada, sino a quién beneficia.</p>
+                <p style="text-align:center; margin-top:12px; color:#6e6e73; font-size:13px; font-style:italic;">La diferencia entre nudge, sludge y dark pattern no es la técnica usada, sino a quién beneficia.</p>
             </div>
         </div>
 
@@ -1478,7 +1471,7 @@
                             <div class="val">28.6%</div>
                         </div>
                     </div>
-                    <p style="text-align:center; margin-top:14px; font-size:13px; color:#2d1b4e;"><strong>Consistencia:</strong> CR = 0.017 &lt; 0.10. Pesos válidos para la siguiente etapa.</p>
+                    <p style="text-align:center; margin-top:12px; font-size:12.5px; color:#2d1b4e;"><strong>Consistencia:</strong> CR = 0.017 &lt; 0.10. Pesos válidos para la siguiente etapa.</p>
                 </div>
             </div>
         </div>
@@ -1492,42 +1485,27 @@
             <div class="slide-body">
                 <div class="topsis-container">
                     <div class="topsis-viz">
-                        <svg viewBox="0 0 400 340" style="width:100%; height:auto;">
-                            <!-- Ejes -->
-                            <line x1="50" y1="290" x2="380" y2="290" stroke="#6e6e73" stroke-width="2"/>
-                            <line x1="50" y1="290" x2="50" y2="30" stroke="#6e6e73" stroke-width="2"/>
-
-                            <text x="215" y="320" text-anchor="middle" fill="#6e6e73" font-size="12" font-weight="600">Criterio 1 (ej. calidad)</text>
-                            <text x="22" y="160" text-anchor="middle" fill="#6e6e73" font-size="12" font-weight="600" transform="rotate(-90 22 160)">Criterio 2 (ej. soporte)</text>
-
-                            <!-- Solución ideal positiva -->
+                        <svg viewBox="0 0 400 320" style="width:100%; height:auto;">
+                            <line x1="50" y1="280" x2="380" y2="280" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="50" y1="280" x2="50" y2="30" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="215" y="310" text-anchor="middle" fill="#6e6e73" font-size="12" font-weight="600">Criterio 1 (ej. calidad)</text>
+                            <text x="22" y="155" text-anchor="middle" fill="#6e6e73" font-size="12" font-weight="600" transform="rotate(-90 22 155)">Criterio 2 (ej. soporte)</text>
                             <circle cx="340" cy="60" r="14" fill="#2d8659" stroke="white" stroke-width="3"/>
                             <text x="340" y="65" text-anchor="middle" fill="white" font-size="11" font-weight="800">A+</text>
                             <text x="320" y="40" fill="#2d8659" font-size="12" font-weight="700" text-anchor="middle">Ideal positivo</text>
-
-                            <!-- Solución ideal negativa -->
-                            <circle cx="90" cy="260" r="14" fill="#c73e6e" stroke="white" stroke-width="3"/>
-                            <text x="90" y="265" text-anchor="middle" fill="white" font-size="11" font-weight="800">A−</text>
-                            <text x="90" y="285" fill="#c73e6e" font-size="12" font-weight="700" text-anchor="middle">Anti-ideal</text>
-
-                            <!-- Alternativas -->
-                            <!-- Alt A: cerca del ideal -->
+                            <circle cx="90" cy="250" r="14" fill="#c73e6e" stroke="white" stroke-width="3"/>
+                            <text x="90" y="255" text-anchor="middle" fill="white" font-size="11" font-weight="800">A−</text>
+                            <text x="90" y="275" fill="#c73e6e" font-size="12" font-weight="700" text-anchor="middle">Anti-ideal</text>
                             <circle cx="290" cy="100" r="12" fill="#00d4ff" stroke="white" stroke-width="2"/>
                             <text x="290" y="104" text-anchor="middle" fill="white" font-size="12" font-weight="700">A</text>
                             <line x1="290" y1="100" x2="340" y2="60" stroke="#2d8659" stroke-width="2" stroke-dasharray="3 3"/>
-                            <line x1="290" y1="100" x2="90" y2="260" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
-
-                            <!-- Alt B: cerca del medio -->
+                            <line x1="290" y1="100" x2="90" y2="250" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="3 3" opacity="0.5"/>
                             <circle cx="210" cy="170" r="12" fill="#00d4ff" stroke="white" stroke-width="2"/>
                             <text x="210" y="174" text-anchor="middle" fill="white" font-size="12" font-weight="700">B</text>
-
-                            <!-- Alt C: cerca del anti-ideal -->
-                            <circle cx="140" cy="230" r="12" fill="#00d4ff" stroke="white" stroke-width="2"/>
-                            <text x="140" y="234" text-anchor="middle" fill="white" font-size="12" font-weight="700">C</text>
-
-                            <!-- Ranking -->
+                            <circle cx="140" cy="225" r="12" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="140" y="229" text-anchor="middle" fill="white" font-size="12" font-weight="700">C</text>
                             <text x="220" y="70" fill="#2d8659" font-size="12" font-weight="700">A gana</text>
-                            <text x="220" y="84" fill="#6e6e73" font-size="10" style="font-style: italic;">cerca de ideal, lejos de anti-ideal</text>
+                            <text x="220" y="84" fill="#6e6e73" font-size="10" font-style="italic">cerca de ideal, lejos de anti-ideal</text>
                         </svg>
                     </div>
                     <div class="topsis-text">
@@ -1553,8 +1531,7 @@
             </div>
             <div class="slide-body">
                 <div class="demo-container">
-                    <div class="code-block">
-<span class="comment"># Caso: proveedor de equipos de red</span>
+<pre class="code-block"><span class="comment"># Caso: proveedor de equipos de red</span>
 <span class="comment"># Huawei vs Cisco vs Ericsson</span>
 
 <span class="keyword">from</span> pyDecision.algorithm <span class="keyword">import</span> ahp_method, topsis_method
@@ -1568,14 +1545,13 @@ A = np.array([[<span class="num">1</span>, <span class="num">1/2</span>, <span c
 
 pesos, cr = <span class="func">ahp_method</span>(A, wd=<span class="string">'m'</span>)
 
-<span class="comment"># Matriz de decisión (alternativas × criterios)</span>
+<span class="comment"># Matriz de decisión (alternativas x criterios)</span>
 X = np.array([[<span class="num">8</span>,  <span class="num">9</span>, <span class="num">7</span>, <span class="num">8</span>],   <span class="comment"># Huawei</span>
               [<span class="num">12</span>, <span class="num">8</span>, <span class="num">9</span>, <span class="num">3</span>],   <span class="comment"># Cisco</span>
               [<span class="num">10</span>, <span class="num">9</span>, <span class="num">8</span>, <span class="num">4</span>]])  <span class="comment"># Ericsson</span>
 
 tipos = [<span class="string">'min'</span>, <span class="string">'max'</span>, <span class="string">'max'</span>, <span class="string">'min'</span>]
-ranking = <span class="func">topsis_method</span>(X, pesos, tipos)
-                    </div>
+ranking = <span class="func">topsis_method</span>(X, pesos, tipos)</pre>
                     <div class="demo-results">
                         <div class="ranking-card first">
                             <div class="position">1</div>
@@ -1672,7 +1648,10 @@ ranking = <span class="func">topsis_method</span>(X, pesos, tipos)
         document.getElementById('totalSlides').textContent = totalSlides;
 
         function showSlide(n) {
-            slides.forEach(slide => slide.classList.remove('active'));
+            slides.forEach(slide => {
+                slide.classList.remove('active');
+                slide.scrollTop = 0;
+            });
             if (n >= totalSlides) currentSlide = totalSlides - 1;
             else if (n < 0) currentSlide = 0;
             else currentSlide = n;
