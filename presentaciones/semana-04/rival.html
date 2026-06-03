@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 4 - Razonamiento estratégico y representación de juegos</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 24px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 22px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS GUÍA ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .question-text { font-size: 15.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .questions-footer {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        /* ============== INGREDIENTES ============== */
+        .ingredients-container {
+            display: grid;
+            grid-template-columns: 1.3fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+        }
+
+        .ingredient-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 18px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border-top: 4px solid #00d4ff;
+        }
+
+        .ingredient-card h4 { color: #2d1b4e; font-size: 17px; margin-bottom: 5px; }
+        .ingredient-card p { font-size: 13px; color: #1d1d1f; line-height: 1.45; }
+        .ingredient-card .ex { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-top: 6px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .gps-callout h3 { font-size: 20px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14.5px; line-height: 1.55; opacity: 0.95; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        /* ============== DOS REPRESENTACIONES ============== */
+        .twoforms-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 26px;
+        }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .form-block h3 { color: #2d1b4e; font-size: 20px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        /* matriz de pagos genérica */
+        .gmatrix { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+        .gmatrix th, .gmatrix td {
+            border: 1px solid #e5e5e7;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .gmatrix th {
+            background: #2d1b4e;
+            color: white;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+        .gmatrix th.corner { background: #f0f0f2; }
+        .gmatrix td.rowhead {
+            background: #2d1b4e;
+            color: white;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+        .gmatrix td .pf { color: #c73e6e; font-weight: 700; }
+        .gmatrix td .pc { color: #1a5e3a; font-weight: 700; }
+        .gmatrix td.nash { background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(45,27,78,0.10)); }
+        .gmatrix td.dim { opacity: 0.32; }
+        .gmatrix td.survivor { background: rgba(0,212,255,0.22); outline: 2px solid #00d4ff; }
+
+        .legend-pf { color: #c73e6e; font-weight: 700; }
+        .legend-pc { color: #1a5e3a; font-weight: 700; }
+
+        .forms-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #2d1b4e;
+            text-align: center;
+        }
+
+        /* ============== ÁRBOLES / INFO ============== */
+        .trees-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 26px;
+        }
+
+        .tree-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+
+        .tree-block h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 4px; }
+        .tree-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 10px; }
+        .tree-block p { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 8px; text-align: left; }
+
+        .info-warning {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 14px;
+            padding: 14px 22px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        /* ============== DOMINANCIA ============== */
+        .dom-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+            margin-top: 6px;
+        }
+
+        .dom-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .dom-card.strict { border-top: 5px solid #1a5e3a; }
+        .dom-card.weak { border-top: 5px solid #c8881a; }
+
+        .dom-card .label {
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .dom-card.strict .label { color: #1a5e3a; }
+        .dom-card.weak .label { color: #c8881a; }
+
+        .dom-card h3 { color: #2d1b4e; font-size: 21px; margin-bottom: 10px; }
+        .dom-card p { font-size: 14.5px; color: #1d1d1f; line-height: 1.55; margin-bottom: 10px; }
+        .dom-card .consequence {
+            background: #f0f0f2;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            color: #2d1b4e;
+            line-height: 1.5;
+        }
+
+        .dom-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        /* ============== IESDS ============== */
+        .iesds-container {
+            display: grid;
+            grid-template-columns: 1fr 1.05fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        .iesds-matrix-wrap {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 20px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .iesds-matrix-wrap .cap {
+            font-size: 12.5px;
+            color: #6e6e73;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        .iesds-steps { display: flex; flex-direction: column; gap: 10px; }
+
+        .iesds-step {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 11px 16px;
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+            font-size: 13.5px;
+            color: #1d1d1f;
+            line-height: 1.45;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .iesds-step .n {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800;
+        }
+        .iesds-step strong { color: #2d1b4e; }
+
+        .kcr-box {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+        .kcr-box .tag {
+            font-size: 11px; color: #00d4ff; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+        }
+
+        .iesds-foot {
+            margin-top: 16px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 12px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #2d1b4e;
+            text-align: center;
+        }
+
+        /* ============== VALUE NET ============== */
+        .valuenet-container {
+            display: grid;
+            grid-template-columns: 1.15fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .valuenet-viz {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .valuenet-text h3 { color: #2d1b4e; font-size: 22px; margin-bottom: 12px; }
+        .valuenet-text p { font-size: 14.5px; color: #1d1d1f; line-height: 1.55; margin-bottom: 12px; }
+        .valuenet-text .punch {
+            background: linear-gradient(135deg, #00d4ff, #2d1b4e);
+            color: white;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* ============== SAMSUNG ============== */
+        .samsung-container { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; align-items: start; }
+
+        .samsung-left { display: flex; flex-direction: column; gap: 12px; }
+
+        .duality-banner {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 16px;
+            padding: 18px 20px;
+        }
+        .duality-banner h3 { font-size: 18px; margin-bottom: 8px; }
+        .duality-banner p { font-size: 13.5px; line-height: 1.5; opacity: 0.95; }
+        .duality-banner .role { color: #00d4ff; font-weight: 700; }
+
+        .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .stat-card .val {
+            font-size: 23px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            line-height: 1.05; margin-bottom: 4px;
+        }
+        .stat-card .desc { font-size: 11.5px; color: #6e6e73; line-height: 1.35; }
+
+        .samsung-right { background: #ffffff; border-radius: 18px; padding: 22px; border: 1px solid #e5e5e7; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .samsung-right h3 { color: #2d1b4e; font-size: 18px; margin-bottom: 12px; text-align: center; }
+        .samsung-right .note { font-size: 12px; color: #6e6e73; font-style: italic; margin-top: 12px; text-align: center; line-height: 1.45; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+
+        .closing-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px 24px;
+            border: 2px solid #00d4ff;
+            box-shadow: 0 4px 18px rgba(0,212,255,0.15);
+            margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 8px; }
+        .case-box p { font-size: 14px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 13px; color: #2d1b4e; }
+        .case-box .tools strong { color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 16px;
+            padding: 14px 22px;
+            margin-top: 14px;
+            text-align: center;
+        }
+        .next-week-box .label {
+            font-size: 11px; opacity: 0.85; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 14px;
+            z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed;
+            top: 22px;
+            right: 28px;
+            color: #6e6e73;
+            font-size: 13px;
+            z-index: 1000;
+            font-weight: 600;
+            background: rgba(255,255,255,0.92);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e5e5e7;
+            backdrop-filter: blur(8px);
+        }
+
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 26px; }
+            .cover-title { font-size: 38px; }
+            .questions-grid,
+            .ingredients-container,
+            .ingredients-grid,
+            .twoforms-container,
+            .trees-container,
+            .dom-grid,
+            .iesds-container,
+            .valuenet-container,
+            .samsung-container,
+            .stat-row,
+            .closing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 4</div>
+            <h1 class="cover-title">Pensar como el rival: representar y resolver juegos</h1>
+            <p class="cover-subtitle">Forma normal y extensiva, dominancia, eliminación iterada y coopetición aplicadas a inteligencia de negocios</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: TRES PREGUNTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta</div>
+                <h2 class="slide-title">Tres preguntas que vamos a responder</h2>
+            </div>
+            <div class="slide-body">
+                <div class="questions-grid">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <p class="question-text">¿Cómo traducimos una interacción empresarial real a una representación formal en <strong>forma normal</strong> o <strong>extensiva</strong> sin perder lo importante?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <p class="question-text">¿Qué significa que una estrategia sea <strong>estrictamente dominada</strong> o <strong>débilmente dominada</strong>, y por qué eliminarlas es la primera herramienta de solución?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <p class="question-text">¿En qué se diferencia la <strong>información perfecta</strong> de la <strong>imperfecta</strong>, y cómo se dibuja esa diferencia en el árbol del juego?</p>
+                    </div>
+                </div>
+                <div class="questions-footer">
+                    Hasta ahora decidíamos contra la incertidumbre y contra nosotros mismos. Hoy aparece <strong>otro decisor racional</strong> que también nos está modelando a nosotros.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: INGREDIENTES + ACCIÓN VS ESTRATEGIA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, los cimientos</div>
+                <h2 class="slide-title">Todo juego tiene cuatro ingredientes</h2>
+            </div>
+            <div class="slide-body">
+                <div class="ingredients-container">
+                    <div class="ingredients-grid">
+                        <div class="ingredient-card">
+                            <h4>Jugadores</h4>
+                            <p>Quiénes deciden.</p>
+                            <p class="ex">PagoTico y un rival fintech.</p>
+                        </div>
+                        <div class="ingredient-card">
+                            <h4>Acciones</h4>
+                            <p>Las jugadas disponibles.</p>
+                            <p class="ex">Subir o bajar comisiones, entrar o no.</p>
+                        </div>
+                        <div class="ingredient-card">
+                            <h4>Estrategias</h4>
+                            <p>Un plan completo y contingente de acción.</p>
+                            <p class="ex">Qué hacer en cada situación posible.</p>
+                        </div>
+                        <div class="ingredient-card">
+                            <h4>Pagos</h4>
+                            <p>Lo que cada quien valora.</p>
+                            <p class="ex">Utilidad, cuota de mercado, ingresos.</p>
+                        </div>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">La distinción clave</div>
+                        <h3>Acción no es lo mismo que estrategia</h3>
+                        <p>Una <strong>acción</strong> es "girar a la izquierda en esta esquina". Una <strong>estrategia</strong> es el GPS completo que dice qué hacer en cada esquina posible, incluso en calles a las que tu propio plan nunca llegaría.</p>
+                        <div class="punch">Por eso un árbol pequeño genera una matriz grande: cada estrategia es un plan condicional, no una jugada suelta.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: DOS REPRESENTACIONES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, parte central</div>
+                <h2 class="slide-title">Dos retratos del mismo juego</h2>
+            </div>
+            <div class="slide-body">
+                <div class="twoforms-container">
+                    <div class="form-block">
+                        <span class="badge">Forma normal</span>
+                        <h3>La matriz de pagos</h3>
+                        <p class="sub">Dos empresas deciden a la vez cuánto invertir en publicidad</p>
+                        <table class="gmatrix">
+                            <tr>
+                                <th class="corner"></th>
+                                <th>B: no anuncia</th>
+                                <th>B: anuncia</th>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: no anuncia</td>
+                                <td><span class="pf">10</span>, <span class="pc">10</span></td>
+                                <td><span class="pf">2</span>, <span class="pc">14</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: anuncia</td>
+                                <td><span class="pf">14</span>, <span class="pc">2</span></td>
+                                <td class="nash"><span class="pf">5</span>, <span class="pc">5</span></td>
+                            </tr>
+                        </table>
+                        <p class="caption">Ideal para movimientos <strong>simultáneos</strong>. Se ve la dominancia y el equilibrio de un vistazo. Aquí "anunciar" conviene siempre, aunque (5,5) sea peor que (10,10).</p>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge">Forma extensiva</span>
+                        <h3>El árbol del juego</h3>
+                        <p class="sub">Un entrante decide; el dominante reacciona</p>
+                        <svg viewBox="0 0 360 250" style="width:100%; height:auto;">
+                            <!-- raíz entrante -->
+                            <circle cx="40" cy="125" r="11" fill="#2d1b4e" stroke="white" stroke-width="2"/>
+                            <text x="40" y="110" text-anchor="middle" fill="#2d1b4e" font-size="11" font-weight="700">Entrante</text>
+                            <!-- ramas desde raíz -->
+                            <line x1="51" y1="119" x2="150" y2="60" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="51" y1="131" x2="150" y2="210" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="92" y="78" fill="#1d1d1f" font-size="11" font-weight="600">Entrar</text>
+                            <text x="78" y="185" fill="#1d1d1f" font-size="11" font-weight="600">No entrar</text>
+                            <!-- nodo dominante -->
+                            <circle cx="160" cy="60" r="11" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="160" y="44" text-anchor="middle" fill="#1a5e3a" font-size="11" font-weight="700">Dominante</text>
+                            <!-- terminal no entrar -->
+                            <text x="165" y="214" fill="#6e6e73" font-size="12" font-weight="700">(0, 5)</text>
+                            <!-- ramas dominante -->
+                            <line x1="171" y1="55" x2="280" y2="28" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="171" y1="66" x2="280" y2="95" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="220" y="33" fill="#1d1d1f" font-size="11" font-weight="600">Pelear</text>
+                            <text x="212" y="92" fill="#1d1d1f" font-size="11" font-weight="600">Acomodar</text>
+                            <text x="288" y="32" fill="#c73e6e" font-size="12" font-weight="700">(−1, 0)</text>
+                            <text x="288" y="99" fill="#1a5e3a" font-size="12" font-weight="700">(2, 2)</text>
+                        </svg>
+                        <p class="caption">Ideal cuando el <strong>orden importa</strong>: quién mueve primero y quién observa qué. "Pelear" no es creíble: una vez dentro el entrante, acomodar le da más al dominante (2 &gt; 0).</p>
+                    </div>
+                </div>
+                <div class="forms-note">
+                    Todo árbol se puede volver matriz, pero al hacerlo se pierde el <strong>orden de las jugadas</strong> y <strong>quién sabe qué</strong>. La matriz puede esconder amenazas que el árbol revela como no creíbles.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: INFORMACIÓN PERFECTA VS IMPERFECTA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 3</div>
+                <h2 class="slide-title">Lo que cada jugador sabe se dibuja en el árbol</h2>
+            </div>
+            <div class="slide-body">
+                <div class="trees-container">
+                    <div class="tree-block">
+                        <h3>Información perfecta</h3>
+                        <p class="sub">El segundo jugador observa la jugada del primero</p>
+                        <svg viewBox="0 0 320 210" style="width:100%; height:auto; max-width:320px;">
+                            <circle cx="160" cy="30" r="11" fill="#2d1b4e" stroke="white" stroke-width="2"/>
+                            <text x="160" y="18" text-anchor="middle" fill="#2d1b4e" font-size="11" font-weight="700">J1</text>
+                            <line x1="151" y1="37" x2="80" y2="100" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="169" y1="37" x2="240" y2="100" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="95" y="70" fill="#1d1d1f" font-size="10" font-weight="600">Izq.</text>
+                            <text x="215" y="70" fill="#1d1d1f" font-size="10" font-weight="600">Der.</text>
+                            <circle cx="80" cy="110" r="11" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="80" y="100" text-anchor="middle" fill="#1a5e3a" font-size="10" font-weight="700">J2</text>
+                            <circle cx="240" cy="110" r="11" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="240" y="100" text-anchor="middle" fill="#1a5e3a" font-size="10" font-weight="700">J2</text>
+                            <line x1="72" y1="118" x2="45" y2="175" stroke="#6e6e73" stroke-width="1.5"/>
+                            <line x1="88" y1="118" x2="115" y2="175" stroke="#6e6e73" stroke-width="1.5"/>
+                            <line x1="232" y1="118" x2="205" y2="175" stroke="#6e6e73" stroke-width="1.5"/>
+                            <line x1="248" y1="118" x2="275" y2="175" stroke="#6e6e73" stroke-width="1.5"/>
+                            <text x="40" y="192" text-anchor="middle" fill="#6e6e73" font-size="10">•</text>
+                            <text x="120" y="192" text-anchor="middle" fill="#6e6e73" font-size="10">•</text>
+                            <text x="200" y="192" text-anchor="middle" fill="#6e6e73" font-size="10">•</text>
+                            <text x="280" y="192" text-anchor="middle" fill="#6e6e73" font-size="10">•</text>
+                        </svg>
+                        <p>Cada nodo de J2 está solo: sabe exactamente dónde está. Ejemplo: ajedrez, o una empresa que anuncia y la otra observa antes de decidir.</p>
+                    </div>
+                    <div class="tree-block">
+                        <h3>Información imperfecta</h3>
+                        <p class="sub">El segundo jugador no observó la jugada del primero</p>
+                        <svg viewBox="0 0 320 210" style="width:100%; height:auto; max-width:320px;">
+                            <circle cx="160" cy="30" r="11" fill="#2d1b4e" stroke="white" stroke-width="2"/>
+                            <text x="160" y="18" text-anchor="middle" fill="#2d1b4e" font-size="11" font-weight="700">J1</text>
+                            <line x1="151" y1="37" x2="80" y2="100" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="169" y1="37" x2="240" y2="100" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="95" y="70" fill="#1d1d1f" font-size="10" font-weight="600">Izq.</text>
+                            <text x="215" y="70" fill="#1d1d1f" font-size="10" font-weight="600">Der.</text>
+                            <ellipse cx="160" cy="110" rx="118" ry="22" fill="none" stroke="#c73e6e" stroke-width="2" stroke-dasharray="6 4"/>
+                            <text x="160" y="148" text-anchor="middle" fill="#c73e6e" font-size="10" font-weight="700">J2 no distingue estos nodos</text>
+                            <circle cx="80" cy="110" r="11" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="80" y="100" text-anchor="middle" fill="#1a5e3a" font-size="10" font-weight="700">J2</text>
+                            <circle cx="240" cy="110" r="11" fill="#00d4ff" stroke="white" stroke-width="2"/>
+                            <text x="240" y="100" text-anchor="middle" fill="#1a5e3a" font-size="10" font-weight="700">J2</text>
+                            <line x1="72" y1="118" x2="48" y2="172" stroke="#6e6e73" stroke-width="1.5"/>
+                            <line x1="88" y1="118" x2="112" y2="172" stroke="#6e6e73" stroke-width="1.5"/>
+                            <line x1="232" y1="118" x2="208" y2="172" stroke="#6e6e73" stroke-width="1.5"/>
+                            <line x1="248" y1="118" x2="272" y2="172" stroke="#6e6e73" stroke-width="1.5"/>
+                        </svg>
+                        <p>La línea punteada agrupa los nodos que J2 no puede distinguir. Así se dibuja un movimiento <strong>simultáneo</strong>: el dilema del prisionero es un árbol con este óvalo.</p>
+                    </div>
+                </div>
+                <div class="info-warning">
+                    No confundir: <strong>perfecta o imperfecta</strong> es si observo las jugadas previas. <strong>Completa o incompleta</strong> es si conozco los pagos del rival, y eso se modela más adelante con juegos bayesianos.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: DOMINANCIA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2</div>
+                <h2 class="slide-title">Dominancia: descartar lo que nadie racional jugaría</h2>
+            </div>
+            <div class="slide-body">
+                <div class="dom-grid">
+                    <div class="dom-card strict">
+                        <div class="label">Estrictamente dominada</div>
+                        <h3>Otra opción te da siempre más</h3>
+                        <p>Existe otra estrategia propia que da un pago <strong>estrictamente mayor</strong> haga lo que haga el rival. Ningún jugador racional la juega jamás.</p>
+                        <div class="consequence">Eliminarlas es <strong>robusto</strong>: el resultado no depende del orden en que las borres. Es la base de la eliminación iterada.</div>
+                    </div>
+                    <div class="dom-card weak">
+                        <div class="label">Débilmente dominada</div>
+                        <h3>Otra opción nunca te da menos</h3>
+                        <p>Existe otra que <strong>nunca</strong> da menos y <strong>a veces</strong> da más. Es "tan buena o mejor", pero no estrictamente mejor en todos los casos.</p>
+                        <div class="consequence">Cuidado: eliminarlas <strong>sí depende del orden</strong> y puede borrar equilibrios legítimos. Se usa como advertencia, no como método.</div>
+                    </div>
+                </div>
+                <div class="dom-note">
+                    Una estrategia es <strong>racionalizable</strong> si es la mejor respuesta a alguna creencia razonable sobre el rival. En juegos de dos jugadores, lo racionalizable coincide con lo que sobrevive a la eliminación de estrictamente dominadas.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: IESDS PASO A PASO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, en acción</div>
+                <h2 class="slide-title">Eliminación iterada, paso a paso</h2>
+            </div>
+            <div class="slide-body">
+                <div class="iesds-container">
+                    <div class="iesds-matrix-wrap">
+                        <table class="gmatrix">
+                            <tr>
+                                <th class="corner"></th>
+                                <th>B: alta</th>
+                                <th>B: media</th>
+                                <th>B: baja</th>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: alta</td>
+                                <td><span class="pf">3</span>, <span class="pc">0</span></td>
+                                <td class="survivor"><span class="pf">2</span>, <span class="pc">1</span></td>
+                                <td class="dim"><span class="pf">1</span>, <span class="pc">0</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: media</td>
+                                <td class="dim"><span class="pf">2</span>, <span class="pc">1</span></td>
+                                <td class="dim"><span class="pf">1</span>, <span class="pc">1</span></td>
+                                <td class="dim"><span class="pf">1</span>, <span class="pc">0</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead dim">A: baja</td>
+                                <td class="dim"><span class="pf">0</span>, <span class="pc">1</span></td>
+                                <td class="dim"><span class="pf">0</span>, <span class="pc">1</span></td>
+                                <td class="dim"><span class="pf">0</span>, <span class="pc">0</span></td>
+                            </tr>
+                        </table>
+                        <p class="cap"><span class="legend-pf">rojo</span> = pago de A (filas) · <span class="legend-pc">verde</span> = pago de B (columnas). Sobrevive (alta, media) = (2, 1).</p>
+                    </div>
+                    <div class="iesds-steps">
+                        <div class="iesds-step"><div class="n">1</div><div><strong>A: baja</strong> está dominada por A: alta (3&gt;0, 2&gt;0, 1&gt;0). Se elimina.</div></div>
+                        <div class="iesds-step"><div class="n">2</div><div>Ahora <strong>B: baja</strong> está dominada por B: media para B (1&gt;0). Se elimina.</div></div>
+                        <div class="iesds-step"><div class="n">3</div><div>En lo que queda, <strong>A: media</strong> está dominada por A: alta. Se elimina.</div></div>
+                        <div class="iesds-step"><div class="n">4</div><div>Por último <strong>B: alta</strong> cede ante B: media. Queda <strong>(alta, media)</strong>.</div></div>
+                        <div class="kcr-box">
+                            <div class="tag">El supuesto detrás</div>
+                            Funciona si hay conocimiento común de racionalidad: yo soy racional, sé que tú lo eres, sé que tú sabes que yo lo soy... Cada ronda consume un nivel de esa cadena.
+                        </div>
+                    </div>
+                </div>
+                <div class="iesds-foot">
+                    Por eso es el <strong>primer filtro</strong> antes del equilibrio de Nash: pide supuestos mínimos y a veces resuelve el juego completo. Cuando no hay dominadas, hay que pasar a Nash.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: COOPETICIÓN + VALUE NET ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Caso integrador</div>
+                <h2 class="slide-title">Coopetición: cooperar y competir a la vez</h2>
+            </div>
+            <div class="slide-body">
+                <div class="valuenet-container">
+                    <div class="valuenet-viz">
+                        <svg viewBox="0 0 420 340" style="width:100%; height:auto;">
+                            <!-- centro -->
+                            <rect x="155" y="145" width="110" height="52" rx="10" fill="#2d1b4e"/>
+                            <text x="210" y="168" text-anchor="middle" fill="white" font-size="14" font-weight="700">Tu</text>
+                            <text x="210" y="185" text-anchor="middle" fill="white" font-size="14" font-weight="700">empresa</text>
+                            <!-- clientes arriba -->
+                            <rect x="160" y="20" width="100" height="44" rx="10" fill="#00d4ff"/>
+                            <text x="210" y="47" text-anchor="middle" fill="#2d1b4e" font-size="14" font-weight="700">Clientes</text>
+                            <!-- proveedores abajo -->
+                            <rect x="160" y="278" width="100" height="44" rx="10" fill="#00d4ff"/>
+                            <text x="210" y="305" text-anchor="middle" fill="#2d1b4e" font-size="13" font-weight="700">Proveedores</text>
+                            <!-- competidores izquierda -->
+                            <rect x="12" y="149" width="108" height="44" rx="10" fill="#c73e6e"/>
+                            <text x="66" y="176" text-anchor="middle" fill="white" font-size="13" font-weight="700">Competidores</text>
+                            <!-- complementadores derecha -->
+                            <rect x="300" y="149" width="112" height="44" rx="10" fill="#1a5e3a"/>
+                            <text x="356" y="170" text-anchor="middle" fill="white" font-size="12" font-weight="700">Complement-</text>
+                            <text x="356" y="184" text-anchor="middle" fill="white" font-size="12" font-weight="700">adores</text>
+                            <!-- conectores -->
+                            <line x1="210" y1="64" x2="210" y2="145" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="210" y1="197" x2="210" y2="278" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="120" y1="171" x2="155" y2="171" stroke="#6e6e73" stroke-width="2"/>
+                            <line x1="265" y1="171" x2="300" y2="171" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="210" y="120" text-anchor="middle" fill="#6e6e73" font-size="9" font-style="italic">eje vertical</text>
+                            <text x="210" y="240" text-anchor="middle" fill="#6e6e73" font-size="9" font-style="italic">eje vertical</text>
+                            <text x="138" y="142" text-anchor="middle" fill="#6e6e73" font-size="9" font-style="italic">competir</text>
+                            <text x="283" y="142" text-anchor="middle" fill="#6e6e73" font-size="9" font-style="italic">cooperar</text>
+                        </svg>
+                    </div>
+                    <div class="valuenet-text">
+                        <h3>La red de valor (Brandenburger y Nalebuff)</h3>
+                        <p>El negocio es <strong>cooperación</strong> al crear el pastel y <strong>competencia</strong> al repartirlo. Un complementador hace que el cliente valore más tu producto cuando también tiene el del otro: es la "sexta fuerza" que no aparece en Porter.</p>
+                        <div class="punch">Un mismo jugador puede ocupar varios roles a la vez. Justo lo que pasa entre Samsung y Apple.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: SAMSUNG-APPLE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Caso integrador, datos reales</div>
+                <h2 class="slide-title">Samsung y Apple: rivales que se necesitan</h2>
+            </div>
+            <div class="slide-body">
+                <div class="samsung-container">
+                    <div class="samsung-left">
+                        <div class="duality-banner">
+                            <h3>El mismo jugador, dos roles</h3>
+                            <p><span class="role">Competidor:</span> los Galaxy compiten de frente con el iPhone. <span class="role">Proveedor:</span> Samsung Display fabrica los paneles OLED del iPhone y le vende memoria. Apple le compra a su rival porque pocos igualan esa capacidad.</p>
+                        </div>
+                        <div class="stat-row">
+                            <div class="stat-card">
+                                <div class="val">64,5 %</div>
+                                <div class="desc">de los paneles OLED del iPhone 17 los envió Samsung Display</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="val">≈ 21 %</div>
+                                <div class="desc">cuota global de cada uno: empate técnico a inicios de 2026</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="val">3 años</div>
+                                <div class="desc">acuerdo exclusivo de paneles OLED para el iPhone plegable</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="samsung-right">
+                        <h3>Modelado como coopetición</h3>
+                        <table class="gmatrix">
+                            <tr>
+                                <th class="corner"></th>
+                                <th>Apple coopera</th>
+                                <th>Apple compite duro</th>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">Samsung suministra</td>
+                                <td class="nash"><span class="pf">8</span>, <span class="pc">10</span></td>
+                                <td><span class="pf">4</span>, <span class="pc">7</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">Samsung corta</td>
+                                <td><span class="pf">6</span>, <span class="pc">5</span></td>
+                                <td><span class="pf">3</span>, <span class="pc">4</span></td>
+                            </tr>
+                        </table>
+                        <p class="note">Cifras pedagógicas, no contables. Cooperar es la mejor respuesta de ambos: por eso la relación persiste pese a la rivalidad.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: CIERRE + CASO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis y trabajo en clase</div>
+                <h2 class="slide-title">Tres ideas y un caso por resolver</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Acción no es estrategia</h4>
+                        <p>Matriz para lo simultáneo, árbol para el orden. Pasar de árbol a matriz pierde quién mueve primero y quién observa qué.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>Eliminar es el primer filtro</h4>
+                        <p>Descartar lo estrictamente dominado es robusto y barato. A veces resuelve el juego antes de pensar en Nash.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>El rival puede ser aliado</h4>
+                        <p>La coopetición y la red de valor muestran que un mismo jugador compite y coopera a la vez.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 3: PagoTico entre la guerra de promociones y SINPE Móvil</h3>
+                    <p>PagoTico compite con la fintech Colibrí Pay por usuarios, pero coopera con los bancos a través de SINPE Móvil. Compite para repartir el pastel y coopera para agrandarlo, igual que Samsung y Apple.</p>
+                    <p class="tools"><strong>Hoy, en Excel:</strong> arman la matriz de pagos, dejan que la hoja marque sola las mejores respuestas y las estrategias dominadas, hacen la eliminación iterada hasta el equilibrio, prueban la sensibilidad y dibujan la red de valor.</p>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 5</div>
+                    <div class="content">Tadelis (2013), capítulos 5 y 6 · Instalar Nashpy ('pip install nashpy') · Equilibrio de Nash, juegos continuos y estrategias mixtas</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
