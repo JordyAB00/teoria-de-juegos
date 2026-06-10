@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 5 - Equilibrio de Nash, juegos continuos y estrategias mixtas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 24px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 22px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS GUÍA ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .question-text { font-size: 15.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .questions-footer {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        /* ============== BLOQUES GENÉRICOS ============== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .form-block h3 { color: #2d1b4e; font-size: 20px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .gps-callout h3 { font-size: 20px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14.5px; line-height: 1.55; opacity: 0.95; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        /* matriz de pagos genérica */
+        .gmatrix { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+        .gmatrix th, .gmatrix td {
+            border: 1px solid #e5e5e7;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .gmatrix th {
+            background: #2d1b4e;
+            color: white;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+        .gmatrix th.corner { background: #f0f0f2; }
+        .gmatrix td.rowhead {
+            background: #2d1b4e;
+            color: white;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+        .gmatrix td .pf { color: #c73e6e; font-weight: 700; }
+        .gmatrix td .pc { color: #1a5e3a; font-weight: 700; }
+        .gmatrix td .br { text-decoration: underline; text-decoration-thickness: 2.5px; text-underline-offset: 3px; }
+        .gmatrix td.nash { background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(45,27,78,0.10)); outline: 2px solid #00d4ff; }
+
+        .legend-pf { color: #c73e6e; font-weight: 700; }
+        .legend-pc { color: #1a5e3a; font-weight: 700; }
+
+        .foot-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        .foot-banner {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 14px;
+            padding: 14px 22px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        /* ============== TARJETAS PEQUEÑAS ============== */
+        .mini-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; }
+        .mini-cards.three { grid-template-columns: repeat(3, 1fr); }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            border-top: 4px solid #00d4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .mini-card h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 5px; }
+        .mini-card p { font-size: 12.5px; color: #1d1d1f; line-height: 1.45; }
+        .mini-card .ex { font-size: 12px; color: #6e6e73; font-style: italic; margin-top: 5px; }
+
+        /* ============== PASOS ============== */
+        .steps-col { display: flex; flex-direction: column; gap: 10px; }
+        .step-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 11px 16px;
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+            font-size: 13.5px;
+            color: #1d1d1f;
+            line-height: 1.45;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .step-item .n {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800;
+        }
+        .step-item strong { color: #2d1b4e; }
+
+        .dark-box {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+        .dark-box .tag {
+            font-size: 11px; color: #00d4ff; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+        }
+
+        /* ============== CÓDIGO ============== */
+        pre.code-block {
+            background: #1e1530;
+            color: #e8e6f0;
+            border-radius: 14px;
+            padding: 18px 20px;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            font-size: 13.5px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+            text-align: left;
+            border: 1px solid #3a2d5e;
+        }
+        pre.code-block .cm { color: #8a82a8; }
+        pre.code-block .kw { color: #00d4ff; }
+        pre.code-block .st { color: #7fd9a8; }
+
+        /* ============== TABLA COMPARATIVA ============== */
+        .compare-table { border-collapse: collapse; width: 100%; font-size: 14px; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .compare-table th, .compare-table td { border: 1px solid #e5e5e7; padding: 13px 14px; text-align: left; line-height: 1.45; }
+        .compare-table th { background: #2d1b4e; color: white; font-size: 13px; }
+        .compare-table td.model { background: #f0f0f2; font-weight: 700; color: #2d1b4e; white-space: nowrap; }
+        .compare-table td { font-size: 13px; }
+
+        /* ============== ESTAD ============== */
+        .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .stat-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .stat-card .val {
+            font-size: 23px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            line-height: 1.05; margin-bottom: 4px;
+        }
+        .stat-card .desc { font-size: 11.5px; color: #6e6e73; line-height: 1.35; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+
+        .closing-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px 24px;
+            border: 2px solid #00d4ff;
+            box-shadow: 0 4px 18px rgba(0,212,255,0.15);
+            margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 8px; }
+        .case-box p { font-size: 14px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 13px; color: #2d1b4e; }
+        .case-box .tools strong { color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 16px;
+            padding: 14px 22px;
+            margin-top: 14px;
+            text-align: center;
+        }
+        .next-week-box .label {
+            font-size: 11px; opacity: 0.85; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 14px;
+            z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed;
+            top: 22px;
+            right: 28px;
+            color: #6e6e73;
+            font-size: 13px;
+            z-index: 1000;
+            font-weight: 600;
+            background: rgba(255,255,255,0.92);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e5e5e7;
+            backdrop-filter: blur(8px);
+        }
+
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 26px; }
+            .cover-title { font-size: 38px; }
+            .questions-grid,
+            .two-col,
+            .mini-cards,
+            .mini-cards.three,
+            .stat-row,
+            .closing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">11</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 5</div>
+            <h1 class="cover-title">El punto donde nadie quiere moverse</h1>
+            <p class="cover-subtitle">Equilibrio de Nash, duopolios de Cournot, Bertrand y Hotelling, y estrategias mixtas aplicados a inteligencia de negocios</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: TRES PREGUNTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta</div>
+                <h2 class="slide-title">Tres preguntas que vamos a responder</h2>
+            </div>
+            <div class="slide-body">
+                <div class="questions-grid">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <p class="question-text">¿Qué condiciones definen un <strong>equilibrio de Nash</strong> en estrategias puras y por qué es una solución <strong>autosostenida</strong> que no necesita árbitro?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <p class="question-text">En los duopolios de <strong>Cournot, Bertrand y Hotelling</strong>, ¿qué intuición empresarial entrega cada modelo sobre cantidades, precios y posicionamiento?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <p class="question-text">¿Qué es una <strong>estrategia mixta</strong>, cómo se interpreta (aleatorizar o creencias del rival) y cuándo predice bien el comportamiento real?</p>
+                    </div>
+                </div>
+                <div class="questions-footer">
+                    La semana pasada eliminamos lo que nadie racional jugaría. Hoy aprendemos a encontrar el punto donde <strong>las mejores respuestas de todos coinciden</strong>, y a calcularlo con Python.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: EQUILIBRIO DE NASH ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1</div>
+                <h2 class="slide-title">Equilibrio de Nash: mejores respuestas que coinciden</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Método de las marcas</span>
+                        <h3>Guerra de precios entre dos operadores</h3>
+                        <p class="sub">Subraye la mejor respuesta de cada jugador en cada caso; donde coinciden las dos, hay equilibrio</p>
+                        <table class="gmatrix">
+                            <tr>
+                                <th class="corner"></th>
+                                <th>B: precio alto</th>
+                                <th>B: precio bajo</th>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: precio alto</td>
+                                <td><span class="pf">8</span>, <span class="pc">8</span></td>
+                                <td><span class="pf">2</span>, <span class="pc br">10</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: precio bajo</td>
+                                <td><span class="pf br">10</span>, <span class="pc">2</span></td>
+                                <td class="nash"><span class="pf br">4</span>, <span class="pc br">4</span></td>
+                            </tr>
+                        </table>
+                        <p class="caption"><span class="legend-pf">rojo</span> = pago de A · <span class="legend-pc">verde</span> = pago de B · subrayado = mejor respuesta. En <strong>(bajo, bajo)</strong> los dos subrayados coinciden: nadie mejora cambiando solo. Aunque (8, 8) era mejor para ambos.</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">La idea central</div>
+                        <h3>Autosostenido: nadie gana moviéndose solo</h3>
+                        <p>Un perfil de estrategias es <strong>equilibrio de Nash</strong> si la estrategia de cada jugador es su mejor respuesta a las de los demás. Una vez ahí, a nadie le conviene desviarse <strong>unilateralmente</strong>: el acuerdo se sostiene solo, sin contratos ni árbitros.</p>
+                        <div class="punch">Conexión con la semana 4: todo equilibrio de Nash <strong>sobrevive</strong> a la eliminación iterada de estrictamente dominadas. Cuando la eliminación ya no resuelve el juego, Nash es el siguiente filtro.</div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    Ojo: equilibrio <strong>no significa mejor resultado posible</strong>. Es consistencia mutua, no optimalidad social. La guerra de precios es estable aunque empobrezca a los dos.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: MULTIPLICIDAD Y EXISTENCIA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, la letra pequeña</div>
+                <h2 class="slide-title">Siempre hay al menos uno, pero puede haber varios</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Caza del ciervo</span>
+                        <h3>Dos equilibrios, ¿cuál ocurre?</h3>
+                        <p class="sub">Cooperar da más, pero solo si el otro también coopera</p>
+                        <table class="gmatrix">
+                            <tr>
+                                <th class="corner"></th>
+                                <th>B: ciervo</th>
+                                <th>B: liebre</th>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: ciervo</td>
+                                <td class="nash"><span class="pf">5</span>, <span class="pc">5</span></td>
+                                <td><span class="pf">0</span>, <span class="pc">3</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: liebre</td>
+                                <td><span class="pf">3</span>, <span class="pc">0</span></td>
+                                <td class="nash"><span class="pf">3</span>, <span class="pc">3</span></td>
+                            </tr>
+                        </table>
+                        <p class="caption">(Ciervo, ciervo) paga más pero es <strong>arriesgado</strong>; (liebre, liebre) es seguro pero inferior. Versión tica: adoptar SINPE Móvil vale la pena si los demás también lo usan. Los <strong>efectos de red</strong> son juegos de coordinación.</p>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Existencia (Nash, 1950):</strong> todo juego finito tiene al menos un equilibrio si se permiten estrategias mixtas. La prueba garantiza que existe, no dice cómo encontrarlo.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Multiplicidad:</strong> los juegos de coordinación tienen varios equilibrios y la teoría sola no dice cuál ocurrirá. Es el problema de selección.</div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>Puntos focales (Schelling):</strong> la cultura, la costumbre o lo "saliente" coordinan. ¿Por qué casi todos pagamos con SINPE y no con otra app? Porque esperamos que los demás lo usen.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">Dato para los curiosos</div>
+                            Computar un equilibrio de Nash es, en general, un problema computacionalmente duro (clase PPAD). Por eso usaremos Nashpy solo en juegos pequeños, donde sí es rápido y exacto.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: COURNOT ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, modelo 1 de 3</div>
+                <h2 class="slide-title">Cournot: competir eligiendo cuánto producir</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Ejemplo numérico</span>
+                        <h3>Demanda P = 100 − Q, costo marginal = 10</h3>
+                        <p class="sub">El mismo mercado bajo tres estructuras distintas</p>
+                        <svg viewBox="0 0 420 250" style="width:100%; height:auto;">
+                            <!-- eje base -->
+                            <line x1="30" y1="210" x2="400" y2="210" stroke="#6e6e73" stroke-width="1.5"/>
+                            <!-- Monopolio -->
+                            <rect x="55" y="67" width="62" height="143" rx="6" fill="#2d1b4e"/>
+                            <text x="86" y="58" text-anchor="middle" fill="#2d1b4e" font-size="15" font-weight="800">P = 55</text>
+                            <text x="86" y="228" text-anchor="middle" fill="#1d1d1f" font-size="12" font-weight="700">Monopolio</text>
+                            <text x="86" y="243" text-anchor="middle" fill="#6e6e73" font-size="11">Q = 45</text>
+                            <!-- Cournot -->
+                            <rect x="180" y="106" width="62" height="104" rx="6" fill="#00d4ff"/>
+                            <text x="211" y="97" text-anchor="middle" fill="#2d1b4e" font-size="15" font-weight="800">P = 40</text>
+                            <text x="211" y="228" text-anchor="middle" fill="#1d1d1f" font-size="12" font-weight="700">Duopolio Cournot</text>
+                            <text x="211" y="243" text-anchor="middle" fill="#6e6e73" font-size="11">Q = 60 (30 + 30)</text>
+                            <!-- Competencia -->
+                            <rect x="305" y="184" width="62" height="26" rx="6" fill="#1a5e3a"/>
+                            <text x="336" y="175" text-anchor="middle" fill="#1a5e3a" font-size="15" font-weight="800">P = 10</text>
+                            <text x="336" y="228" text-anchor="middle" fill="#1d1d1f" font-size="12" font-weight="700">Competencia</text>
+                            <text x="336" y="243" text-anchor="middle" fill="#6e6e73" font-size="11">Q = 90</text>
+                            <!-- línea de costo marginal -->
+                            <line x1="30" y1="184" x2="400" y2="184" stroke="#c73e6e" stroke-width="1.5" stroke-dasharray="6 4"/>
+                            <text x="398" y="178" text-anchor="end" fill="#c73e6e" font-size="11" font-weight="700">costo marginal = 10</text>
+                        </svg>
+                        <p class="caption">El duopolio queda <strong>entre</strong> el monopolio y la competencia perfecta: cada firma produce 30 y gana 900. Si coludieran (22.5 cada una) ganarían más, pero cada una tiene incentivo a producir de más: el dilema del prisionero en versión continua.</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">La intuición</div>
+                        <h3>Las cantidades son sustitutos estratégicos</h3>
+                        <p>Si mi rival inunda el mercado, el precio cae y a mí me conviene <strong>producir menos</strong>. Las curvas de reacción tienen pendiente negativa: respondo en dirección contraria a lo que hace el otro.</p>
+                        <div class="punch">Cournot aplica cuando la capacidad se decide <strong>por adelantado</strong> y es rígida: manufactura, commodities, infraestructura de red. Más firmas en el mercado, precio más cercano al competitivo.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: BERTRAND ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, modelo 2 de 3</div>
+                <h2 class="slide-title">Bertrand: competir en precios y su paradoja</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">La paradoja</span>
+                        <h3>Con solo dos firmas, el precio cae al costo</h3>
+                        <p class="sub">Producto idéntico: el que cobra un colón menos se lleva todo el mercado</p>
+                        <svg viewBox="0 0 420 230" style="width:100%; height:auto;">
+                            <!-- escalera descendente -->
+                            <path d="M 40 40 L 110 40 L 110 70 L 180 70 L 180 100 L 250 100 L 250 130 L 320 130 L 320 160 L 385 160"
+                                  fill="none" stroke="#2d1b4e" stroke-width="3.5" stroke-linejoin="round"/>
+                            <text x="75" y="32" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="700">A: 50</text>
+                            <text x="145" y="62" text-anchor="middle" fill="#00b4dc" font-size="12" font-weight="700">B: 45</text>
+                            <text x="215" y="92" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="700">A: 40</text>
+                            <text x="285" y="122" text-anchor="middle" fill="#00b4dc" font-size="12" font-weight="700">B: 35</text>
+                            <text x="352" y="152" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="700">...</text>
+                            <!-- piso costo marginal -->
+                            <line x1="30" y1="185" x2="400" y2="185" stroke="#c73e6e" stroke-width="2" stroke-dasharray="6 4"/>
+                            <text x="215" y="207" text-anchor="middle" fill="#c73e6e" font-size="12.5" font-weight="700">equilibrio: precio = costo marginal, utilidad cero</text>
+                        </svg>
+                        <p class="caption">Pasar de una a dos firmas lleva el precio del monopolio al competitivo. Es "paradoja" porque <strong>casi nunca lo vemos</strong> en la realidad. La pregunta correcta no es si el modelo falla, sino <strong>qué supuesto falla</strong>.</p>
+                    </div>
+                    <div>
+                        <div class="mini-cards" style="grid-template-columns: 1fr 1fr;">
+                            <div class="mini-card">
+                                <h4>Diferenciación</h4>
+                                <p>Si los productos no son idénticos, bajar el precio ya no roba todo el mercado.</p>
+                                <p class="ex">Marca, cobertura, servicio al cliente.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Capacidad limitada</h4>
+                                <p>Si no puedo atender toda la demanda, no gano nada robándola completa.</p>
+                                <p class="ex">Espectro y antenas en telecom.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Interacción repetida</h4>
+                                <p>Si competimos cada mes, bajar hoy invita represalia mañana: colusión tácita.</p>
+                                <p class="ex">Lo veremos en juegos repetidos.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Costos de cambio</h4>
+                                <p>Si al cliente le cuesta comparar o cambiarse, el precio no lo decide todo.</p>
+                                <p class="ex">Trámite de portabilidad, permanencias.</p>
+                            </div>
+                        </div>
+                        <div class="foot-banner" style="margin-top:14px;">
+                            Los precios son <strong>complementos estratégicos</strong>: si el rival sube, me conviene subir. Lo contrario de Cournot.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: HOTELLING ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, modelo 3 de 3</div>
+                <h2 class="slide-title">Hotelling: por qué los rivales terminan pareciéndose</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">La playa lineal</span>
+                        <h3>Dos heladeros en una playa</h3>
+                        <p class="sub">Cada bañista compra al carrito más cercano; los carritos eligen dónde pararse</p>
+                        <svg viewBox="0 0 420 240" style="width:100%; height:auto;">
+                            <!-- estado inicial -->
+                            <text x="20" y="30" fill="#6e6e73" font-size="11.5" font-weight="700">INICIO</text>
+                            <line x1="40" y1="60" x2="380" y2="60" stroke="#6e6e73" stroke-width="2"/>
+                            <circle cx="70" cy="60" r="3" fill="#d0d0d4"/><circle cx="110" cy="60" r="3" fill="#d0d0d4"/><circle cx="150" cy="60" r="3" fill="#d0d0d4"/><circle cx="190" cy="60" r="3" fill="#d0d0d4"/><circle cx="230" cy="60" r="3" fill="#d0d0d4"/><circle cx="270" cy="60" r="3" fill="#d0d0d4"/><circle cx="310" cy="60" r="3" fill="#d0d0d4"/><circle cx="350" cy="60" r="3" fill="#d0d0d4"/>
+                            <circle cx="125" cy="60" r="11" fill="#2d1b4e" stroke="white" stroke-width="2.5"/>
+                            <text x="125" y="42" text-anchor="middle" fill="#2d1b4e" font-size="11" font-weight="800">A</text>
+                            <circle cx="295" cy="60" r="11" fill="#00d4ff" stroke="white" stroke-width="2.5"/>
+                            <text x="295" y="42" text-anchor="middle" fill="#00b4dc" font-size="11" font-weight="800">B</text>
+                            <!-- flechas hacia el centro -->
+                            <path d="M 145 92 L 195 92" stroke="#c73e6e" stroke-width="2.5" marker-end="url(#arrowR)"/>
+                            <path d="M 275 92 L 225 92" stroke="#c73e6e" stroke-width="2.5" marker-end="url(#arrowR)"/>
+                            <text x="210" y="112" text-anchor="middle" fill="#c73e6e" font-size="11.5" font-weight="700">cada uno gana clientes acercándose al otro</text>
+                            <defs>
+                                <marker id="arrowR" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                                    <path d="M0,0 L7,3 L0,6 Z" fill="#c73e6e"/>
+                                </marker>
+                            </defs>
+                            <!-- estado final -->
+                            <text x="20" y="150" fill="#6e6e73" font-size="11.5" font-weight="700">EQUILIBRIO</text>
+                            <line x1="40" y1="180" x2="380" y2="180" stroke="#6e6e73" stroke-width="2"/>
+                            <circle cx="70" cy="180" r="3" fill="#d0d0d4"/><circle cx="110" cy="180" r="3" fill="#d0d0d4"/><circle cx="150" cy="180" r="3" fill="#d0d0d4"/><circle cx="190" cy="180" r="3" fill="#d0d0d4"/><circle cx="230" cy="180" r="3" fill="#d0d0d4"/><circle cx="270" cy="180" r="3" fill="#d0d0d4"/><circle cx="310" cy="180" r="3" fill="#d0d0d4"/><circle cx="350" cy="180" r="3" fill="#d0d0d4"/>
+                            <circle cx="199" cy="180" r="11" fill="#2d1b4e" stroke="white" stroke-width="2.5"/>
+                            <circle cx="223" cy="180" r="11" fill="#00d4ff" stroke="white" stroke-width="2.5"/>
+                            <text x="211" y="215" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="700">ambos en el centro: mínima diferenciación</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="mini-cards three" style="grid-template-columns: 1fr;">
+                            <div class="mini-card">
+                                <h4>Productos que se parecen</h4>
+                                <p>Los planes pospago de Kölbi, Liberty y Claro convergen en gigas, minutos y precio: todos pelean por el cliente "mediano".</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Política que converge</h4>
+                                <p>En contiendas de dos, las plataformas se acercan al votante mediano. La lógica es la misma playa.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Negocios que se aglomeran</h4>
+                                <p>Concesionarios de autos, comida rápida y hoteles se instalan unos junto a otros: ceder el centro regala clientes.</p>
+                            </div>
+                        </div>
+                        <div class="foot-note" style="margin-top:14px; text-align:left;">
+                            Honestidad científica: el resultado depende de supuestos técnicos (con otros costos de transporte la predicción se invierte a <strong>máxima</strong> diferenciación). Úsenlo como intuición potente, no como ley.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: MAPA DE DECISIÓN ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, síntesis</div>
+                <h2 class="slide-title">¿Cuál modelo uso? Mapa rápido de decisión</h2>
+            </div>
+            <div class="slide-body">
+                <table class="compare-table">
+                    <tr>
+                        <th>Modelo</th>
+                        <th>¿En qué compiten?</th>
+                        <th>Reacción al rival</th>
+                        <th>Predicción de precio</th>
+                        <th>Pregunta empresarial</th>
+                    </tr>
+                    <tr>
+                        <td class="model">Cournot</td>
+                        <td>Cantidades / capacidad</td>
+                        <td>Sustitutos: si él produce más, yo menos</td>
+                        <td>Intermedio entre monopolio y competencia</td>
+                        <td>¿Cuánto producir o cuánta capacidad instalar?</td>
+                    </tr>
+                    <tr>
+                        <td class="model">Bertrand</td>
+                        <td>Precios</td>
+                        <td>Complementos: si él sube, yo subo</td>
+                        <td>Igual al costo marginal (sin diferenciación)</td>
+                        <td>¿A qué precio vender?</td>
+                    </tr>
+                    <tr>
+                        <td class="model">Hotelling</td>
+                        <td>Posicionamiento</td>
+                        <td>Acercarse al rival roba su mercado</td>
+                        <td>Margen según qué tan "lejos" estén</td>
+                        <td>¿Dónde y cómo posicionarse?</td>
+                    </tr>
+                </table>
+                <div class="foot-banner">
+                    Regla práctica: si la capacidad es <strong>rígida</strong> y se decide antes (fábricas, antenas, espectro), piense en Cournot. Si la producción es <strong>flexible</strong> y se puede atender cualquier demanda (servicios, software), piense en Bertrand. Casi siempre, además, hay un componente Hotelling de posicionamiento.
+                </div>
+                <div class="foot-note">
+                    En el caso de hoy aplicaremos los tres lentes al mercado móvil costarricense: Kölbi, Liberty y Claro.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: ESTRATEGIAS MIXTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 3</div>
+                <h2 class="slide-title">Estrategias mixtas: cuando conviene ser impredecible</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Matching pennies</span>
+                        <h3>Un juego sin equilibrio puro</h3>
+                        <p class="sub">A gana si coinciden las monedas; B gana si difieren</p>
+                        <table class="gmatrix">
+                            <tr>
+                                <th class="corner"></th>
+                                <th>B: cara</th>
+                                <th>B: cruz</th>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: cara</td>
+                                <td><span class="pf">+1</span>, <span class="pc">−1</span></td>
+                                <td><span class="pf">−1</span>, <span class="pc">+1</span></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">A: cruz</td>
+                                <td><span class="pf">−1</span>, <span class="pc">+1</span></td>
+                                <td><span class="pf">+1</span>, <span class="pc">−1</span></td>
+                            </tr>
+                        </table>
+                        <p class="caption">En cualquier celda, alguien quiere cambiar: si soy predecible, me explotan. El único equilibrio es <strong>mixto</strong>: cada uno juega cara y cruz con probabilidad 1/2, dejando al rival <strong>indiferente</strong>. Es el modelo del penal, el saque de tenis, el farol en póker y la auditoría sorpresa.</p>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Interpretación clásica:</strong> aleatorizo de verdad (un dado, una moneda) para que no me lean. Funciona en juegos de pura rivalidad, donde ser predecible cuesta caro.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Interpretación de creencias:</strong> nadie tira dados; las probabilidades son la <strong>conjetura del rival</strong> sobre lo que haré. Útil cuando la "aleatoriedad" refleja incertidumbre genuina.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">¿Y la gente juega así? Debate abierto</div>
+                            En 1,417 penales de ligas europeas, los profesionales mezclaron casi exactamente como predice la teoría (Palacios-Huerta, 2003); en tenis de élite también, y más cuanto mejor es el jugador. Pero estudios masivos en béisbol y fútbol americano hallan desviaciones sistemáticas, y en laboratorio los novatos fallan. Síntesis honesta: el equilibrio mixto predice bien con <strong>expertos, incentivos fuertes y contexto familiar</strong>; fuera de ahí, no tanto.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: NASHPY ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Demostración en vivo</div>
+                <h2 class="slide-title">Nashpy: el cálculo en tres pasos</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div>
+                        <pre class="code-block"><span class="cm"># En Colab no se instala nada complicado:</span>
+<span class="cm"># una celda hace pip install nashpy</span>
+
+<span class="kw">import</span> nashpy <span class="kw">as</span> nash
+
+A = [[ 1, -1],
+     [-1,  1]]   <span class="cm"># pagos del jugador fila</span>
+B = [[-1,  1],
+     [ 1, -1]]   <span class="cm"># pagos del jugador columna</span>
+
+juego = nash.Game(A, B)
+<span class="kw">for</span> eq <span class="kw">in</span> juego.support_enumeration():
+    <span class="kw">print</span>(eq)
+
+<span class="cm"># Resultado para matching pennies:</span>
+<span class="cm"># (array([0.5, 0.5]), array([0.5, 0.5]))</span>
+<span class="cm"># cada jugador mezcla 50% y 50%</span></pre>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Escribir las matrices:</strong> una con los pagos del jugador fila y otra con los del jugador columna. Es lo único que ustedes editarán hoy.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Ejecutar support enumeration:</strong> el algoritmo prueba sistemáticamente qué combinaciones de acciones podrían mezclarse y calcula las probabilidades que dejan al rival indiferente.</div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>Leer los equilibrios:</strong> cada resultado es un par de vectores de probabilidad. (1, 0) significa estrategia pura; (0.5, 0.5) significa mezclar mitad y mitad.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">Límites de la herramienta</div>
+                            Nashpy solo resuelve juegos de <strong>dos jugadores</strong> y escala mal en juegos grandes. Para lo que haremos hoy (matrices de 2x2 y 3x3) es rápido, exacto y más que suficiente.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 11: CIERRE + CASO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis y trabajo en clase</div>
+                <h2 class="slide-title">Tres ideas y un caso por resolver</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Nash es estabilidad, no felicidad</h4>
+                        <p>Donde las mejores respuestas coinciden, nadie se mueve solo. Puede ser un punto malo para todos, y aun así sostenerse.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>El modelo depende de la variable</h4>
+                        <p>Cantidades rígidas: Cournot. Precios flexibles: Bertrand. Posicionamiento: Hotelling. Elegir el lente correcto es la mitad del análisis.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>A veces lo óptimo es un dado</h4>
+                        <p>Sin equilibrio puro, la mejor estrategia es mezclar con las probabilidades exactas que dejan al rival indiferente.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 4: Kölbi contra Liberty, la guerra del pospago</h3>
+                    <p>Con datos reales de SUTEL, su equipo asesora a Kölbi: perdió casi 20 puntos de cuota pospago desde 2019. Modelarán la guerra de descuentos como juego, calcularán el equilibrio con Nashpy, compararán las predicciones de Cournot y Bertrand para el mercado móvil y resolverán en mixtas la batalla por la portabilidad.</p>
+                    <p class="tools"><strong>Hoy, en Google Colab:</strong> un notebook pre-armado donde solo cambian los números de las matrices y ejecutan las celdas. Sin programar: editar, ejecutar, interpretar.</p>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 6</div>
+                    <div class="content">Tadelis (2013), capítulos 7 y 8 · Osborne (2004), capítulo 16 sobre bargaining de Rubinstein · Juegos secuenciales, inducción reversa y negociación</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
