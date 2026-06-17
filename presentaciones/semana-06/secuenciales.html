@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 6 - Juegos secuenciales, inducción reversa y negociación</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 24px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 22px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS GUÍA ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .question-text { font-size: 15.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .questions-footer {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        /* ============== BLOQUES GENÉRICOS ============== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .form-block h3 { color: #2d1b4e; font-size: 20px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .gps-callout h3 { font-size: 20px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14.5px; line-height: 1.55; opacity: 0.95; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        /* tabla de pagos genérica */
+        .gmatrix { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+        .gmatrix th, .gmatrix td {
+            border: 1px solid #e5e5e7;
+            padding: 10px 6px;
+            text-align: center;
+        }
+        .gmatrix th {
+            background: #2d1b4e;
+            color: white;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+        .gmatrix th.corner { background: #f0f0f2; }
+        .gmatrix td.rowhead {
+            background: #2d1b4e;
+            color: white;
+            font-weight: 600;
+            font-size: 12.5px;
+        }
+        .gmatrix td .pf { color: #c73e6e; font-weight: 700; }
+        .gmatrix td .pc { color: #1a5e3a; font-weight: 700; }
+        .gmatrix td .br { text-decoration: underline; text-decoration-thickness: 2.5px; text-underline-offset: 3px; }
+        .gmatrix td.nash { background: linear-gradient(135deg, rgba(0,212,255,0.18), rgba(45,27,78,0.10)); outline: 2px solid #00d4ff; }
+
+        .legend-pf { color: #c73e6e; font-weight: 700; }
+        .legend-pc { color: #1a5e3a; font-weight: 700; }
+
+        .foot-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        .foot-banner {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 14px;
+            padding: 14px 22px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        /* ============== TARJETAS PEQUEÑAS ============== */
+        .mini-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; }
+        .mini-cards.three { grid-template-columns: repeat(3, 1fr); }
+        .mini-cards.two { grid-template-columns: repeat(2, 1fr); }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            border-top: 4px solid #00d4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .mini-card h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 5px; }
+        .mini-card p { font-size: 12.5px; color: #1d1d1f; line-height: 1.45; }
+        .mini-card .ex { font-size: 12px; color: #6e6e73; font-style: italic; margin-top: 5px; }
+
+        /* ============== PASOS ============== */
+        .steps-col { display: flex; flex-direction: column; gap: 10px; }
+        .step-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 11px 16px;
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+            font-size: 13.5px;
+            color: #1d1d1f;
+            line-height: 1.45;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .step-item .n {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800;
+        }
+        .step-item strong { color: #2d1b4e; }
+
+        .dark-box {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+        .dark-box .tag {
+            font-size: 11px; color: #00d4ff; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+        }
+
+        /* ============== CÓDIGO ============== */
+        pre.code-block {
+            background: #1e1530;
+            color: #e8e6f0;
+            border-radius: 14px;
+            padding: 18px 20px;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            font-size: 13.5px;
+            line-height: 1.6;
+            white-space: pre;
+            overflow-x: auto;
+            text-align: left;
+            border: 1px solid #3a2d5e;
+        }
+        pre.code-block .cm { color: #8a82a8; }
+        pre.code-block .kw { color: #00d4ff; }
+        pre.code-block .st { color: #7fd9a8; }
+
+        /* ============== TABLA COMPARATIVA ============== */
+        .compare-table { border-collapse: collapse; width: 100%; font-size: 14px; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .compare-table th, .compare-table td { border: 1px solid #e5e5e7; padding: 13px 14px; text-align: left; line-height: 1.45; }
+        .compare-table th { background: #2d1b4e; color: white; font-size: 13px; }
+        .compare-table td.model { background: #f0f0f2; font-weight: 700; color: #2d1b4e; white-space: nowrap; }
+        .compare-table td { font-size: 13px; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+
+        .closing-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px 24px;
+            border: 2px solid #00d4ff;
+            box-shadow: 0 4px 18px rgba(0,212,255,0.15);
+            margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 8px; }
+        .case-box p { font-size: 14px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 13px; color: #2d1b4e; }
+        .case-box .tools strong { color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 16px;
+            padding: 14px 22px;
+            margin-top: 14px;
+            text-align: center;
+        }
+        .next-week-box .label {
+            font-size: 11px; opacity: 0.85; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 14px;
+            z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed;
+            top: 22px;
+            right: 28px;
+            color: #6e6e73;
+            font-size: 13px;
+            z-index: 1000;
+            font-weight: 600;
+            background: rgba(255,255,255,0.92);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e5e5e7;
+            backdrop-filter: blur(8px);
+        }
+
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 26px; }
+            .cover-title { font-size: 38px; }
+            .questions-grid,
+            .two-col,
+            .mini-cards,
+            .mini-cards.three,
+            .mini-cards.two,
+            .closing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">11</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 6</div>
+            <h1 class="cover-title">Mira adelante, razona hacia atrás</h1>
+            <p class="cover-subtitle">Juegos secuenciales, inducción reversa, equilibrio perfecto en subjuegos y negociación de Rubinstein</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: TRES PREGUNTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta</div>
+                <h2 class="slide-title">Tres preguntas que vamos a responder</h2>
+            </div>
+            <div class="slide-body">
+                <div class="questions-grid">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <p class="question-text">¿Cómo permite la <strong>inducción reversa</strong> hallar la jugada óptima en un juego secuencial y por qué <strong>descarta las amenazas vacías</strong>?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <p class="question-text">¿En qué se diferencia un <strong>equilibrio de Nash</strong> de un <strong>equilibrio perfecto en subjuegos</strong>, y por qué este último es la solución estándar de los juegos dinámicos?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <p class="question-text">¿Cómo modela el <strong>bargaining de Rubinstein</strong> una negociación con costos de espera, y qué predice sobre el reparto del excedente?</p>
+                    </div>
+                </div>
+                <div class="questions-footer">
+                    La semana pasada buscamos el punto donde nadie se mueve. Hoy <strong>el orden importa</strong>: quien mueve primero puede comprometerse, y eso cambia el resultado.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: FORMA EXTENSIVA / ÁRBOL ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, primer paso</div>
+                <h2 class="slide-title">Cuando el orden importa: el árbol del juego</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Forma extensiva</span>
+                        <h3>Un entrante y un establecido, por turnos</h3>
+                        <p class="sub">PagoTico decide primero; Colibrí responde solo si hubo entrada</p>
+                        <svg viewBox="0 0 440 270" style="width:100%; height:auto;">
+                            <!-- raíz -->
+                            <circle cx="60" cy="135" r="9" fill="#2d1b4e"/>
+                            <text x="60" y="118" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="800">PagoTico</text>
+                            <!-- rama no entrar (arriba) -->
+                            <line x1="69" y1="130" x2="185" y2="55" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="110" y="80" fill="#6e6e73" font-size="12" font-weight="700">No entrar</text>
+                            <rect x="185" y="40" width="92" height="30" rx="6" fill="#f0f0f2" stroke="#e5e5e7"/>
+                            <text x="231" y="59" text-anchor="middle" font-size="12.5" font-weight="700"><tspan fill="#c73e6e">0</tspan><tspan fill="#1d1d1f">, </tspan><tspan fill="#1a5e3a">10</tspan></text>
+                            <!-- rama entrar (abajo) hacia nodo Colibrí -->
+                            <line x1="69" y1="140" x2="185" y2="200" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="110" y="185" fill="#6e6e73" font-size="12" font-weight="700">Entrar</text>
+                            <circle cx="195" cy="205" r="9" fill="#1a5e3a"/>
+                            <text x="195" y="230" text-anchor="middle" fill="#1a5e3a" font-size="12" font-weight="800">Colibrí</text>
+                            <!-- ramas de Colibrí -->
+                            <line x1="204" y1="200" x2="320" y2="150" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="246" y="165" fill="#6e6e73" font-size="12" font-weight="700">Acomodar</text>
+                            <rect x="320" y="135" width="92" height="30" rx="6" fill="#f0f0f2" stroke="#e5e5e7"/>
+                            <text x="366" y="154" text-anchor="middle" font-size="12.5" font-weight="700"><tspan fill="#c73e6e">4</tspan><tspan fill="#1d1d1f">, </tspan><tspan fill="#1a5e3a">5</tspan></text>
+                            <line x1="204" y1="210" x2="320" y2="245" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="250" y="245" fill="#6e6e73" font-size="12" font-weight="700">Pelear</text>
+                            <rect x="320" y="230" width="92" height="30" rx="6" fill="#f0f0f2" stroke="#e5e5e7"/>
+                            <text x="366" y="249" text-anchor="middle" font-size="12.5" font-weight="700"><tspan fill="#c73e6e">-2</tspan><tspan fill="#1d1d1f">, </tspan><tspan fill="#1a5e3a">2</tspan></text>
+                        </svg>
+                        <p class="caption">Cada hoja muestra (<span class="legend-pf">pago PagoTico</span>, <span class="legend-pc">pago Colibrí</span>). El árbol guarda algo que la matriz no: <strong>quién juega primero y quién ve qué</strong>.</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">El vocabulario mínimo</div>
+                        <h3>Información perfecta frente a imperfecta</h3>
+                        <p><strong>Información perfecta:</strong> cuando le toca jugar, cada uno sabe exactamente en qué punto del árbol está (ajedrez, este caso). <strong>Imperfecta:</strong> no lo sabe; se dibuja con una línea punteada que une los nodos que no puede distinguir.</p>
+                        <div class="punch">Un juego simultáneo, como los de la semana pasada, es información imperfecta: cada uno elige <strong>sin ver</strong> la jugada del otro. El orden, cuando existe, abre la puerta al <strong>compromiso</strong>.</div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    Mover primero puede ser una ventaja: permite <strong>comprometerse</strong> con una acción que cambia los incentivos del rival antes de que decida.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: INDUCCIÓN REVERSA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1</div>
+                <h2 class="slide-title">Inducción reversa: resolver de atrás hacia adelante</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">El mismo árbol, resuelto</span>
+                        <h3>Empiece por la última decisión</h3>
+                        <p class="sub">Lo verde es lo que de verdad se jugaría; lo rojo se descarta</p>
+                        <svg viewBox="0 0 440 270" style="width:100%; height:auto;">
+                            <circle cx="60" cy="135" r="9" fill="#2d1b4e"/>
+                            <text x="60" y="118" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="800">PagoTico</text>
+                            <!-- no entrar (descartada) -->
+                            <line x1="69" y1="130" x2="185" y2="55" stroke="#d0d0d4" stroke-width="2"/>
+                            <text x="110" y="80" fill="#b0b0b6" font-size="12" font-weight="700">No entrar</text>
+                            <rect x="185" y="40" width="92" height="30" rx="6" fill="#f7f7f9" stroke="#e5e5e7"/>
+                            <text x="231" y="59" text-anchor="middle" font-size="12.5" font-weight="700" fill="#b0b0b6">0, 10</text>
+                            <!-- entrar (elegida, gruesa cian) -->
+                            <line x1="69" y1="140" x2="185" y2="200" stroke="#00b4dc" stroke-width="4"/>
+                            <text x="108" y="185" fill="#00b4dc" font-size="12" font-weight="800">Entrar</text>
+                            <circle cx="195" cy="205" r="9" fill="#1a5e3a"/>
+                            <text x="195" y="230" text-anchor="middle" fill="#1a5e3a" font-size="12" font-weight="800">Colibrí</text>
+                            <!-- acomodar (elegida) -->
+                            <line x1="204" y1="200" x2="320" y2="150" stroke="#00b4dc" stroke-width="4"/>
+                            <text x="246" y="163" fill="#00b4dc" font-size="12" font-weight="800">Acomodar</text>
+                            <rect x="320" y="135" width="92" height="30" rx="6" fill="#eafaf0" stroke="#1a5e3a" stroke-width="1.5"/>
+                            <text x="366" y="154" text-anchor="middle" font-size="13" font-weight="800"><tspan fill="#c73e6e">4</tspan><tspan fill="#1d1d1f">, </tspan><tspan fill="#1a5e3a">5</tspan></text>
+                            <!-- pelear (descartada) -->
+                            <line x1="204" y1="210" x2="320" y2="245" stroke="#e8b5c6" stroke-width="2" stroke-dasharray="5 4"/>
+                            <text x="250" y="245" fill="#c73e6e" font-size="12" font-weight="700">Pelear</text>
+                            <rect x="320" y="230" width="92" height="30" rx="6" fill="#fdeef3" stroke="#e8b5c6"/>
+                            <text x="366" y="249" text-anchor="middle" font-size="12.5" font-weight="700" fill="#c73e6e">-2, 2</text>
+                        </svg>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Última decisión (Colibrí):</strong> si PagoTico ya entró, acomodar le da <strong>5</strong> y pelear le da <strong>2</strong>. Elige <strong>acomodar</strong>.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Decisión anterior (PagoTico):</strong> anticipa que lo dejarán coexistir, así que entrar le da <strong>4</strong> contra <strong>0</strong> de no entrar. <strong>Entra.</strong></div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>Resultado:</strong> (Entrar, Acomodar), pagos (4, 5). Es la única jugada coherente con que ambos son racionales.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">La clave de hoy</div>
+                            La amenaza «si entras, peleo» <strong>no es creíble</strong>: en el momento de cumplirla, pelear da 2 y acomodar da 5. PagoTico lo sabe, y por eso entra.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: AMENAZAS Y COMPROMISO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, la vuelta de tuerca</div>
+                <h2 class="slide-title">Amenazas vacías y el poder de atarse las manos</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">La idea de Schelling</div>
+                        <h3>Limitar mis opciones puede darme poder</h3>
+                        <p>Si Colibrí pudiera <strong>eliminar de antemano</strong> la opción de acomodar, su amenaza de pelear dejaría de ser un farol: tendría que pelear, y PagoTico preferiría no entrar.</p>
+                        <div class="punch">Parece absurdo, pero atarse las manos cambia lo que el rival cree que pasará. «Quemar las naves» convierte una amenaza vacía en una <strong>promesa creíble</strong>.</div>
+                    </div>
+                    <div>
+                        <div class="mini-cards two">
+                            <div class="mini-card">
+                                <h4>Capacidad irreversible</h4>
+                                <p>Invertir por adelantado en red y soporte que solo rinden si peleo de verdad.</p>
+                                <p class="ex">Hace creíble inundar el mercado.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Contratos de exclusividad</h4>
+                                <p>Atar comercios o bancos con cláusulas que castigan retroceder.</p>
+                                <p class="ex">Me obligo a sostener la pelea.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Reputación</h4>
+                                <p>Pelear hoy aunque duela, para que nadie dude mañana.</p>
+                                <p class="ex">Útil con muchos entrantes futuros.</p>
+                            </div>
+                            <div class="mini-card">
+                                <h4>Reglas públicas</h4>
+                                <p>Anunciar una política de igualar cualquier precio, sin excepciones.</p>
+                                <p class="ex">El anuncio me compromete.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="foot-banner">
+                    Pregunta para el caso de hoy: ¿con qué movimiento podría Colibrí hacer <strong>creíble</strong> su amenaza de guerra de comisiones, y por qué eso es difícil en un mercado de ticket bajo?
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: NASH VS SPNE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2</div>
+                <h2 class="slide-title">Nash no basta: el equilibrio perfecto en subjuegos</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">El Nash sospechoso</span>
+                        <h3>Un equilibrio sostenido por un farol</h3>
+                        <p class="sub">«PagoTico no entra; Colibrí pelearía si entrara»</p>
+                        <p class="caption" style="margin-top:4px;">Visto como un todo, ese par <strong>sí</strong> es un equilibrio de Nash: si PagoTico cree la amenaza, no entrar (0) le gana a entrar y que lo peleen (-2); y como nadie entra, Colibrí <strong>nunca tiene que cumplir</strong> su amenaza.</p>
+                        <div class="dark-box" style="margin-top:14px;">
+                            <div class="tag">El problema</div>
+                            Descansa en algo que Colibrí <strong>no haría</strong> si le tocara: pelear (2) en vez de acomodar (5). Es un equilibrio apoyado en una amenaza que nadie ejecutaría.
+                        </div>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Subjuego:</strong> cualquier parte del árbol que arranca en una decisión y contiene todo lo que sigue. Aquí, la respuesta de Colibrí tras la entrada es un subjuego.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>SPNE:</strong> exige que la estrategia sea óptima <strong>en todo subjuego</strong>, no solo al inicio. Es «racionalidad en cada punto del camino».</div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>El filtro:</strong> el SPNE descarta el Nash del farol, porque dentro del subjuego pelear no es óptimo. Solo sobrevive (Entrar, Acomodar).</div></div>
+                        <div class="gps-callout" style="padding:16px;">
+                            <p style="font-size:13.5px;">Todo SPNE es un equilibrio de Nash, pero <strong>no al revés</strong>. Y en juegos finitos de información perfecta, <strong>inducción reversa y SPNE son lo mismo</strong>. Por eso el SPNE es la solución estándar de los juegos dinámicos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: RUBINSTEIN ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 3</div>
+                <h2 class="slide-title">Negociación de Rubinstein: la paciencia es poder</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Repartir un excedente de 100</span>
+                        <h3>Quien menos sufre la demora se lleva más</h3>
+                        <p class="sub">Ofertas que van y vienen; cada ronda de espera encoge el pastel</p>
+                        <svg viewBox="0 0 420 230" style="width:100%; height:auto;">
+                            <!-- barra 1: ambos impacientes -->
+                            <text x="10" y="34" fill="#1d1d1f" font-size="12" font-weight="700">Ambos impacientes</text>
+                            <rect x="10" y="42" width="240" height="30" rx="5" fill="#2d1b4e"/>
+                            <rect x="250" y="42" width="160" height="30" rx="5" fill="#00d4ff"/>
+                            <text x="130" y="62" text-anchor="middle" fill="white" font-size="12.5" font-weight="800">PagoTico 60</text>
+                            <text x="330" y="62" text-anchor="middle" fill="#2d1b4e" font-size="12.5" font-weight="800">Banco 40</text>
+                            <!-- barra 2: PagoTico mas paciente -->
+                            <text x="10" y="106" fill="#1d1d1f" font-size="12" font-weight="700">PagoTico más paciente</text>
+                            <rect x="10" y="114" width="300" height="30" rx="5" fill="#2d1b4e"/>
+                            <rect x="310" y="114" width="100" height="30" rx="5" fill="#00d4ff"/>
+                            <text x="160" y="134" text-anchor="middle" fill="white" font-size="12.5" font-weight="800">PagoTico 75</text>
+                            <text x="360" y="134" text-anchor="middle" fill="#2d1b4e" font-size="12.5" font-weight="800">Banco 25</text>
+                            <!-- barra 3: periodos cortos -->
+                            <text x="10" y="178" fill="#1d1d1f" font-size="12" font-weight="700">Periodos muy cortos</text>
+                            <rect x="10" y="186" width="206" height="30" rx="5" fill="#2d1b4e"/>
+                            <rect x="216" y="186" width="194" height="30" rx="5" fill="#00d4ff"/>
+                            <text x="113" y="206" text-anchor="middle" fill="white" font-size="12.5" font-weight="800">PagoTico 51</text>
+                            <text x="313" y="206" text-anchor="middle" fill="#2d1b4e" font-size="12.5" font-weight="800">Banco 49</text>
+                        </svg>
+                        <p class="caption">Cifras ilustrativas. La <strong>ventaja del primer proponente</strong> existe, pero se desvanece cuando las rondas se acortan: el reparto tiende a 50/50 si ambos son igual de pacientes.</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">Tres intuiciones, sin fórmulas</div>
+                        <h3>Qué reparte el pastel</h3>
+                        <p><strong>Paciencia = poder.</strong> El que aguanta más una negociación larga captura una porción mayor.</p>
+                        <p style="margin-top:10px;"><strong>Acuerdo inmediato.</strong> En equilibrio cierran en la primera oferta: alargar solo quema valor para los dos.</p>
+                        <div class="punch">La amenaza de «esperar indefinidamente» no es creíble: también <strong>te daña a ti</strong>. Por eso conviene cerrar pronto en un punto que ambos aceptan.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: BATNA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 3, lo que de verdad mueve la aguja</div>
+                <h2 class="slide-title">La opción externa manda, si es creíble</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">BATNA</div>
+                        <h3>Lo que obtengo si me levanto de la mesa</h3>
+                        <p>El reparto se mueve a favor de quien tiene una <strong>mejor alternativa real</strong>: otro banco con quien integrarse, otro mercado al cual expandirse. Pero solo cuenta si de verdad la tomaría.</p>
+                        <div class="punch">Sobreactuar un BATNA que no existe <strong>no cambia el resultado</strong>. Mejorar (o atarse a) una opción externa creíble es la forma más limpia de ganar poder de negociación: conecta de nuevo con el compromiso.</div>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">→</div><div><strong>PagoTico:</strong> negociar la integración con un segundo banco adquirente como alternativa real mejora cada peso que pide al primero.</div></div>
+                        <div class="step-item"><div class="n">→</div><div><strong>Aranceles CR–EE. UU. 2025:</strong> diversificar mercados de exportación es el BATNA del país. «La negociación no tiene que ir de prisa para que vaya bien.»</div></div>
+                        <div class="dark-box">
+                            <div class="tag">Puente con la semana pasada</div>
+                            Cuando las rondas se hacen muy cortas, el reparto de Rubinstein <strong>coincide</strong> con la solución de negociación de Nash. Dos caminos distintos, el mismo punto justo.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: LÍMITES CONDUCTUALES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Honestidad científica</div>
+                <h2 class="slide-title">Lo que la teoría predice y lo que la gente hace</h2>
+            </div>
+            <div class="slide-body">
+                <table class="compare-table">
+                    <tr>
+                        <th>Juego</th>
+                        <th>Qué predice la inducción reversa</th>
+                        <th>Qué hacen las personas reales</th>
+                    </tr>
+                    <tr>
+                        <td class="model">Ultimátum<br><span style="font-weight:400;font-size:11.5px;color:#6e6e73;">repartir una suma; el otro acepta o rechaza</span></td>
+                        <td>El que recibe acepta cualquier oferta positiva, así que el que propone ofrece el mínimo.</td>
+                        <td>La oferta típica ronda el 40%; las ofertas por debajo de 20–25% se rechazan cerca de la mitad de las veces, aunque eso deje a ambos en cero.</td>
+                    </tr>
+                    <tr>
+                        <td class="model">Ciempiés<br><span style="font-weight:400;font-size:11.5px;color:#6e6e73;">tomar el pozo o pasarlo para agrandarlo</span></td>
+                        <td>El primer jugador toma en el primer turno: nunca conviene pasar.</td>
+                        <td>Los jugadores pasan en el primer nodo en torno al 90–99% de las veces: cooperan mucho más de lo previsto.</td>
+                    </tr>
+                </table>
+                <div class="dark-box" style="margin-top:18px;">
+                    <div class="tag">El mensaje ejecutivo</div>
+                    Use la inducción reversa para <strong>diseñar su propia estrategia</strong>, que es donde brilla. Pero corrija sus <strong>predicciones sobre la conducta ajena</strong> con datos: las personas valoran la equidad, castigan lo injusto y cooperan por reputación más de lo que el modelo supone.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: DEMO COLAB ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Demostración en vivo</div>
+                <h2 class="slide-title">La herramienta de hoy en Google Colab</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div>
+                        <pre class="code-block"><span class="cm"># Parte 1: inducción reversa del árbol</span>
+<span class="cm"># Solo cambian los pagos; el resto se resuelve solo</span>
+
+<span class="cm"># === EDITAR === (pago PagoTico, pago Colibrí)</span>
+no_entrar      = (0, 10)
+entrar_acomoda = (4, 5)
+entrar_pelea   = (-2, 2)
+
+<span class="cm"># El notebook imprime, paso a paso:</span>
+<span class="cm">#  Colibrí: Acomodar (5) > Pelear (2)</span>
+<span class="cm">#  PagoTico: Entrar (4) > No entrar (0)</span>
+<span class="cm">#  -> Resultado: (Entrar, Acomodar)</span>
+<span class="cm">#  -> La amenaza de pelear NO es creíble</span>
+
+<span class="cm"># Parte 2: calculadora de Rubinstein</span>
+<span class="cm"># === EDITAR === paciencia de cada parte (0 a 1)</span>
+delta_pagotico = 0.80
+delta_banco    = 0.90
+<span class="cm"># -> imprime el reparto del excedente</span></pre>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Guardar una copia:</strong> Archivo → Guardar una copia en Drive. Trabajan sobre su propio cuaderno.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Ejecutar en orden:</strong> botón de play en cada celda, de arriba abajo. No se instala nada.</div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>Editar solo lo marcado:</strong> únicamente las celdas <strong>=== EDITAR ===</strong>. Todo lo demás se recalcula solo y se imprime con nombres y números.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">Por qué es fácil</div>
+                            Es Python puro, sin librerías que instalar y sin gráficos que fallen. Funciona igual en Windows, Mac, iPad o el laboratorio. <strong>Editar, ejecutar, interpretar.</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 11: CIERRE + CASO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis y trabajo en clase</div>
+                <h2 class="slide-title">Tres ideas y un caso por resolver</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>El orden importa</h4>
+                        <p>La inducción reversa resuelve de atrás hacia adelante y descarta las amenazas que nadie cumpliría. Comprometerse de verdad las vuelve creíbles.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>SPNE, no solo Nash</h4>
+                        <p>En juegos dinámicos exigimos que la jugada sea óptima en cada punto del camino. Eso filtra los equilibrios sostenidos por faroles.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>Paciencia y BATNA reparten</h4>
+                        <p>En una negociación, gana porción quien menos sufre la espera y quien tiene una mejor alternativa real fuera de la mesa.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 5: PagoTico contra Colibrí Pay, entrar y negociar</h3>
+                    <p>Con datos reales de SINPE Móvil, su equipo asesora a PagoTico, una fintech que quiere entrar al nicho de pagos a comercios. Decidirán con inducción reversa si la amenaza de Colibrí es creíble, negociarán con un banco adquirente usando la lógica de Rubinstein, y pondrán a prueba la teoría con un ultimátum.</p>
+                    <p class="tools"><strong>Hoy, en Google Colab:</strong> un cuaderno pre-armado donde solo cambian números en las celdas marcadas y ejecutan. Sin programar: editar, ejecutar, interpretar.</p>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 7</div>
+                    <div class="content">Tadelis (2013), capítulos 11 y 12 · Spence (1973), «Job Market Signaling» · Juegos bayesianos, señalización y comunicación estratégica</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
