@@ -1,0 +1,914 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 7 - Juegos bayesianos, señalización y comunicación estratégica</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 24px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 38px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 56px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 22px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 900px;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS GUÍA ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 48px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .question-text { font-size: 15.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .questions-footer {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 14px 22px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 14.5px;
+            line-height: 1.5;
+        }
+
+        /* ============== BLOQUES GENÉRICOS ============== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+
+        .two-col.even { grid-template-columns: 1fr 1fr; }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+
+        .form-block h3 { color: #2d1b4e; font-size: 20px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .gps-callout h3 { font-size: 20px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14.5px; line-height: 1.55; opacity: 0.95; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        .foot-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 13px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        .foot-banner {
+            margin-top: 18px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 14px;
+            padding: 14px 22px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.55;
+        }
+
+        .legend-pf { color: #c73e6e; font-weight: 700; }
+        .legend-pc { color: #1a5e3a; font-weight: 700; }
+
+        /* ============== TARJETAS PEQUEÑAS ============== */
+        .mini-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; }
+        .mini-cards.three { grid-template-columns: repeat(3, 1fr); }
+        .mini-cards.two { grid-template-columns: repeat(2, 1fr); }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            border-top: 4px solid #00d4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .mini-card h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 5px; }
+        .mini-card p { font-size: 12.5px; color: #1d1d1f; line-height: 1.45; }
+        .mini-card .ex { font-size: 12px; color: #6e6e73; font-style: italic; margin-top: 5px; }
+
+        /* ============== PASOS ============== */
+        .steps-col { display: flex; flex-direction: column; gap: 10px; }
+        .step-item {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 11px 16px;
+            border: 1px solid #e5e5e7;
+            border-left: 4px solid #00d4ff;
+            font-size: 13.5px;
+            color: #1d1d1f;
+            line-height: 1.45;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        .step-item .n {
+            flex-shrink: 0;
+            width: 26px; height: 26px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800;
+        }
+        .step-item strong { color: #2d1b4e; }
+
+        .dark-box {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 13px;
+            line-height: 1.55;
+        }
+        .dark-box .tag {
+            font-size: 11px; color: #00d4ff; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px;
+        }
+
+        /* ============== CÓDIGO ============== */
+        pre.code-block {
+            background: #1e1530;
+            color: #e8e6f0;
+            border-radius: 14px;
+            padding: 18px 20px;
+            font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.55;
+            white-space: pre;
+            overflow-x: auto;
+            text-align: left;
+            border: 1px solid #3a2d5e;
+        }
+        pre.code-block .cm { color: #8a82a8; }
+        pre.code-block .kw { color: #00d4ff; }
+        pre.code-block .st { color: #7fd9a8; }
+
+        /* ============== TABLA COMPARATIVA ============== */
+        .compare-table { border-collapse: collapse; width: 100%; font-size: 14px; background: white; border-radius: 14px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .compare-table th, .compare-table td { border: 1px solid #e5e5e7; padding: 13px 14px; text-align: left; line-height: 1.45; }
+        .compare-table th { background: #2d1b4e; color: white; font-size: 13px; }
+        .compare-table td.model { background: #f0f0f2; font-weight: 700; color: #2d1b4e; white-space: nowrap; }
+        .compare-table td { font-size: 13px; }
+        .compare-table td .rule { display: inline-block; margin-top: 4px; font-size: 11.5px; color: #00b4dc; font-weight: 700; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+
+        .closing-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px 24px;
+            border: 2px solid #00d4ff;
+            box-shadow: 0 4px 18px rgba(0,212,255,0.15);
+            margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 8px; }
+        .case-box p { font-size: 14px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 13px; color: #2d1b4e; }
+        .case-box .tools strong { color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            border-radius: 16px;
+            padding: 14px 22px;
+            margin-top: 14px;
+            text-align: center;
+        }
+        .next-week-box .label {
+            font-size: 11px; opacity: 0.85; letter-spacing: 2px;
+            text-transform: uppercase; margin-bottom: 4px;
+        }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 14px;
+            z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px;
+            border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6);
+            box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 13.5px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+
+        .nav-button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4);
+        }
+
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed;
+            top: 22px;
+            right: 28px;
+            color: #6e6e73;
+            font-size: 13px;
+            z-index: 1000;
+            font-weight: 600;
+            background: rgba(255,255,255,0.92);
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 1px solid #e5e5e7;
+            backdrop-filter: blur(8px);
+        }
+
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 26px; }
+            .cover-title { font-size: 38px; }
+            .questions-grid,
+            .two-col,
+            .two-col.even,
+            .mini-cards,
+            .mini-cards.three,
+            .mini-cards.two,
+            .closing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">10</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 7</div>
+            <h1 class="cover-title">Hablar es barato; mostrar, cuesta</h1>
+            <p class="cover-subtitle">Juegos bayesianos, señalización de Spence y comunicación estratégica cuando no sé con quién juego</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: TRES PREGUNTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta</div>
+                <h2 class="slide-title">Tres preguntas que vamos a responder</h2>
+            </div>
+            <div class="slide-body">
+                <div class="questions-grid">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <p class="question-text">¿Cómo decido cuando <strong>no conozco los costos ni la calidad</strong> del otro? Aquí entran los <strong>tipos</strong> y las <strong>creencias</strong>.</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <p class="question-text">¿Por qué una señal <strong>costosa</strong> (un título, una garantía, una auditoría) sí es creíble, y cómo distingue un <strong>equilibrio separador</strong> de uno <strong>agrupador</strong>?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <p class="question-text">Si hablar es <strong>gratis y no verificable</strong>, ¿bajo qué condiciones las palabras todavía <strong>informan</strong>?</p>
+                    </div>
+                </div>
+                <div class="questions-footer">
+                    La semana pasada el <strong>orden</strong> importaba. Hoy importa lo que <strong>no veo</strong> del otro: su tipo, su calidad, sus intenciones. La estrategia se vuelve un juego de creencias.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: EL PROBLEMA + TIPOS Y CREENCIAS + BAYES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1, el problema</div>
+                <h2 class="slide-title">No sé con quién estoy jugando</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">El gancho: el mercado de limones</div>
+                        <h3>Cuando no distingo calidad, el bueno se va</h3>
+                        <p>Si un comprador no puede saber si un auto usado es bueno o malo, paga un precio <strong>promedio</strong>. A ese precio, el dueño del auto bueno prefiere no vender, y el mercado se llena de malos (Akerlof, 1970).</p>
+                        <div class="punch">La idea de <strong>Harsanyi</strong>: imaginemos que la <strong>Naturaleza</strong> reparte en secreto un <strong>tipo</strong> a cada jugador (alto/bajo, fuerte/débil). Yo no lo veo; solo tengo <strong>creencias</strong> (probabilidades) sobre él.</div>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge">Ustedes ya saben esto</span>
+                        <h3>Tipo y creencia = prior. Observar = posterior.</h3>
+                        <p class="sub">Colibrí cree que PagoTico es 50/50; observa una señal y actualiza</p>
+                        <svg viewBox="0 0 420 200" style="width:100%; height:auto;">
+                            <!-- Eje base -->
+                            <text x="95" y="22" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="800">Creencia inicial</text>
+                            <text x="95" y="36" text-anchor="middle" fill="#6e6e73" font-size="10.5">(prior)</text>
+                            <text x="325" y="22" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="800">Tras ver la señal</text>
+                            <text x="325" y="36" text-anchor="middle" fill="#6e6e73" font-size="10.5">(posterior)</text>
+                            <!-- prior fuerte 50 -->
+                            <rect x="40" y="60" width="50" height="55" rx="4" fill="#00d4ff"/>
+                            <text x="65" y="92" text-anchor="middle" fill="#1e1530" font-size="12" font-weight="800">50%</text>
+                            <!-- prior debil 50 -->
+                            <rect x="100" y="60" width="50" height="55" rx="4" fill="#cfcfd6"/>
+                            <text x="125" y="92" text-anchor="middle" fill="#1e1530" font-size="12" font-weight="800">50%</text>
+                            <!-- flecha -->
+                            <line x1="170" y1="100" x2="250" y2="100" stroke="#2d1b4e" stroke-width="2.5" marker-end="url(#arr)"/>
+                            <text x="210" y="90" text-anchor="middle" fill="#2d1b4e" font-size="10.5" font-weight="700">señal</text>
+                            <!-- posterior fuerte 75 -->
+                            <rect x="270" y="33" width="50" height="82" rx="4" fill="#00d4ff"/>
+                            <text x="295" y="80" text-anchor="middle" fill="#1e1530" font-size="12" font-weight="800">75%</text>
+                            <!-- posterior debil 25 -->
+                            <rect x="330" y="88" width="50" height="27" rx="4" fill="#cfcfd6"/>
+                            <text x="355" y="106" text-anchor="middle" fill="#1e1530" font-size="11" font-weight="800">25%</text>
+                            <!-- linea base -->
+                            <line x1="30" y1="115" x2="390" y2="115" stroke="#e5e5e7" stroke-width="1.5"/>
+                            <!-- leyenda -->
+                            <rect x="40" y="135" width="13" height="13" rx="2" fill="#00d4ff"/>
+                            <text x="58" y="146" fill="#1d1d1f" font-size="11.5">Tipo fuerte (costos bajos)</text>
+                            <rect x="240" y="135" width="13" height="13" rx="2" fill="#cfcfd6"/>
+                            <text x="258" y="146" fill="#1d1d1f" font-size="11.5">Tipo débil (costos altos)</text>
+                            <defs>
+                                <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                    <path d="M0,0 L9,4.5 L0,9 Z" fill="#2d1b4e"/>
+                                </marker>
+                            </defs>
+                        </svg>
+                        <p class="caption">Esto es <strong>Bayes</strong>, que ya dominan de estadística: parto de una creencia, observo un dato y la actualizo. La teoría de juegos solo le agrega un rival que también razona.</p>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    <strong>El vocabulario mínimo:</strong> un <strong>tipo</strong> es la información privada de un jugador (su costo, su calidad); una <strong>creencia</strong> es la probabilidad que le asigno; una <strong>estrategia condicional</strong> dice qué hago <em>para cada tipo</em> que yo podría ser.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: BAYES-NASH Y PBE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 1</div>
+                <h2 class="slide-title">Decidir con creencias: Bayes-Nash y su versión perfecta</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Juego de entrada con tipos</span>
+                        <h3>Colibrí no sabe si PagoTico es fuerte o débil</h3>
+                        <p class="sub">La línea punteada une lo que Colibrí no puede distinguir</p>
+                        <svg viewBox="0 0 440 250" style="width:100%; height:auto;">
+                            <!-- Naturaleza -->
+                            <circle cx="60" cy="125" r="9" fill="#c79a3e"/>
+                            <text x="60" y="108" text-anchor="middle" fill="#9a7a2e" font-size="11.5" font-weight="800">Naturaleza</text>
+                            <!-- rama fuerte -->
+                            <line x1="68" y1="120" x2="170" y2="70" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="100" y="83" fill="#6e6e73" font-size="11" font-weight="700">Fuerte ½</text>
+                            <circle cx="178" cy="68" r="8" fill="#2d1b4e"/>
+                            <text x="178" y="53" text-anchor="middle" fill="#2d1b4e" font-size="11" font-weight="800">PagoTico</text>
+                            <!-- rama debil -->
+                            <line x1="68" y1="130" x2="170" y2="182" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="100" y="172" fill="#6e6e73" font-size="11" font-weight="700">Débil ½</text>
+                            <circle cx="178" cy="184" r="8" fill="#2d1b4e"/>
+                            <text x="178" y="206" text-anchor="middle" fill="#2d1b4e" font-size="11" font-weight="800">PagoTico</text>
+                            <!-- PagoTico fuerte -> entra -->
+                            <line x1="186" y1="68" x2="300" y2="68" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="232" y="60" fill="#6e6e73" font-size="10.5" font-weight="700">Entra</text>
+                            <circle cx="308" cy="68" r="8" fill="#1a5e3a"/>
+                            <!-- PagoTico debil -> entra -->
+                            <line x1="186" y1="184" x2="300" y2="184" stroke="#6e6e73" stroke-width="2"/>
+                            <text x="232" y="176" fill="#6e6e73" font-size="10.5" font-weight="700">Entra</text>
+                            <circle cx="308" cy="184" r="8" fill="#1a5e3a"/>
+                            <!-- conjunto de informacion (linea punteada) -->
+                            <line x1="308" y1="76" x2="308" y2="176" stroke="#c73e6e" stroke-width="2" stroke-dasharray="5 4"/>
+                            <text x="316" y="128" fill="#c73e6e" font-size="10.5" font-weight="700">Colibrí no sabe</text>
+                            <text x="316" y="142" fill="#c73e6e" font-size="10.5" font-weight="700">en qué nodo está</text>
+                            <!-- etiqueta Colibri -->
+                            <text x="308" y="40" text-anchor="middle" fill="#1a5e3a" font-size="11" font-weight="800">Colibrí</text>
+                            <text x="308" y="214" text-anchor="middle" fill="#1a5e3a" font-size="11" font-weight="800">Colibrí</text>
+                        </svg>
+                        <p class="caption">Colibrí decide <strong>acomodar o pelear sin ver el tipo</strong> de PagoTico. Solo conoce la probabilidad. Por eso necesita actuar sobre sus <strong>creencias</strong>, no sobre certezas.</p>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Equilibrio Bayes-Nash:</strong> es «Nash con creencias». Cada <em>tipo</em> de cada jugador elige su mejor respuesta dado lo que cree del rival y lo que hacen los demás.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Equilibrio bayesiano perfecto (PBE):</strong> le agrega dos cosas: ser <strong>racional en cada momento</strong> del juego y <strong>actualizar las creencias con Bayes</strong> al ver qué pasa.</div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>Para qué sirve:</strong> el PBE descarta las amenazas no creíbles, igual que la inducción reversa de la semana pasada, pero ahora <em>con información incompleta</em>.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">La lectura ejecutiva</div>
+                            Las decisiones de mercado son <strong>apuestas sobre el tipo del rival</strong>. Lo valioso es cuantificar esa creencia con datos y actualizarla cuando el rival se mueve. Justo lo que ustedes saben hacer.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: SPENCE + SINGLE-CROSSING ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2, el corazón de la semana</div>
+                <h2 class="slide-title">Spence: la señal creíble es la que cuesta distinto</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">La condición de cruce único</span>
+                        <h3>Para el bueno es fácil; para el malo, caro</h3>
+                        <p class="sub">Costo de emitir la señal según el tipo, a cada nivel de exigencia</p>
+                        <svg viewBox="0 0 420 230" style="width:100%; height:auto;">
+                            <!-- ejes -->
+                            <line x1="50" y1="190" x2="395" y2="190" stroke="#1d1d1f" stroke-width="1.5"/>
+                            <line x1="50" y1="190" x2="50" y2="25" stroke="#1d1d1f" stroke-width="1.5"/>
+                            <text x="222" y="218" text-anchor="middle" fill="#6e6e73" font-size="11.5">Nivel de la señal (auditoría, certificación)</text>
+                            <text x="22" y="110" text-anchor="middle" fill="#6e6e73" font-size="11.5" transform="rotate(-90 22 110)">Costo</text>
+                            <!-- recta tipo debil (empinada, rojo) -->
+                            <line x1="50" y1="190" x2="320" y2="45" stroke="#c73e6e" stroke-width="3.5"/>
+                            <text x="330" y="50" fill="#c73e6e" font-size="11.5" font-weight="800">Tipo débil</text>
+                            <text x="330" y="64" fill="#c73e6e" font-size="10">(le cuesta mucho)</text>
+                            <!-- recta tipo fuerte (suave, cyan) -->
+                            <line x1="50" y1="190" x2="380" y2="135" stroke="#00b4dc" stroke-width="3.5"/>
+                            <text x="305" y="128" fill="#00b4dc" font-size="11.5" font-weight="800">Tipo fuerte</text>
+                            <text x="305" y="142" fill="#00b4dc" font-size="10">(le cuesta poco)</text>
+                            <!-- umbral s* -->
+                            <line x1="235" y1="190" x2="235" y2="78" stroke="#2d1b4e" stroke-width="1.5" stroke-dasharray="4 3"/>
+                            <circle cx="235" cy="78" r="4" fill="#2d1b4e"/>
+                            <text x="235" y="205" text-anchor="middle" fill="#2d1b4e" font-size="12" font-weight="800">s*</text>
+                        </svg>
+                        <p class="caption">En <strong>s*</strong>, alcanzar la señal le compensa al fuerte pero <strong>no al débil</strong> (le costaría más de lo que ganaría imitándolo). Por eso solo el fuerte la emite y la señal se vuelve <strong>creíble</strong>.</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">La idea de Spence (1973)</div>
+                        <h3>La señal puede valer aunque no cambie la calidad</h3>
+                        <p>La educación funciona como <strong>etiqueta</strong> en el mercado laboral aun si no subiera la productividad: separa a quien puede pagarla barato de quien no. Lo que la hace creíble no es lo que dice, sino que <strong>cuesta distinto según el tipo</strong>.</p>
+                        <div class="punch">La misma lógica, en los negocios:<br>
+                        <strong>Garantía generosa</strong> = «apuesto mi dinero a que es bueno».<br>
+                        <strong>Publicidad fuerte</strong> = solo la recupero con recompras.<br>
+                        <strong>Dividendos altos</strong> = confío en mis flujos futuros.<br>
+                        <strong>Licencias y auditorías</strong> = una fintech sólida las paga sin quebrar.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: SEPARADOR VS AGRUPADOR ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 2</div>
+                <h2 class="slide-title">Separador o agrupador: ¿la señal revela o esconde?</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge" style="background:linear-gradient(135deg,#1a5e3a,#00d4ff);">Equilibrio separador</span>
+                        <h3>Cada tipo elige una señal distinta</h3>
+                        <svg viewBox="0 0 360 150" style="width:100%; height:auto; margin-top:6px;">
+                            <rect x="10" y="20" width="95" height="34" rx="7" fill="#eafaf0" stroke="#1a5e3a" stroke-width="1.5"/>
+                            <text x="57" y="41" text-anchor="middle" fill="#1a5e3a" font-size="12" font-weight="800">Fuerte</text>
+                            <line x1="105" y1="37" x2="200" y2="37" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#ag)"/>
+                            <text x="152" y="29" text-anchor="middle" fill="#1a5e3a" font-size="10">señal alta</text>
+                            <rect x="205" y="20" width="140" height="34" rx="7" fill="#1a5e3a"/>
+                            <text x="275" y="41" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">Salario alto</text>
+
+                            <rect x="10" y="96" width="95" height="34" rx="7" fill="#fdeef3" stroke="#c73e6e" stroke-width="1.5"/>
+                            <text x="57" y="117" text-anchor="middle" fill="#c73e6e" font-size="12" font-weight="800">Débil</text>
+                            <line x1="105" y1="113" x2="200" y2="113" stroke="#c73e6e" stroke-width="2.5" marker-end="url(#ar)"/>
+                            <text x="152" y="105" text-anchor="middle" fill="#c73e6e" font-size="10">señal baja</text>
+                            <rect x="205" y="96" width="140" height="34" rx="7" fill="#c73e6e"/>
+                            <text x="275" y="117" text-anchor="middle" fill="#fff" font-size="11.5" font-weight="700">Salario bajo</text>
+                            <defs>
+                                <marker id="ag" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#1a5e3a"/></marker>
+                                <marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#c73e6e"/></marker>
+                            </defs>
+                        </svg>
+                        <p class="caption">La señal <strong>revela</strong> el tipo. El mercado paga a cada quien según lo que realmente es. El fuerte invierte lo justo para que al débil no le convenga copiarlo.</p>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge" style="background:linear-gradient(135deg,#6e6e73,#a0a0a8);">Equilibrio agrupador</span>
+                        <h3>Ambos eligen la misma señal</h3>
+                        <svg viewBox="0 0 360 150" style="width:100%; height:auto; margin-top:6px;">
+                            <rect x="10" y="20" width="95" height="34" rx="7" fill="#eafaf0" stroke="#1a5e3a" stroke-width="1.5"/>
+                            <text x="57" y="41" text-anchor="middle" fill="#1a5e3a" font-size="12" font-weight="800">Fuerte</text>
+                            <rect x="10" y="96" width="95" height="34" rx="7" fill="#fdeef3" stroke="#c73e6e" stroke-width="1.5"/>
+                            <text x="57" y="117" text-anchor="middle" fill="#c73e6e" font-size="12" font-weight="800">Débil</text>
+                            <line x1="105" y1="37" x2="200" y2="68" stroke="#6e6e73" stroke-width="2.5"/>
+                            <line x1="105" y1="113" x2="200" y2="82" stroke="#6e6e73" stroke-width="2.5"/>
+                            <text x="150" y="62" text-anchor="middle" fill="#6e6e73" font-size="10">misma señal</text>
+                            <rect x="205" y="56" width="140" height="38" rx="7" fill="#6e6e73"/>
+                            <text x="275" y="73" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">Salario</text>
+                            <text x="275" y="87" text-anchor="middle" fill="#fff" font-size="11" font-weight="700">promedio</text>
+                        </svg>
+                        <p class="caption">La señal <strong>no informa</strong> nada y el mercado paga el <strong>promedio</strong>: el fuerte termina subsidiando al débil. Pasa cuando emitir la señal cuesta casi lo mismo para ambos.</p>
+                    </div>
+                </div>
+                <div class="foot-banner">
+                    <strong>Evidencia regional (Busso et al., 2023, Colombia):</strong> una credencial que señala habilidades específicas eleva el salario de quien la recibe entre un <strong>7% y 10%</strong> frente a pares comparables, sin que medie más capital humano. La señal, por sí sola, separa tipos.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: CHEAP TALK ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Pregunta 3</div>
+                <h2 class="slide-title">Cheap talk: hablar gratis a veces informa</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">Crawford y Sobel (1982)</span>
+                        <h3>Cuanto más alineados los intereses, más fluye</h3>
+                        <p class="sub">El emisor revela en qué «bloque» cae la verdad, no el valor exacto</p>
+                        <svg viewBox="0 0 420 220" style="width:100%; height:auto;">
+                            <!-- barra 1: alineados -->
+                            <text x="10" y="30" fill="#1d1d1f" font-size="11.5" font-weight="700">Intereses alineados</text>
+                            <rect x="10" y="38" width="80" height="28" fill="#00d4ff" stroke="#fff" stroke-width="2"/>
+                            <rect x="90" y="38" width="80" height="28" fill="#00b4dc" stroke="#fff" stroke-width="2"/>
+                            <rect x="170" y="38" width="80" height="28" fill="#2db4d8" stroke="#fff" stroke-width="2"/>
+                            <rect x="250" y="38" width="80" height="28" fill="#2d8fb8" stroke="#fff" stroke-width="2"/>
+                            <rect x="330" y="38" width="80" height="28" fill="#2d6a9e" stroke="#fff" stroke-width="2"/>
+                            <text x="210" y="57" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">muchos bloques = mucha información</text>
+                            <!-- barra 2: parcial -->
+                            <text x="10" y="100" fill="#1d1d1f" font-size="11.5" font-weight="700">Intereses algo desalineados</text>
+                            <rect x="10" y="108" width="200" height="28" fill="#6e5a9e" stroke="#fff" stroke-width="2"/>
+                            <rect x="210" y="108" width="200" height="28" fill="#4a3680" stroke="#fff" stroke-width="2"/>
+                            <text x="210" y="127" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">pocos bloques = información gruesa</text>
+                            <!-- barra 3: opuestos -->
+                            <text x="10" y="170" fill="#1d1d1f" font-size="11.5" font-weight="700">Intereses opuestos</text>
+                            <rect x="10" y="178" width="400" height="28" fill="#2d1b4e" stroke="#fff" stroke-width="2"/>
+                            <text x="210" y="197" text-anchor="middle" fill="#fff" font-size="10.5" font-weight="700">un solo bloque = nada se transmite (babbling)</text>
+                        </svg>
+                        <p class="caption">Como mentir no cuesta, el receptor <strong>descuenta</strong> lo que oye. El emisor solo puede comprometer información <strong>por bloques</strong>, y cuanto mayor el conflicto de intereses, más gruesos los bloques.</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">Dónde vive el cheap talk</div>
+                        <h3>Palabras gratis en el mundo real</h3>
+                        <p><strong>Earnings calls:</strong> el «guidance» y los planes de la gerencia son en gran parte palabras no verificables, filtradas por la alineación parcial con los analistas.</p>
+                        <p style="margin-top:10px;"><strong>Comunicados y forward guidance:</strong> notas de prensa y orientaciones de bancos centrales se leen según la alineación y la reputación acumulada.</p>
+                        <p style="margin-top:10px;"><strong>Publicidad no verificable:</strong> afirmaciones «blandas» de calidad que solo informan si el incentivo a exagerar es bajo.</p>
+                        <div class="punch">La pregunta clave nunca es «¿qué dijo?», sino <strong>«¿qué tan alineados están sus intereses con los míos?»</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: TABLA TRES REGÍMENES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis de la semana</div>
+                <h2 class="slide-title">Tres formas de comunicar, tres reglas de credibilidad</h2>
+            </div>
+            <div class="slide-body">
+                <table class="compare-table">
+                    <tr>
+                        <th style="width:20%;">Régimen</th>
+                        <th style="width:34%;">¿Qué tiene de especial el mensaje?</th>
+                        <th style="width:46%;">¿Por qué (o cuándo) es creíble?</th>
+                    </tr>
+                    <tr>
+                        <td class="model">Señalización<br><span style="font-weight:400;font-size:11.5px;color:#6e6e73;">Spence</span></td>
+                        <td>El mensaje <strong>cuesta</strong>, y el costo es distinto según el tipo.</td>
+                        <td>Separa porque al tipo malo no le compensa imitar al bueno.<span class="rule">Regla: costo diferencial</span></td>
+                    </tr>
+                    <tr>
+                        <td class="model">Cheap talk<br><span style="font-weight:400;font-size:11.5px;color:#6e6e73;">Crawford-Sobel</span></td>
+                        <td>El mensaje <strong>no cuesta</strong> ni se verifica.</td>
+                        <td>Solo informa si los intereses del emisor y el receptor están suficientemente alineados.<span class="rule">Regla: alineación de intereses</span></td>
+                    </tr>
+                    <tr>
+                        <td class="model">Disclosure verificable<br><span style="font-weight:400;font-size:11.5px;color:#6e6e73;">Grossman, Milgrom</span></td>
+                        <td>El mensaje <strong>se puede verificar</strong> (auditable, comprobable).</td>
+                        <td>Aparece el «deshilachado»: hasta los mediocres revelan para no parecer los peores, y «no hay noticia = mala noticia».<span class="rule">Regla: verificabilidad</span></td>
+                    </tr>
+                </table>
+                <div class="dark-box" style="margin-top:18px;">
+                    <div class="tag">El mensaje ejecutivo</div>
+                    Cuando quiera que le crean, pregúntese <strong>qué hace creíble su mensaje</strong>: ¿le cuesta distinto que a un impostor (señal)?, ¿están alineados los intereses (cheap talk)?, ¿puede comprobarse (disclosure)? Mucho del trabajo regulatorio consiste en <strong>convertir cheap talk en disclosure verificable</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: DEMO COLAB ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Demostración en vivo</div>
+                <h2 class="slide-title">La herramienta de hoy en Google Colab</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div>
+                        <pre class="code-block"><span class="cm"># Parte 1: actualización bayesiana de creencias</span>
+<span class="cm"># Colibrí parte de un prior y observa una señal</span>
+
+<span class="cm"># === EDITAR === creencia inicial de "tipo fuerte"</span>
+prior_fuerte = 0.50
+fuerza_senal = 0.80   <span class="cm"># qué tan informativa es</span>
+<span class="cm"># -> imprime el posterior (cuánto sube la creencia)</span>
+
+<span class="cm"># Parte 2: señalización de Spence (single-crossing)</span>
+<span class="cm"># === EDITAR === costo de la señal por tipo</span>
+costo_fuerte = 2
+costo_debil  = 6
+<span class="cm"># -> imprime si el equilibrio SEPARA o AGRUPA</span>
+
+<span class="cm"># Parte 3: cheap talk (Crawford-Sobel)</span>
+<span class="cm"># === EDITAR === conflicto de intereses (0 = alineados)</span>
+sesgo = 0.10
+<span class="cm"># -> imprime cuántos bloques de info se transmiten</span></pre>
+                    </div>
+                    <div class="steps-col">
+                        <div class="step-item"><div class="n">1</div><div><strong>Guardar una copia:</strong> Archivo → Guardar una copia en Drive. Trabajan sobre su propio cuaderno.</div></div>
+                        <div class="step-item"><div class="n">2</div><div><strong>Ejecutar en orden:</strong> botón de play en cada celda, de arriba abajo. No se instala nada.</div></div>
+                        <div class="step-item"><div class="n">3</div><div><strong>Editar solo lo marcado:</strong> únicamente las celdas <strong>=== EDITAR ===</strong>. Todo lo demás se recalcula solo y se imprime con nombres y números.</div></div>
+                        <div class="dark-box">
+                            <div class="tag">Por qué es fácil</div>
+                            Es Python puro, sin librerías que instalar y sin gráficos que fallen. Funciona igual en Windows, Mac, iPad o el laboratorio. <strong>Editar, ejecutar, interpretar.</strong> El código ya está escrito por ustedes; aquí solo se usa.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: CIERRE + CASO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis y trabajo en clase</div>
+                <h2 class="slide-title">Tres ideas y un caso por resolver</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Decido con creencias</h4>
+                        <p>Cuando no veo el tipo del rival, actúo sobre probabilidades y las actualizo con datos. Eso es el equilibrio Bayes-Nash y su versión perfecta.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>La señal creíble cuesta</h4>
+                        <p>Una señal separa tipos solo si le cuesta distinto al bueno y al malo. Garantías, auditorías y certificaciones funcionan por esa lógica.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>Hablar gratis informa a medias</h4>
+                        <p>Las palabras sin costo solo transmiten información si los intereses están alineados. Si no, conviene verificarlas.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 6: PagoTico bajo sospecha, señalizar para entrar</h3>
+                    <p>Una entidad reguladora y los comercios no saben si PagoTico es una fintech sólida o frágil. Su equipo asesora a PagoTico para que decida <strong>qué señal emitir</strong> (una auditoría costosa), demuestre que es creíble con la lógica del costo diferencial, y diseñe un <strong>comunicado</strong> al mercado cuyo valor dependerá de qué tan alineados estén sus intereses con los del receptor.</p>
+                    <p class="tools"><strong>Hoy, en Google Colab:</strong> un cuaderno pre-armado donde solo cambian números en las celdas marcadas y ejecutan. Sin programar: editar, ejecutar, interpretar.</p>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 8</div>
+                    <div class="content">Tadelis (2013), capítulos 9 y 10 · Axelrod (1984), La evolución de la cooperación · Juegos repetidos, cooperación y reputación · Avance único del proyecto integrador</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
