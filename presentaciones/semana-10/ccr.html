@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semanas 9 y 10 - Juegos evolutivos y valor de Shapley</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 22px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 60px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 21px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 940px;
+            line-height: 1.5;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS / ARCO ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 44px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .question-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #00b4dc; margin-bottom: 6px; }
+        .question-text { font-size: 15.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .questions-footer {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 15px 22px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* ============== BLOQUES GENÉRICOS ============== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+        .two-col.even { grid-template-columns: 1fr 1fr; }
+        .two-col.wide-left { grid-template-columns: 1.35fr 1fr; }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .form-block .badge.alt { background: linear-gradient(135deg, #1a5e3a, #2d8659); }
+        .form-block .badge.gold { background: linear-gradient(135deg, #8a6a10, #c79a2e); }
+
+        .form-block h3 { color: #2d1b4e; font-size: 20px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .gps-callout h3 { font-size: 21px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14.5px; line-height: 1.55; opacity: 0.96; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        .analogy {
+            margin-top: 16px;
+            background: #fff7e6;
+            border: 1px solid #f0dcae;
+            border-left: 4px solid #c79a2e;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 14px;
+            color: #5a4410;
+            line-height: 1.55;
+        }
+        .analogy strong { color: #8a6410; }
+        .analogy .lead { display:block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #b1852b; margin-bottom: 5px; }
+
+        .foot-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        /* ============== MATRIZ DE PAGOS ============== */
+        .payoff { border-collapse: collapse; width: 100%; margin-top: 4px; }
+        .payoff td { border: 3px solid #ffffff; padding: 12px 6px; text-align: center; }
+        .payoff .corner { background: transparent; border: none; }
+        .payoff .colhead, .payoff .rowhead {
+            background: #2d1b4e; color: #fff; font-weight: 700; font-size: 12px; line-height: 1.3;
+        }
+        .payoff .cell { font-size: 20px; font-weight: 800; color: #1e1530; }
+        .payoff .cell small { display: block; font-size: 10px; font-weight: 700; color: #6e6e73; margin-top: 3px; letter-spacing: 0.5px; }
+        .payoff .coop  { background: #d3f3e1; }
+        .payoff .defx  { background: #f8d5dd; }
+        .payoff .tempt { background: #fbeecb; }
+
+        /* ============== TARJETAS PEQUEÑAS ============== */
+        .mini-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 16px; }
+        .mini-cards.three { grid-template-columns: repeat(3, 1fr); }
+        .mini-cards.two { grid-template-columns: repeat(2, 1fr); }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            border-top: 4px solid #00d4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .mini-card.g { border-top-color: #2d8659; }
+        .mini-card h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 5px; }
+        .mini-card p { font-size: 12.5px; color: #1d1d1f; line-height: 1.45; }
+        .mini-card .ex { font-size: 12px; color: #6e6e73; font-style: italic; margin-top: 5px; }
+
+        /* ============== AXIOMAS ============== */
+        .axiom-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 6px; }
+        .axiom-card {
+            background: #ffffff; border-radius: 16px; padding: 20px 18px;
+            border: 1px solid #e5e5e7; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-bottom: 5px solid #00d4ff; text-align: center;
+        }
+        .axiom-card .aicon {
+            width: 46px; height: 46px; margin: 0 auto 12px auto; border-radius: 50%;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white; display: flex; align-items: center; justify-content: center;
+            font-size: 22px; font-weight: 800; font-family: 'Georgia', serif;
+        }
+        .axiom-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 7px; }
+        .axiom-card p { font-size: 13px; color: #1d1d1f; line-height: 1.5; }
+
+        /* ============== TABLA COMPARATIVA ATRIBUCIÓN ============== */
+        .attr-table { border-collapse: collapse; width: 100%; margin-top: 6px; font-size: 13.5px; }
+        .attr-table th { background: #2d1b4e; color: white; padding: 10px 8px; font-weight: 700; text-align: center; }
+        .attr-table th:first-child { text-align: left; }
+        .attr-table td { border-bottom: 1px solid #e5e5e7; padding: 9px 8px; text-align: center; }
+        .attr-table td:first-child { text-align: left; font-weight: 700; color: #2d1b4e; }
+        .attr-table tr.hl td { background: #eaf9fe; }
+        .attr-table .win { color: #1a5e3a; font-weight: 800; }
+        .attr-table .low { color: #a3213f; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+        .closing-card {
+            background: #ffffff; border-radius: 18px; padding: 24px;
+            border: 1px solid #e5e5e7; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff; border-radius: 18px; padding: 22px 24px;
+            border: 2px solid #00d4ff; box-shadow: 0 4px 18px rgba(0,212,255,0.15); margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 8px; }
+        .case-box p { font-size: 14px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 13px; color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff); color: white;
+            border-radius: 16px; padding: 14px 22px; margin-top: 14px; text-align: center;
+        }
+        .next-week-box .label { font-size: 11px; opacity: 0.85; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* transición de bloque */
+        .divider-hero { text-align:center; padding: 10px 0; }
+        .divider-hero .big {
+            font-size: 30px; font-weight: 800; color: #2d1b4e; line-height: 1.25; max-width: 900px; margin: 0 auto 14px auto;
+        }
+        .divider-hero .big span { color: #00b4dc; }
+        .flow-blocks { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; margin-top: 10px; }
+        .flow-block {
+            background: #ffffff; border-radius: 18px; padding: 22px; border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .flow-block.left { border-top: 5px solid #00d4ff; }
+        .flow-block.right { border-top: 5px solid #2d8659; }
+        .flow-block h4 { color: #2d1b4e; font-size: 18px; margin-bottom: 8px; }
+        .flow-block .q { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+        .flow-block .lbl { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+        .flow-block.left .lbl { color: #00b4dc; }
+        .flow-block.right .lbl { color: #2d8659; }
+        .flow-arrow { font-size: 40px; color: #2d1b4e; font-weight: 800; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 14px; z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px; border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6); box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff); border: none; color: white;
+            padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 13.5px; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        .nav-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4); }
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed; top: 22px; right: 28px; color: #6e6e73; font-size: 13px; z-index: 1000;
+            font-weight: 600; background: rgba(255,255,255,0.92); padding: 6px 14px; border-radius: 20px;
+            border: 1px solid #e5e5e7; backdrop-filter: blur(8px);
+        }
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 25px; }
+            .cover-title { font-size: 40px; }
+            .questions-grid, .two-col, .two-col.even, .two-col.wide-left,
+            .mini-cards, .mini-cards.three, .mini-cards.two,
+            .axiom-grid, .closing-grid, .flow-blocks { grid-template-columns: 1fr; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">14</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semanas 9 y 10</div>
+            <h1 class="cover-title">Copiar, cooperar, repartir</h1>
+            <p class="cover-subtitle">Cómo se difunde lo que funciona sin que nadie lo calcule (juegos evolutivos) y cómo se reparte con justicia lo que creamos en equipo (valor de Shapley)</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: EL ARCO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta</div>
+                <h2 class="slide-title">Dos semanas unidas por una sola idea: la cooperación</h2>
+            </div>
+            <div class="slide-body">
+                <div class="questions-grid">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <div class="question-tag">Bloque evolutivo · Sem. 9</div>
+                        <p class="question-text">¿Por qué una estrategia se <strong>difunde</strong> en toda una población aunque nadie se siente a calcularla?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <div class="question-tag">Bloque evolutivo · Sem. 9</div>
+                        <p class="question-text">Si traicionar suele convenir, ¿cómo es que la <strong>cooperación</strong> emerge y sobrevive entre rivales?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <div class="question-tag">Bloque cooperativo · Sem. 10</div>
+                        <p class="question-text">Cuando nos unimos y creamos valor juntos, ¿cómo lo <strong>repartimos con justicia</strong>?</p>
+                    </div>
+                </div>
+                <div class="questions-footer">
+                    Primero veremos cómo <strong>se propaga</strong> lo que rinde (la selva de la evolución). Luego, qué pasa cuando los jugadores <strong>se dan la mano</strong> y toca decidir la tajada de cada uno.
+                </div>
+                <div class="analogy">
+                    <span class="lead">La idea en una frase</span>
+                    En la primera mitad, los jugadores <strong>copian</strong> lo que funciona sin pensarlo mucho. En la segunda, <strong>se sientan en la misma mesa</strong> a repartir lo que ganaron juntos. Dos caras de cómo surge y se sostiene la cooperación.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: LO QUE FUNCIONA SE COPIA (REPLICATOR + SINPE) ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque evolutivo · La idea madre</div>
+                <h2 class="slide-title">Lo que rinde por encima del promedio, se difunde</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col wide-left">
+                    <div class="form-block">
+                        <span class="badge alt">SINPE Móvil · datos reales del BCCR</span>
+                        <h3>La curva en S de la adopción</h3>
+                        <p class="sub">Suscripciones activas de SINPE Móvil, 2015–2024</p>
+                        <svg viewBox="0 0 460 220" style="width:100%; height:auto;">
+                            <!-- ejes -->
+                            <line x1="45" y1="185" x2="440" y2="185" stroke="#c9c9d0" stroke-width="1.5"/>
+                            <line x1="45" y1="20" x2="45" y2="185" stroke="#c9c9d0" stroke-width="1.5"/>
+                            <!-- curva S -->
+                            <path d="M50 178 C 120 176, 150 172, 190 150 C 235 124, 260 70, 320 45 C 370 26, 410 24, 435 22"
+                                  fill="none" stroke="#00b4dc" stroke-width="4"/>
+                            <!-- puntos clave -->
+                            <circle cx="52" cy="178" r="5" fill="#2d1b4e"/>
+                            <text x="52" y="205" text-anchor="middle" font-size="10.5" fill="#6e6e73">2015</text>
+                            <text x="52" y="168" text-anchor="middle" font-size="10" fill="#2d1b4e" font-weight="700">147 mil</text>
+                            <circle cx="435" cy="22" r="6" fill="#00b4dc"/>
+                            <text x="430" y="205" text-anchor="middle" font-size="10.5" fill="#6e6e73">2024</text>
+                            <text x="405" y="16" text-anchor="middle" font-size="11" fill="#00b4dc" font-weight="800">4,23 mill.</text>
+                            <!-- fases -->
+                            <text x="110" y="140" text-anchor="middle" font-size="10.5" fill="#9a6a10" font-weight="700">arranque lento</text>
+                            <text x="255" y="105" text-anchor="middle" font-size="10.5" fill="#1a5e3a" font-weight="700">explosión por</text>
+                            <text x="255" y="118" text-anchor="middle" font-size="10.5" fill="#1a5e3a" font-weight="700">boca a boca</text>
+                            <text x="390" y="55" text-anchor="middle" font-size="10.5" fill="#2d1b4e" font-weight="700">saturación</text>
+                        </svg>
+                        <p class="caption">Cerca del <strong>80% de la población mayor de 15 años</strong> usaba SINPE Móvil a fines de 2024. Empezó lento, luego explotó. ¿Por qué?</p>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">La regla, sin ecuaciones</div>
+                            <h3>Una estrategia no necesita ser buena en absoluto: solo superar al promedio</h3>
+                            <p>Lo que rinde por encima del promedio <strong>gana cuota</strong>; lo que rinde por debajo la <strong>pierde</strong>. Nadie calcula nada: las prácticas exitosas simplemente <strong>se copian</strong> (por imitación, por costumbre, por refuerzo).</p>
+                        </div>
+                        <div class="analogy">
+                            <span class="lead">Analogía</span>
+                            Es como una <strong>moda</strong> o como el propio SINPE: cuando tus contactos, tu pulpería y tu familia ya lo usan, adoptarlo te <strong>rinde más</strong>. Cada nuevo usuario vuelve más valioso adoptar. Eso empuja la curva hacia arriba hasta que casi todos están dentro.
+                        </div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    Esta es la <strong>dinámica replicadora</strong>: la misma matemática que describe la difusión de tecnologías, las guerras de estándares (VHS venció a Betamax) y el fenómeno de <strong>"el ganador se lo lleva todo"</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: ESS + HALCÓN-PALOMA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque evolutivo · Estabilidad</div>
+                <h2 class="slide-title">¿Cuánta agresividad sobrevive en un mercado?</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge alt">Halcón contra Paloma</span>
+                        <h3>Pelear o convivir por el mismo cliente</h3>
+                        <p class="sub">Halcón = guerra de precios · Paloma = mantener y convivir</p>
+                        <table class="payoff">
+                            <tr>
+                                <td class="corner"></td>
+                                <td class="colhead">Rival:<br>Halcón</td>
+                                <td class="colhead">Rival:<br>Paloma</td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">Yo:<br>Halcón</td>
+                                <td class="cell defx">se destruyen<small>ambos pagan la guerra</small></td>
+                                <td class="cell tempt">me lo llevo<small>gano el cliente</small></td>
+                            </tr>
+                            <tr>
+                                <td class="rowhead">Yo:<br>Paloma</td>
+                                <td class="cell tempt">cedo<small>me lo quitan</small></td>
+                                <td class="cell coop">reparto<small>convivimos</small></td>
+                            </tr>
+                        </table>
+                        <p class="caption">Cuando la guerra cuesta más que el premio, ni "todos halcones" ni "todas palomas" es estable. El mercado se asienta en una <strong>mezcla</strong>.</p>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">Estrategia evolutivamente estable (ESS)</div>
+                            <h3>El estándar que nadie logra invadir</h3>
+                            <p>Una estrategia es <strong>evolutivamente estable</strong> si, cuando toda la población la adopta, ningún grupito que experimente con algo distinto logra mejores resultados. Es un <strong>equilibrio de Nash con blindaje</strong>: además de que nadie quiere moverse, resiste a los que prueban algo raro.</p>
+                        </div>
+                        <div class="analogy">
+                            <span class="lead">Analogía</span>
+                            Piense en el <strong>tránsito</strong>: si todos manejan agresivo, todos chocan; si todos ceden, alguien se aprovecha. El sistema se autorregula a una <strong>proporción estable</strong> de agresivos. En un mercado donde la guerra de precios es cara, solo <strong>unos pocos halcones</strong> sobreviven; demasiados se destruyen entre sí.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: PIEDRA-PAPEL-TIJERA + AXELROD ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque evolutivo · Ciclos y cooperación</div>
+                <h2 class="slide-title">A veces nada se estabiliza; y aun así, la cooperación puede ganar</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge alt">Piedra, papel o tijera</span>
+                        <h3>Cuando ninguna estrategia domina a todas</h3>
+                        <svg viewBox="0 0 300 190" style="width:100%; height:auto; max-height:170px;">
+                            <!-- triángulo simplex -->
+                            <polygon points="150,25 275,175 25,175" fill="#f3f0fa" stroke="#c9c9d0" stroke-width="1.5"/>
+                            <text x="150" y="18" text-anchor="middle" font-size="11" font-weight="700" fill="#2d1b4e">Piedra</text>
+                            <text x="285" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#2d1b4e">Papel</text>
+                            <text x="15" y="185" text-anchor="middle" font-size="11" font-weight="700" fill="#2d1b4e">Tijera</text>
+                            <!-- órbita -->
+                            <ellipse cx="150" cy="128" rx="60" ry="34" fill="none" stroke="#c73e6e" stroke-width="2.5" stroke-dasharray="5 4"/>
+                            <path d="M208 118 l 6 -9 l 9 6" fill="none" stroke="#c73e6e" stroke-width="2.5"/>
+                            <circle cx="150" cy="128" r="4" fill="#2d1b4e"/>
+                            <text x="150" y="152" text-anchor="middle" font-size="9.5" fill="#6e6e73">nunca se detiene</text>
+                        </svg>
+                        <p class="caption">Piedra vence a tijera, tijera a papel, papel a piedra. No hay estrategia estable: la población <strong>rota en círculos</strong>, para siempre.</p>
+                        <div class="analogy" style="margin-top:12px;">
+                            <span class="lead">Analogía</span>
+                            Tres posicionamientos de mercado que <strong>se comen entre sí</strong> en ciclo: el líder de hoy será desplazado y volverá a subir. El mercado <strong>rota</strong>, no se asienta.
+                        </div>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">El torneo de Axelrod</div>
+                            <h3>Ganó la estrategia más simple: "ojo por ojo"</h3>
+                            <p>En un torneo de dilema del prisionero repetido, la campeona fue <strong>tit-for-tat</strong>: coopera primero y luego copia lo que hizo el rival. La cooperación puede ser <strong>evolutivamente exitosa</strong>.</p>
+                            <div class="punch"><strong>Sus cuatro secretos (mensaje de liderazgo):</strong><br>
+                            <strong>Amable</strong> — nunca traiciona primero.<br>
+                            <strong>Firme</strong> — responde de inmediato al abuso.<br>
+                            <strong>Indulgente</strong> — perdona apenas el otro vuelve a cooperar.<br>
+                            <strong>Clara</strong> — tan simple que el rival la entiende.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: PUENTE A LA IA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque evolutivo · El puente (curiosidad)</div>
+                <h2 class="slide-title">El mismo mecanismo, hoy, dentro de la inteligencia artificial</h2>
+            </div>
+            <div class="slide-body">
+                <div class="divider-hero">
+                    <p class="big">"Evolucionar por selección" y "aprender por refuerzo" son, casi, <span>dos caras de la misma moneda</span></p>
+                </div>
+                <div class="flow-blocks">
+                    <div class="flow-block left">
+                        <div class="lbl">La biología, años 70</div>
+                        <h4>Evolución sin cerebro</h4>
+                        <p class="q">Las estrategias con más éxito se reproducen y se copian más. Nadie calcula; el que rinde, se multiplica.</p>
+                    </div>
+                    <div class="flow-arrow">≈</div>
+                    <div class="flow-block right">
+                        <div class="lbl">La IA, hoy</div>
+                        <h4>Aprender sin fórmulas</h4>
+                        <p class="q">Muchos algoritmos que aprenden "probando y reforzando lo que funciona" siguen, en el fondo, la misma dinámica replicadora.</p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">El gancho</span>
+                    Y aquí lo bonito: igual que los lagartos de "piedra-papel-tijera" nunca se estabilizan, hay agentes de IA que, al aprender unos de otros, también <strong>ciclan sin converger</strong>. El comportamiento que vimos en la selva reaparece en las máquinas.
+                </div>
+                <div class="foot-note">
+                    Esto es solo un <strong>abrebocas</strong>. El tratamiento formal del aprendizaje multiagente y de los modelos de lenguaje como agentes estratégicos lo dejamos para la <strong>Semana 15</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: TRANSICIÓN DE BLOQUE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Cambio de bloque</div>
+                <h2 class="slide-title">Hasta aquí: competir y copiar. Ahora: unirse y repartir</h2>
+            </div>
+            <div class="slide-body">
+                <div class="flow-blocks">
+                    <div class="flow-block left">
+                        <div class="lbl">Lo que veníamos haciendo</div>
+                        <h4>Juegos no cooperativos</h4>
+                        <p class="q">Cada jugador decide <strong>por su cuenta</strong>, sin acuerdos que obliguen. La pregunta era: <em>"¿qué hará cada quién?"</em> (Nash, dominancia).</p>
+                    </div>
+                    <div class="flow-arrow">→</div>
+                    <div class="flow-block right">
+                        <div class="lbl">Lo que empieza ahora</div>
+                        <h4>Juegos cooperativos</h4>
+                        <p class="q">Los jugadores forman <strong>coaliciones con acuerdos vinculantes</strong> y crean valor juntos. La pregunta cambia: <em>"¿cómo repartimos con justicia lo que creamos?"</em></p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">Ancla del curso</span>
+                    Antes, <strong>PagoTico competía</strong> contra Colibrí Pay (eran rivales, puro Nash). Ahora miramos <strong>hacia adentro</strong> de PagoTico: sus canales de marketing —redes, búsqueda, correo, referidos— <strong>cooperan</strong> para lograr que una persona active la app. ¿Cuánto crédito merece cada canal?
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: v(S) Y NÚCLEO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque cooperativo · Fundamentos</div>
+                <h2 class="slide-title">El único ingrediente: cuánto vale cada equipo posible</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge">La función característica v(S)</span>
+                        <h3>El "menú" de valores de cada coalición</h3>
+                        <p class="caption" style="margin-top:2px;">Para describir un juego cooperativo basta decir <strong>cuánto puede lograr cada grupo posible por sí solo</strong>. Un grupo solo = poco; el grupo completo = mucho.</p>
+                        <div style="margin-top:14px; background:#f3f0fa; border-radius:12px; padding:14px 16px; font-size:13.5px; color:#2d1b4e; line-height:1.7;">
+                            <strong>Ejemplo — tres bancos comparten una red antifraude:</strong><br>
+                            • Cada banco solo: ahorra poco.<br>
+                            • Dos juntos: ahorran más.<br>
+                            • Los tres juntos: ahorran lo máximo.<br>
+                            La pregunta: ¿cómo se reparte la <strong>factura</strong> (o el ahorro)?
+                        </div>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">El núcleo (en un minuto)</div>
+                            <h3>¿Se sostiene la gran coalición?</h3>
+                            <p>El <strong>núcleo</strong> es el conjunto de repartos <strong>estables</strong>: aquellos ante los cuales <strong>ningún grupo tiene incentivo de irse</strong> a jugar por su cuenta. Responde <em>"¿aguanta la alianza?"</em>.</p>
+                            <div class="punch">A veces el núcleo está <strong>vacío</strong>: no existe ningún reparto que deje contentos a todos los grupos a la vez. Por eso necesitamos algo que <strong>siempre</strong> dé una respuesta y que además sea <strong>justa</strong>… y ahí entra Shapley.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    Dos preguntas complementarias: el <strong>núcleo</strong> pregunta "¿aguanta la alianza?"; el <strong>valor de Shapley</strong> pregunta "¿cuánto le toca a cada quién?".
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: EL VALOR DE SHAPLEY ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque cooperativo · El corazón de la semana</div>
+                <h2 class="slide-title">Tu aporte promedio, según el orden de llegada</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">La idea de Shapley (Nobel 2012)</div>
+                        <h3>Imagina que todos llegan en fila, en orden al azar</h3>
+                        <p>Cuando entras a la sala, aportas <strong>lo que le sumas</strong> a los que ya estaban. El valor de Shapley de cada jugador es el <strong>promedio de ese aporte</strong> sobre <strong>todos los órdenes posibles</strong> de llegada.</p>
+                        <div class="punch">Con 3 jugadores hay <strong>6 órdenes</strong>; con 4, hay <strong>24</strong>. Se calcula el aporte en cada uno y se promedia. Suena laborioso, pero la computadora lo hace en un instante… y hoy lo van a ver.</div>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge gold">El ejemplo de los guantes</span>
+                        <h3>El recurso escaso se lleva la mayor tajada</h3>
+                        <p class="sub">1 tiene un guante izquierdo; 2 y 3 tienen uno derecho cada uno. Un par vale ₡1; sueltos valen 0.</p>
+                        <div style="display:flex; gap:12px; justify-content:center; margin:14px 0; text-align:center;">
+                            <div style="background:#eaf9fe; border-radius:12px; padding:14px 10px; flex:1;">
+                                <div style="font-size:26px; font-weight:800; color:#00b4dc;">⅔</div>
+                                <div style="font-size:12px; color:#2d1b4e; font-weight:700;">Jugador 1</div>
+                                <div style="font-size:11px; color:#6e6e73;">guante escaso</div>
+                            </div>
+                            <div style="background:#f3f0fa; border-radius:12px; padding:14px 10px; flex:1;">
+                                <div style="font-size:26px; font-weight:800; color:#2d1b4e;">⅙</div>
+                                <div style="font-size:12px; color:#2d1b4e; font-weight:700;">Jugador 2</div>
+                            </div>
+                            <div style="background:#f3f0fa; border-radius:12px; padding:14px 10px; flex:1;">
+                                <div style="font-size:26px; font-weight:800; color:#2d1b4e;">⅙</div>
+                                <div style="font-size:12px; color:#2d1b4e; font-weight:700;">Jugador 3</div>
+                            </div>
+                        </div>
+                        <p class="caption">Hay dos guantes derechos "de sobra", así que el <strong>izquierdo escaso</strong> captura la mayor parte del valor. Shapley lo detecta solo.</p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">Analogía de negocio</span>
+                    En un equipo, quien aporta el <strong>recurso que nadie más tiene</strong> (el dato clave, el contacto, la licencia) captura más valor que quien aporta algo abundante. Shapley pone número a esa intuición, de forma <strong>justa y sin favoritismos</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: CUATRO AXIOMAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque cooperativo · Por qué es "lo justo"</div>
+                <h2 class="slide-title">Cuatro reglas de sentido común, una sola respuesta posible</h2>
+            </div>
+            <div class="slide-body">
+                <div class="axiom-grid">
+                    <div class="axiom-card">
+                        <div class="aicon">=</div>
+                        <h4>Eficiencia</h4>
+                        <p>Se reparte <strong>todo</strong> el valor creado: no sobra ni falta plata.</p>
+                    </div>
+                    <div class="axiom-card">
+                        <div class="aicon">⇋</div>
+                        <h4>Simetría</h4>
+                        <p>Si dos aportan <strong>lo mismo</strong>, reciben lo mismo. No importa el nombre.</p>
+                    </div>
+                    <div class="axiom-card">
+                        <div class="aicon">0</div>
+                        <h4>Jugador nulo</h4>
+                        <p>Quien <strong>no aporta</strong> nada a ninguna coalición, <strong>no cobra</strong>.</p>
+                    </div>
+                    <div class="axiom-card">
+                        <div class="aicon">+</div>
+                        <h4>Aditividad</h4>
+                        <p>Repartir dos negocios juntos da lo mismo que repartir cada uno y sumar. Sin trucos.</p>
+                    </div>
+                </div>
+                <div class="gps-callout" style="margin-top:22px;">
+                    <div class="tag">El resultado que le valió el Nobel a Lloyd Shapley</div>
+                    <h3>Estas cuatro reglas no dejan más que una respuesta</h3>
+                    <p>No es una definición inventada al azar: es la <strong>única</strong> forma de reparto que cumple las cuatro reglas a la vez. Por eso decimos que Shapley es "lo justo": es la <strong>consecuencia forzosa</strong> de cuatro principios que casi todos aceptarían.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 11: ATRIBUCIÓN MULTICANAL ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque cooperativo · Aplicación estrella</div>
+                <h2 class="slide-title">El crédito de la venta: ¿solo para quien mete el gol?</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div>
+                        <div class="analogy" style="margin-top:0;">
+                            <span class="lead">Analogía del gol</span>
+                            Un cliente ve un anuncio, luego busca en Google, abre un correo y por fin activa la app. ¿El crédito es <strong>solo de quien anotó</strong> (el último clic)? ¿O también de <strong>quien dio el pase</strong> y de quien <strong>recuperó el balón</strong>? Shapley reparte el crédito entre <strong>todos los que tocaron la jugada</strong>, según lo que cada uno aportó de verdad.
+                        </div>
+                        <div class="mini-cards three" style="margin-top:16px;">
+                            <div class="mini-card"><h4>Último clic</h4><p>Todo el crédito al último contacto. Sobrevalora el fondo del embudo.</p></div>
+                            <div class="mini-card"><h4>Primer clic</h4><p>Todo al primero. Ignora lo que vino después.</p></div>
+                            <div class="mini-card g"><h4>Shapley</h4><p>Reparte según la <strong>contribución real</strong>, considerando sinergias.</p></div>
+                        </div>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge">PagoTico · crédito por canal</span>
+                        <h3>Quién activó usuarios de la app</h3>
+                        <table class="attr-table">
+                            <tr><th>Canal</th><th>Último clic</th><th>Shapley</th></tr>
+                            <tr><td>Búsqueda</td><td>83%</td><td>46%</td></tr>
+                            <tr><td>Redes</td><td>8%</td><td>22%</td></tr>
+                            <tr><td>Email</td><td>8%</td><td>11%</td></tr>
+                            <tr class="hl"><td>Referidos</td><td class="low">0%</td><td class="win">21%</td></tr>
+                        </table>
+                        <p class="caption">El <strong>boca a boca (referidos)</strong> —clave en el mercado tico— recibía <strong>0% por último clic</strong> porque nunca cierra la venta. Shapley revela que aporta un 21% y cambia dónde invertir el presupuesto.</p>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    Google Analytics 4 usa <strong>atribución basada en datos</strong> (método de Shapley), modelo por defecto desde octubre de 2025. Los anunciantes que migran ven, en promedio, <strong>~6% más conversiones</strong> (cifra reportada por Google, tómese como direccional).
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 12: SHAP + IA EXPLICABLE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Bloque cooperativo · La misma matemática, otra vez</div>
+                <h2 class="slide-title">"¿Por qué el modelo decidió esto?" SHAP lo reparte</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">SHAP = Shapley aplicado a la IA</div>
+                        <h3>La misma idea, con otros "jugadores"</h3>
+                        <p>Un modelo de machine learning predice, por ejemplo, si aprobar un crédito. SHAP responde <strong>por qué</strong>: reparte el crédito de esa predicción entre las variables.</p>
+                        <div class="punch">La traducción es exacta:<br>• Los <strong>jugadores</strong> → las variables del modelo.<br>• El <strong>valor a repartir</strong> → la predicción.<br>• El <strong>reparto justo</strong> → cuánto empujó cada variable la decisión.</div>
+                    </div>
+                    <div>
+                        <div class="analogy" style="margin-top:0;">
+                            <span class="lead">Por qué importa hoy</span>
+                            SHAP es el estándar de la <strong>IA explicable</strong>. Con el <strong>EU AI Act</strong> (2024–2027), los sistemas de alto riesgo —crédito, empleo, salud— deben poder <strong>explicar sus decisiones</strong>. Ahí SHAP se volvió herramienta práctica de cumplimiento.
+                        </div>
+                        <div class="foot-note" style="margin-top:16px; text-align:left;">
+                            <strong>Ojo con el alcance:</strong> hoy solo vemos la <strong>idea</strong>. No entrenamos modelos ni estudiamos el algoritmo por dentro. Lo que importa es reconocer que es <strong>el mismo reparto justo de Shapley</strong>, ahora para explicar una decisión.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 13: EL JUEGO + EL CASO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Manos a la obra</div>
+                <h2 class="slide-title">Hoy juegan, y del juego sale el caso</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards two">
+                    <div class="mini-card">
+                        <h4>Parte 1 · Torneo evolutivo</h4>
+                        <p>Su equipo configura la estrategia de PagoTico (qué tan amable, qué tan firme) y la lanza a un torneo repetido contra estrategias clásicas. Observan qué se <strong>difunde</strong> y qué se extingue.</p>
+                        <p class="ex">Aterriza: dinámica replicadora, ESS y las cuatro reglas de Axelrod.</p>
+                    </div>
+                    <div class="mini-card g">
+                        <h4>Parte 2 · Reparto de Shapley</h4>
+                        <p>Reciben las rutas de activación de PagoTico por canal. Primero <strong>reparten el crédito a intuición</strong>; luego el juego calcula el Shapley real y lo comparan con los heurísticos.</p>
+                        <p class="ex">Aterriza: Shapley, atribución multicanal y decisión de presupuesto.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 8-9 · Doble: PagoTico entre la selva y la mesa de reparto</h3>
+                    <p>Con el juego de hoy, su equipo debe (1) decidir la <strong>postura competitiva</strong> de PagoTico a partir del torneo, y (2) proponer una <strong>reasignación de presupuesto</strong> de marketing con base en el reparto de Shapley. Cierran con una recomendación gerencial integrada.</p>
+                    <p class="tools"><strong>La herramienta de hoy:</strong> un juego interactivo que se abre con doble clic en el navegador. Sin instalar nada, funciona en Windows, Mac, iPad o el laboratorio. Jugar, observar, interpretar.</p>
+                </div>
+                <div class="foot-note">
+                    Tienen entre 40 y 60 minutos. Al final, la <strong>ruleta</strong> elige al azar un equipo para que exponga en cinco a siete minutos qué hicieron y qué recomiendan.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 14: SÍNTESIS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis</div>
+                <h2 class="slide-title">Tres ideas para llevarse</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Lo que funciona se copia</h4>
+                        <p>Sin que nadie lo calcule, las buenas estrategias se difunden. Y la cooperación puede ser estable, no solo la agresión.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>La cooperación se diseña</h4>
+                        <p>Amable, firme, indulgente y clara: las reglas de Axelrod que hoy inspiran hasta a la inteligencia artificial.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>El reparto justo tiene una sola respuesta</h4>
+                        <p>Shapley: tu aporte promedio. Hoy es el motor de la atribución de marketing y de la IA explicable.</p>
+                    </div>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 11</div>
+                    <div class="content">Diseño de mecanismos y subastas · Principio de revelación · Primer precio, segundo precio (Vickrey) y VCG · Cómo Google fija el precio de sus anuncios</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
