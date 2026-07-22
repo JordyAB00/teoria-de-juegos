@@ -1,0 +1,831 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 11 - Diseño de mecanismos y subastas</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 22px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 60px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 21px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 940px;
+            line-height: 1.5;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS / ARCO ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 44px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .question-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #00b4dc; margin-bottom: 6px; }
+        .question-text { font-size: 15.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .questions-footer {
+            margin-top: 22px;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 15px 22px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        /* ============== BLOQUES GENÉRICOS ============== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+        .two-col.even { grid-template-columns: 1fr 1fr; }
+        .two-col.wide-left { grid-template-columns: 1.35fr 1fr; }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+        }
+        .form-block .badge.alt { background: linear-gradient(135deg, #1a5e3a, #2d8659); }
+        .form-block .badge.gold { background: linear-gradient(135deg, #8a6a10, #c79a2e); }
+
+        .form-block h3 { color: #2d1b4e; font-size: 20px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .gps-callout h3 { font-size: 21px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14.5px; line-height: 1.55; opacity: 0.96; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13.5px;
+            line-height: 1.5;
+        }
+
+        .analogy {
+            margin-top: 16px;
+            background: #fff7e6;
+            border: 1px solid #f0dcae;
+            border-left: 4px solid #c79a2e;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 14px;
+            color: #5a4410;
+            line-height: 1.55;
+        }
+        .analogy strong { color: #8a6410; }
+        .analogy .lead { display:block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #b1852b; margin-bottom: 5px; }
+
+        .foot-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 14px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        /* ============== BARRA 90/10 (SUTEL) ============== */
+        .split-bar { display: flex; width: 100%; height: 54px; border-radius: 12px; overflow: hidden; margin: 6px 0 4px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+        .split-bar .part { display: flex; align-items: center; justify-content: center; color: white; font-weight: 800; font-size: 15px; }
+        .split-bar .towers { flex: 9; background: linear-gradient(135deg, #1a5e3a, #2d8659); }
+        .split-bar .cash { flex: 1; background: linear-gradient(135deg, #8a6a10, #c79a2e); font-size: 12px; }
+
+        /* ============== SUBASTAS (4) ============== */
+        .auction-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-top: 6px; }
+        .auction-card {
+            background: #ffffff; border-radius: 16px; padding: 18px 20px;
+            border: 1px solid #e5e5e7; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-left: 5px solid #00d4ff;
+        }
+        .auction-card.sealed { border-left-color: #2d1b4e; }
+        .auction-card h4 { color: #2d1b4e; font-size: 17px; margin-bottom: 4px; }
+        .auction-card .how { font-size: 13px; color: #6e6e73; line-height: 1.45; margin-bottom: 8px; }
+        .auction-card .play { font-size: 13.5px; color: #1d1d1f; line-height: 1.45; }
+        .auction-card .play strong { color: #1a5e3a; }
+        .pair-note {
+            margin-top: 16px; text-align:center; font-size: 13.5px; color: #2d1b4e;
+            background: #eaf9fe; border-radius: 12px; padding: 12px 16px; line-height: 1.5;
+        }
+
+        /* ============== TABLA COMPARATIVA ============== */
+        .attr-table { border-collapse: collapse; width: 100%; margin-top: 6px; font-size: 13.5px; }
+        .attr-table th { background: #2d1b4e; color: white; padding: 10px 8px; font-weight: 700; text-align: center; }
+        .attr-table th:first-child { text-align: left; }
+        .attr-table td { border-bottom: 1px solid #e5e5e7; padding: 9px 8px; text-align: center; }
+        .attr-table td:first-child { text-align: left; font-weight: 700; color: #2d1b4e; }
+        .attr-table tr.hl td { background: #eaf9fe; }
+        .attr-table .win { color: #1a5e3a; font-weight: 800; }
+        .attr-table .low { color: #a3213f; }
+
+        /* ============== TARJETAS PEQUEÑAS ============== */
+        .mini-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+        .mini-cards.two { grid-template-columns: repeat(2, 1fr); }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            border-top: 4px solid #00d4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .mini-card.g { border-top-color: #2d8659; }
+        .mini-card h4 { color: #2d1b4e; font-size: 15px; margin-bottom: 5px; }
+        .mini-card p { font-size: 12.5px; color: #1d1d1f; line-height: 1.45; }
+        .mini-card .ex { font-size: 12px; color: #6e6e73; font-style: italic; margin-top: 5px; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+        .closing-card {
+            background: #ffffff; border-radius: 18px; padding: 24px;
+            border: 1px solid #e5e5e7; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 34px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 16px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff; border-radius: 18px; padding: 22px 24px;
+            border: 2px solid #00d4ff; box-shadow: 0 4px 18px rgba(0,212,255,0.15); margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 8px; }
+        .case-box p { font-size: 14px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 13px; color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff); color: white;
+            border-radius: 16px; padding: 14px 22px; margin-top: 14px; text-align: center;
+        }
+        .next-week-box .label { font-size: 11px; opacity: 0.85; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* transición de bloque */
+        .divider-hero { text-align:center; padding: 10px 0; }
+        .divider-hero .big {
+            font-size: 30px; font-weight: 800; color: #2d1b4e; line-height: 1.25; max-width: 900px; margin: 0 auto 14px auto;
+        }
+        .divider-hero .big span { color: #00b4dc; }
+        .flow-blocks { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; margin-top: 10px; }
+        .flow-block {
+            background: #ffffff; border-radius: 18px; padding: 22px; border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .flow-block.left { border-top: 5px solid #00d4ff; }
+        .flow-block.right { border-top: 5px solid #2d8659; }
+        .flow-block h4 { color: #2d1b4e; font-size: 18px; margin-bottom: 8px; }
+        .flow-block .q { font-size: 13.5px; color: #1d1d1f; line-height: 1.5; }
+        .flow-block .lbl { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+        .flow-block.left .lbl { color: #00b4dc; }
+        .flow-block.right .lbl { color: #2d8659; }
+        .flow-arrow { font-size: 40px; color: #2d1b4e; font-weight: 800; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 14px; z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px; border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6); box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff); border: none; color: white;
+            padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 13.5px; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        .nav-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4); }
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed; top: 22px; right: 28px; color: #6e6e73; font-size: 13px; z-index: 1000;
+            font-weight: 600; background: rgba(255,255,255,0.92); padding: 6px 14px; border-radius: 20px;
+            border: 1px solid #e5e5e7; backdrop-filter: blur(8px);
+        }
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 25px; }
+            .cover-title { font-size: 40px; }
+            .questions-grid, .two-col, .two-col.even, .two-col.wide-left,
+            .mini-cards, .mini-cards.two, .auction-grid,
+            .closing-grid, .flow-blocks { grid-template-columns: 1fr; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">12</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 11</div>
+            <h1 class="cover-title">El que diseña las reglas</h1>
+            <p class="cover-subtitle">Diseño de mecanismos y subastas: cómo se fijan las reglas de un juego para lograr lo que uno quiere, incluso cuando cada quien esconde sus cartas.</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: GANCHO SUTEL + HOJA DE RUTA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta · Un gancho local</div>
+                <h2 class="slide-title">¿Por qué un regulador diseñaría una subasta para no recaudar dinero?</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col wide-left">
+                    <div class="form-block">
+                        <span class="badge alt">SUTEL · subasta 5G de Costa Rica (enero 2025)</span>
+                        <h3>La regla "90/10"</h3>
+                        <p class="sub">Los operadores no pujaban plata: pujaban infraestructura</p>
+                        <div class="split-bar">
+                            <div class="part towers">90% en torres / radiobases</div>
+                            <div class="part cash">10%</div>
+                        </div>
+                        <p class="caption">Ganaba <strong>quien más infraestructura se comprometiera a construir</strong> en 134 distritos de baja conectividad. Solo un 10% se pagó en efectivo (unos US$34 millones a FONATEL).</p>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">La lección de fondo</div>
+                        <h3>El objetivo del diseñador moldea las reglas</h3>
+                        <p>SUTEL no buscaba <strong>maximizar el dinero</strong>, sino la <strong>cobertura rural</strong>. Así que hizo de las torres la moneda de la subasta. Cambia el objetivo y cambian las reglas.</p>
+                        <div class="punch">Eso es <strong>diseño de mecanismos</strong>: primero decides qué quieres lograr y luego inventas las reglas del juego para conseguirlo.</div>
+                    </div>
+                </div>
+                <div class="questions-grid" style="margin-top:20px;">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <div class="question-tag">La honestidad</div>
+                        <p class="question-text">¿Cómo se logra que la gente <strong>diga la verdad</strong> sobre lo que algo vale para ella?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <div class="question-tag">Los formatos</div>
+                        <p class="question-text">¿Da igual cómo organices una subasta? Las <strong>cuatro formas clásicas</strong> y por qué, en el papel, recaudan lo mismo.</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <div class="question-tag">El caso real</div>
+                        <p class="question-text">¿Cómo vende <strong>Google</strong> sus anuncios y por qué cambió sus reglas en 2019?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: TEORÍA DE JUEGOS AL REVÉS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">La gran idea</div>
+                <h2 class="slide-title">Teoría de juegos, pero al revés</h2>
+            </div>
+            <div class="slide-body">
+                <div class="flow-blocks">
+                    <div class="flow-block left">
+                        <div class="lbl">Lo que veníamos haciendo</div>
+                        <h4>Jugar el juego</h4>
+                        <p class="q">Las reglas estaban dadas y nos preguntábamos: <em>"¿cómo jugará cada quién?"</em> (Nash, dominancia, Shapley).</p>
+                    </div>
+                    <div class="flow-arrow">↺</div>
+                    <div class="flow-block right">
+                        <div class="lbl">Lo que empieza ahora</div>
+                        <h4>Diseñar el juego</h4>
+                        <p class="q">Ahora <strong>nosotros ponemos las reglas</strong> para conseguir un resultado. La pregunta cambia: <em>"¿qué reglas hacen que la gente se comporte como quiero?"</em></p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">Analogía</span>
+                    Hasta hoy fuimos <strong>jugadores</strong> dentro de la cancha. Ahora somos el <strong>arquitecto</strong> que diseña el estadio y el reglamento. El reto: la gente <strong>esconde sus cartas</strong> (cuánto está dispuesta a pagar de verdad, cuánto le cuesta algo). Si mentir les conviene, mentirán. Todo el arte consiste en diseñar reglas donde <strong>decir la verdad sea el mejor negocio</strong>.
+                </div>
+                <div class="foot-note">
+                    Es un campo tan importante que dio el <strong>Premio Nobel de Economía 2007</strong> (Hurwicz, Maskin y Myerson). Y lo usamos todos los días sin saberlo: en subastas de anuncios, en asignación de espectro, en plataformas digitales.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: PRINCIPIO DE REVELACIÓN ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">La gran simplificación</div>
+                <h2 class="slide-title">Si van a mentir, que la verdad sea el mejor negocio</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">El principio de revelación</div>
+                        <h3>No hace falta inventar reglas rebuscadas</h3>
+                        <p>Cualquier resultado que se pueda lograr con un mecanismo complicado (pujas en rondas, negociaciones, formularios), también se puede lograr con uno <strong>directo y simple</strong>: cada quien solo <strong>reporta su información privada</strong> y decir la verdad es su mejor jugada.</p>
+                        <div class="punch">Esto convierte un problema imposible (buscar entre todos los juegos imaginables) en uno manejable: <strong>basta buscar entre reglas donde la honestidad conviene</strong>.</div>
+                    </div>
+                    <div>
+                        <div class="analogy" style="margin-top:0;">
+                            <span class="lead">Analogía · el asesor de confianza</span>
+                            Imagine que contrata a un <strong>experto</strong> para que, sabiendo cuánto vale algo para usted de verdad, juegue por usted en la subasta complicada. Ahora <strong>junte</strong> al experto con la máquina: el nuevo sistema solo le pide una cosa, su valor verdadero. Si mentirle a su propio experto no tenía sentido, mentirle a la máquina tampoco.
+                        </div>
+                        <div class="foot-note" style="margin-top:16px; text-align:left;">
+                            <strong>Por qué nos importa:</strong> en lugar de imaginar mil formatos raros, el diseñador se concentra en una sola familia sencilla: <em>"dime la verdad, que te conviene"</em>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: VICKREY SEGUNDO PRECIO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">La joya del diseño</div>
+                <h2 class="slide-title">La subasta donde mentir no sirve de nada</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge">Subasta de Vickrey (segundo precio)</span>
+                        <h3>Gana el que más ofrece, pero paga la segunda oferta</h3>
+                        <p class="sub">Usted valora un bien en ₡100.000. ¿Cuánto conviene ofrecer?</p>
+                        <svg viewBox="0 0 460 210" style="width:100%; height:auto;">
+                            <!-- linea central: valor verdadero -->
+                            <line x1="230" y1="20" x2="230" y2="190" stroke="#00b4dc" stroke-width="2.5" stroke-dasharray="4 4"/>
+                            <text x="230" y="15" text-anchor="middle" font-size="12" fill="#00b4dc" font-weight="800">Su valor: ₡100.000</text>
+                            <!-- flecha sobredeclarar -->
+                            <rect x="255" y="45" width="185" height="52" rx="8" fill="#f8d5dd"/>
+                            <text x="347" y="66" text-anchor="middle" font-size="12.5" fill="#a3213f" font-weight="800">Ofrecer de más (₡120.000)</text>
+                            <text x="347" y="85" text-anchor="middle" font-size="11" fill="#7a1830">arriesga pagar más de lo que vale</text>
+                            <!-- flecha subdeclarar -->
+                            <rect x="20" y="113" width="185" height="52" rx="8" fill="#fbeecb"/>
+                            <text x="112" y="134" text-anchor="middle" font-size="12.5" fill="#8a6410" font-weight="800">Ofrecer de menos (₡80.000)</text>
+                            <text x="112" y="153" text-anchor="middle" font-size="11" fill="#7a5810">arriesga perder un buen negocio</text>
+                            <!-- centro justo -->
+                            <circle cx="230" cy="105" r="7" fill="#1a5e3a"/>
+                            <text x="230" y="180" text-anchor="middle" font-size="12.5" fill="#1a5e3a" font-weight="800">Ofrecer ₡100.000: lo justo</text>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">El truco de diseño</div>
+                            <h3>Tu oferta decide si ganas, pero no cuánto pagas</h3>
+                            <p>Como el pago lo fija <strong>la oferta del segundo</strong>, no la tuya, no hay ningún motivo para especular. Ofrecer tu <strong>valor verdadero</strong> es siempre lo mejor: es una <strong>estrategia dominante</strong>.</p>
+                        </div>
+                        <div class="analogy">
+                            <span class="lead">Analogía · eBay lo hace así</span>
+                            En eBay usted fija su <strong>máximo</strong> y el sistema puja por usted lo mínimo necesario. Si gana, paga apenas por encima del segundo. Es una subasta de segundo precio disfrazada: por eso "decir la verdad" (su tope real) es lo óptimo.
+                        </div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    En el <strong>juego de hoy</strong> lo van a comprobar: intenten ofrecer de más o de menos… y verán que <strong>no ganan más plata</strong> que diciendo la verdad.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: LAS CUATRO SUBASTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">El zoológico de subastas</div>
+                <h2 class="slide-title">Cuatro formas de subastar, dos parejas escondidas</h2>
+            </div>
+            <div class="slide-body">
+                <div class="auction-grid">
+                    <div class="auction-card sealed">
+                        <h4>Primer precio (sobre cerrado)</h4>
+                        <p class="how">Cada quien oferta en secreto; gana la más alta y paga <strong>su propia oferta</strong>.</p>
+                        <p class="play">Jugada óptima: <strong>ofertar por debajo</strong> de tu valor (rebajar la oferta).</p>
+                    </div>
+                    <div class="auction-card sealed">
+                        <h4>Segundo precio (Vickrey)</h4>
+                        <p class="how">Sobre cerrado; gana la más alta pero paga <strong>la segunda</strong>.</p>
+                        <p class="play">Jugada óptima: <strong>ofertar tu valor verdadero</strong>.</p>
+                    </div>
+                    <div class="auction-card">
+                        <h4>Inglesa (ascendente)</h4>
+                        <p class="how">El precio <strong>sube</strong> y la gente se va retirando; el último en pie gana. La de toda la vida.</p>
+                        <p class="play">Equivale al <strong>segundo precio</strong>.</p>
+                    </div>
+                    <div class="auction-card">
+                        <h4>Holandesa (descendente)</h4>
+                        <p class="how">El precio <strong>baja</strong> desde un tope; el primero en aceptar gana. Se usa en el mercado de flores.</p>
+                        <p class="play">Equivale al <strong>primer precio</strong>.</p>
+                    </div>
+                </div>
+                <div class="pair-note">
+                    Aunque parezcan cuatro, son <strong>dos parejas de gemelas estratégicas</strong>: la inglesa se comporta como el segundo precio y la holandesa como el primero. Cambia la puesta en escena, no el fondo.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: EQUIVALENCIA DE INGRESOS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">El resultado que sorprende</div>
+                <h2 class="slide-title">En el papel, las cuatro recaudan lo mismo</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge gold">Teorema de equivalencia de ingresos</span>
+                        <h3>Dos caminos, el mismo promedio</h3>
+                        <svg viewBox="0 0 420 180" style="width:100%; height:auto;">
+                            <!-- camino 1 -->
+                            <rect x="20" y="30" width="170" height="46" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                            <text x="105" y="50" text-anchor="middle" font-size="12" fill="#2d1b4e" font-weight="800">Primer precio</text>
+                            <text x="105" y="67" text-anchor="middle" font-size="10.5" fill="#6e6e73">pagas menos, pero siempre</text>
+                            <!-- camino 2 -->
+                            <rect x="20" y="104" width="170" height="46" rx="10" fill="#f3f0fa" stroke="#2d1b4e"/>
+                            <text x="105" y="124" text-anchor="middle" font-size="12" fill="#2d1b4e" font-weight="800">Segundo precio</text>
+                            <text x="105" y="141" text-anchor="middle" font-size="10.5" fill="#6e6e73">pagas más, pero menos veces</text>
+                            <!-- flechas -->
+                            <path d="M190 53 C 250 53, 250 90, 300 90" fill="none" stroke="#c9c9d0" stroke-width="2.5"/>
+                            <path d="M190 127 C 250 127, 250 90, 300 90" fill="none" stroke="#c9c9d0" stroke-width="2.5"/>
+                            <!-- destino -->
+                            <rect x="300" y="66" width="105" height="48" rx="10" fill="#1a5e3a"/>
+                            <text x="352" y="87" text-anchor="middle" font-size="12" fill="white" font-weight="800">Mismo</text>
+                            <text x="352" y="103" text-anchor="middle" font-size="12" fill="white" font-weight="800">promedio</text>
+                        </svg>
+                        <p class="caption">En promedio, los dos efectos se cancelan. Por eso las cuatro subastas clásicas rinden <strong>el mismo ingreso esperado</strong>.</p>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">Ojo: es un punto de referencia</div>
+                            <h3>Un "benchmark", no una ley de hierro</h3>
+                            <p>La igualdad vale en un mundo ideal (valores independientes, gente neutral al riesgo, competidores parecidos). En la vida real <strong>se rompe</strong>… y ahí es donde el diseño empieza a importar de verdad.</p>
+                            <div class="punch"><strong>Cuándo se rompe:</strong> si la gente teme perder (el primer precio recauda más), si los competidores son muy distintos, si hay valores correlacionados o si hay colusión.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    En el <strong>juego de hoy</strong> correrán cientos de subastas de los dos formatos y verán los dos promedios caer <strong>casi encima</strong> uno del otro.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: VCG ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Cuando hay varios objetos</div>
+                <h2 class="slide-title">Pagas por el hueco que dejas, no por lo que te llevas</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="gps-callout">
+                        <div class="tag">El mecanismo VCG</div>
+                        <h3>El segundo precio, ahora con muchos objetos</h3>
+                        <p>Las reglas: (1) se asigna cada objeto a <strong>quien más lo valora</strong> (eficiencia) y (2) cada ganador paga la <strong>externalidad</strong> que impone, es decir, cuánto peor quedan los demás por su presencia.</p>
+                        <div class="punch">Igual que en Vickrey, <strong>decir la verdad conviene</strong> y el bien termina en las mejores manos.</div>
+                    </div>
+                    <div>
+                        <div class="analogy" style="margin-top:0;">
+                            <span class="lead">Analogía · la obra pública</span>
+                            Tres empresas compiten por dos lotes de obra pública. Si tu participación <strong>desplaza</strong> a alguien que le habría generado ₡X de valor al resto, tú pagas ₡X. Pagas por el <strong>hueco</strong> que dejas en el bienestar ajeno, no por lo que tú ganas.
+                        </div>
+                        <div class="foot-note" style="margin-top:16px; text-align:left;">
+                            <strong>Pero casi nadie lo usa puro:</strong> puede recaudar muy poco (o nada), es <strong>vulnerable a la colusión</strong> y a identidades falsas, y es pesado de calcular. Por eso las plataformas usan variantes más simples.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: SPONSORED SEARCH + GOOGLE 2019 ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">El negocio de los anuncios</div>
+                <h2 class="slide-title">Cómo Google vende anuncios (y por qué cambió las reglas en 2019)</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge">Antes de 2019 · el "segundo precio generalizado" (GSP)</span>
+                        <h3>Cada anunciante pagaba la oferta del siguiente</h3>
+                        <p class="caption" style="margin-top:2px;">Los anuncios se ordenan en posiciones (arriba se hace más clic). Google imitó el segundo precio de Vickrey: el de la mejor posición paga, por clic, la oferta del que va abajo.</p>
+                        <div class="analogy" style="margin-top:14px;">
+                            <span class="lead">El problema</span>
+                            Edelman, Ostrovsky y Schwarz (2007) demostraron que el GSP <strong>no es veraz</strong>: a diferencia de Vickrey, aquí sí conviene pujar con estrategia. La honestidad deja de ser lo óptimo.
+                        </div>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">La migración de 2019</div>
+                            <h3>Volver al primer precio: "pagas lo que ofreces, punto"</h3>
+                            <p>Con el <strong>header bidding</strong>, un mismo anuncio podía pasar por <strong>más de 10 subastas distintas</strong>, con reglas diferentes, antes de elegir un ganador. El segundo precio dejó de ser transparente y Google tenía la ventaja de "ver último". La solución: un <strong>primer precio unificado</strong>, simple y transparente.</p>
+                            <div class="punch">¿La consecuencia? Los compradores volvieron a <strong>rebajar sus ofertas</strong> (bid shading), justo lo que predice la teoría del primer precio.</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    <strong>Analogía:</strong> demasiados árbitros con reglamentos distintos hacen que nadie confíe en el marcador. A veces la mejor regla no es la más ingeniosa, sino la más <strong>clara</strong>.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: SUBASTAS INVISIBLES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">A tu alrededor, ahora mismo</div>
+                <h2 class="slide-title">Subastas que ocurren sin que las veas</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards">
+                    <div class="mini-card">
+                        <h4>Cada página que abres</h4>
+                        <p>En milisegundos se corre una subasta (RTB) por el espacio del anuncio que vas a ver. Ocurren <strong>miles de millones</strong> al día en Google, Meta y Amazon.</p>
+                        <p class="ex">El terreno donde vive la migración a primer precio.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h4>eBay y MercadoLibre</h4>
+                        <p>El "proxy bidding" es una <strong>subasta inglesa de segundo precio</strong> disfrazada: fijas tu máximo y el sistema puja por ti lo mínimo necesario.</p>
+                        <p class="ex">La teoría dice: pon tu valor verdadero.</p>
+                    </div>
+                    <div class="mini-card g">
+                        <h4>AWS (nube de Amazon)</h4>
+                        <p>Vendía capacidad sobrante con pujas… hasta que en 2017 <strong>eliminó la subasta</strong> por volátil y pasó a un precio publicado.</p>
+                        <p class="ex">A veces el mejor mecanismo es no subastar.</p>
+                    </div>
+                </div>
+                <div class="foot-note">
+                    El diseño de mecanismos no es abstracto: es la <strong>plomería invisible</strong> de la economía digital. Quien entiende las reglas del juego, decide mejor dentro de él.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 11: MANOS A LA OBRA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Manos a la obra</div>
+                <h2 class="slide-title">Hoy juegan: PagoTico va a pujar por anuncios</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards">
+                    <div class="mini-card">
+                        <h4>Lab 1 · El duelo de formatos</h4>
+                        <p>Descubran <strong>cuánto conviene ofrecer</strong> en primer precio y en segundo precio para maximizar la ganancia de PagoTico.</p>
+                        <p class="ex">Aterriza: Vickrey, rebaja de la oferta.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h4>Lab 2 · ¿Recaudan lo mismo?</h4>
+                        <p>Corran cientos de subastas y vean los <strong>dos promedios</strong> de recaudación caer casi encima.</p>
+                        <p class="ex">Aterriza: equivalencia de ingresos.</p>
+                    </div>
+                    <div class="mini-card g">
+                        <h4>Lab 3 · Sponsored search y VCG</h4>
+                        <p>Repartan las posiciones de anuncios y vean el <strong>pago por externalidad</strong> y por qué la verdad conviene.</p>
+                        <p class="ex">Aterriza: VCG, cómo vende Google.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 10 · La estrategia de pujas de PagoTico</h3>
+                    <p>Con el juego de hoy, su equipo debe recomendarle a PagoTico <strong>cuánto ofrecer</strong> según el formato de subasta, y explicar qué significa para un anunciante que la plataforma elija <strong>primer o segundo precio</strong>. Cierran con una recomendación gerencial.</p>
+                    <p class="tools"><strong>La herramienta de hoy:</strong> un juego que se abre con doble clic en el navegador. Sin instalar nada, funciona en Windows, Mac, iPad o el laboratorio. Jugar, observar, decidir.</p>
+                </div>
+                <div class="foot-note">
+                    Tienen entre 40 y 60 minutos. Al final, la <strong>ruleta</strong> elige al azar un equipo para exponer en cinco a siete minutos qué hicieron y qué recomiendan.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 12: SÍNTESIS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis</div>
+                <h2 class="slide-title">Tres ideas para llevarse</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Las reglas se diseñan</h4>
+                        <p>Quien pone las reglas decide el resultado. SUTEL quiso cobertura y cobró en torres, no en plata.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>La honestidad se puede premiar</h4>
+                        <p>El segundo precio y el VCG están diseñados para que decir la verdad sea, justamente, la mejor jugada.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>En la práctica manda la claridad</h4>
+                        <p>Por eso Google volvió al primer precio en 2019: más vale una regla simple y transparente que una ingeniosa pero opaca.</p>
+                    </div>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 12</div>
+                    <div class="content">Matching markets y Gale-Shapley · Emparejamiento estable · Del examen médico al school choice · Cómo se casan candidatos y empresas en una plataforma de empleo</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
