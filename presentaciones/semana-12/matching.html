@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Semana 12 - Matching markets y el algoritmo de Gale-Shapley</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            background: #f5f5f7;
+            color: #1d1d1f;
+            scroll-behavior: smooth;
+        }
+
+        .presentation-container { width: 100vw; position: relative; }
+
+        .slide {
+            width: 100%;
+            min-height: 100vh;
+            padding: 56px 80px 140px 80px;
+            background: #f5f5f7;
+            display: none;
+            flex-direction: column;
+        }
+
+        .slide.active { display: flex; animation: fadeIn 0.4s ease-out; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-header { margin-bottom: 22px; flex-shrink: 0; }
+
+        .slide-eyebrow {
+            font-size: 13px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+
+        .slide-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: #2d1b4e;
+            line-height: 1.15;
+        }
+
+        .slide-body {
+            flex: 1 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* ============== PORTADA ============== */
+        .cover {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f7 100%);
+            padding-top: 80px;
+            padding-bottom: 80px;
+        }
+
+        .cover-eyebrow {
+            font-size: 16px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+        }
+
+        .cover-title {
+            font-size: 58px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff, #2d1b4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            background-size: 200% 200%;
+            animation: shimmer 4s ease infinite;
+            line-height: 1.1;
+            max-width: 1100px;
+            margin-bottom: 25px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .cover-subtitle {
+            font-size: 20px;
+            color: #6e6e73;
+            font-weight: 300;
+            max-width: 920px;
+            line-height: 1.5;
+        }
+
+        .cover-meta {
+            margin-top: 40px;
+            font-size: 15px;
+            color: #6e6e73;
+            line-height: 1.7;
+        }
+
+        /* ============== PREGUNTAS / TARJETAS ============== */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 22px;
+            margin-top: 14px;
+        }
+
+        .question-card {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 24px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .question-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 4px;
+            background: linear-gradient(90deg, #2d1b4e, #00d4ff);
+        }
+
+        .question-num {
+            font-size: 40px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+            margin-bottom: 10px;
+        }
+
+        .question-tag { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #00b4dc; margin-bottom: 6px; }
+        .question-text { font-size: 15px; color: #1d1d1f; line-height: 1.5; }
+
+        /* ============== BLOQUES GENÉRICOS ============== */
+        .two-col {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr;
+            gap: 26px;
+            align-items: center;
+        }
+        .two-col.even { grid-template-columns: 1fr 1fr; }
+        .two-col.wide-left { grid-template-columns: 1.3fr 1fr; }
+
+        .form-block {
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px;
+            border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .form-block .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            margin-bottom: 12px;
+        }
+        .form-block .badge.alt { background: linear-gradient(135deg, #1a5e3a, #2d8659); }
+        .form-block .badge.gold { background: linear-gradient(135deg, #8a6a10, #c79a2e); }
+        .form-block .badge.muted { background: linear-gradient(135deg, #6e6e73, #9b9ba1); }
+
+        .form-block h3 { color: #2d1b4e; font-size: 19px; margin-bottom: 4px; }
+        .form-block .sub { font-size: 12.5px; color: #6e6e73; font-style: italic; margin-bottom: 12px; }
+        .form-block .caption { font-size: 13px; color: #1d1d1f; line-height: 1.5; margin-top: 12px; }
+
+        .gps-callout {
+            background: linear-gradient(135deg, #2d1b4e, #4a3680);
+            color: white;
+            border-radius: 18px;
+            padding: 26px;
+        }
+        .gps-callout .tag {
+            font-size: 12px;
+            color: #00d4ff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
+        }
+        .gps-callout h3 { font-size: 20px; margin-bottom: 12px; }
+        .gps-callout p { font-size: 14px; line-height: 1.55; opacity: 0.96; }
+        .gps-callout .punch {
+            margin-top: 14px;
+            background: rgba(0,212,255,0.18);
+            border-left: 4px solid #00d4ff;
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .analogy {
+            margin-top: 16px;
+            background: #fff7e6;
+            border: 1px solid #f0dcae;
+            border-left: 4px solid #c79a2e;
+            border-radius: 12px;
+            padding: 13px 16px;
+            font-size: 13.5px;
+            color: #5a4410;
+            line-height: 1.55;
+        }
+        .analogy strong { color: #8a6410; }
+        .analogy .lead { display:block; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #b1852b; margin-bottom: 5px; }
+
+        .foot-note {
+            margin-top: 18px;
+            background: #f0f0f2;
+            border-radius: 12px;
+            padding: 14px 18px;
+            font-size: 13.5px;
+            color: #2d1b4e;
+            line-height: 1.5;
+            border-left: 4px solid #00d4ff;
+            text-align: center;
+        }
+
+        .caveat-note {
+            margin-top: 14px;
+            background: #fdf3f3;
+            border: 1px solid #f0caca;
+            border-left: 4px solid #a3213f;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 12.5px;
+            color: #6e2430;
+            line-height: 1.5;
+        }
+        .caveat-note strong { color: #a3213f; }
+
+        /* ============== TARJETAS PEQUEÑAS ============== */
+        .mini-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+        .mini-cards.two { grid-template-columns: repeat(2, 1fr); }
+        .mini-cards.four { grid-template-columns: repeat(4, 1fr); }
+        .mini-card {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 16px;
+            border: 1px solid #e5e5e7;
+            border-top: 4px solid #00d4ff;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+        .mini-card.g { border-top-color: #2d8659; }
+        .mini-card.p { border-top-color: #2d1b4e; }
+        .mini-card.o { border-top-color: #c79a2e; }
+        .mini-card h4 { color: #2d1b4e; font-size: 14.5px; margin-bottom: 5px; }
+        .mini-card p { font-size: 12.5px; color: #1d1d1f; line-height: 1.45; }
+        .mini-card .ex { font-size: 11.5px; color: #6e6e73; font-style: italic; margin-top: 5px; }
+        .mini-card .stat { font-size: 26px; font-weight: 800; color: #2d1b4e; margin-bottom: 2px; }
+
+        /* ============== COMPARACIÓN DE ESTADÍSTICAS (stat-pair) ============== */
+        .stat-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 6px; }
+        .stat-box { background: #ffffff; border-radius: 18px; padding: 20px; border: 1px solid #e5e5e7; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center; }
+        .stat-box .flag { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #00b4dc; margin-bottom: 10px; }
+        .stat-box.cr .flag { color: #1a5e3a; }
+        .stat-box .big { font-size: 42px; font-weight: 800; color: #2d1b4e; line-height: 1; }
+        .stat-box .lbl { font-size: 12.5px; color: #6e6e73; margin: 6px 0 14px 0; }
+        .stat-box .big2 { font-size: 26px; font-weight: 800; color: #2d1b4e; }
+        .stat-box .lbl2 { font-size: 12px; color: #6e6e73; margin-top: 2px; }
+
+        /* ============== TABLA DE EMPAREJAMIENTO ============== */
+        .match-table { border-collapse: collapse; width: 100%; margin-top: 6px; font-size: 14px; }
+        .match-table th { background: #2d1b4e; color: white; padding: 9px 10px; font-weight: 700; text-align: left; }
+        .match-table td { border-bottom: 1px solid #e5e5e7; padding: 9px 10px; }
+        .match-table tr.hl td { background: #eaf9fe; font-weight: 700; }
+        .match-table .check { color: #1a5e3a; font-weight: 800; }
+        .match-table .cross { color: #a3213f; font-weight: 800; }
+
+        /* ============== LEYENDA ============== */
+        .legend-row { display: flex; gap: 18px; margin-top: 10px; flex-wrap: wrap; }
+        .legend-chip { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #2d1b4e; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 4px; display: inline-block; }
+
+        /* ============== CIERRE ============== */
+        .closing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 6px; }
+        .closing-card {
+            background: #ffffff; border-radius: 18px; padding: 24px;
+            border: 1px solid #e5e5e7; box-shadow: 0 2px 10px rgba(0,0,0,0.05); text-align: center;
+        }
+        .closing-card .icon {
+            font-size: 32px; font-weight: 800;
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+            font-family: 'Georgia', serif; margin-bottom: 8px;
+        }
+        .closing-card h4 { color: #2d1b4e; font-size: 15.5px; margin-bottom: 6px; }
+        .closing-card p { font-size: 13px; color: #1d1d1f; line-height: 1.5; }
+
+        .case-box {
+            background: #ffffff; border-radius: 18px; padding: 22px 24px;
+            border: 2px solid #00d4ff; box-shadow: 0 4px 18px rgba(0,212,255,0.15); margin-top: 16px;
+        }
+        .case-box h3 { color: #2d1b4e; font-size: 18px; margin-bottom: 8px; }
+        .case-box p { font-size: 13.5px; color: #1d1d1f; line-height: 1.55; }
+        .case-box .tools { margin-top: 10px; font-size: 12.5px; color: #2d1b4e; }
+
+        .next-week-box {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff); color: white;
+            border-radius: 16px; padding: 14px 22px; margin-top: 14px; text-align: center;
+        }
+        .next-week-box .label { font-size: 11px; opacity: 0.85; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 4px; }
+        .next-week-box .content { font-size: 14px; line-height: 1.5; }
+
+        /* transición de bloque */
+        .flow-blocks { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; margin-top: 10px; }
+        .flow-block {
+            background: #ffffff; border-radius: 18px; padding: 22px; border: 1px solid #e5e5e7;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        .flow-block.left { border-top: 5px solid #a3213f; }
+        .flow-block.right { border-top: 5px solid #2d8659; }
+        .flow-block h4 { color: #2d1b4e; font-size: 17px; margin-bottom: 8px; }
+        .flow-block .q { font-size: 13px; color: #1d1d1f; line-height: 1.5; }
+        .flow-block .lbl { font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+        .flow-block.left .lbl { color: #a3213f; }
+        .flow-block.right .lbl { color: #2d8659; }
+        .flow-arrow { font-size: 34px; color: #2d1b4e; font-weight: 800; }
+
+        /* ============== NAVEGACIÓN ============== */
+        .navigation {
+            position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+            display: flex; gap: 14px; z-index: 1000;
+            background: rgba(245, 245, 247, 0.85);
+            backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+            padding: 10px 14px; border-radius: 50px;
+            border: 1px solid rgba(229, 229, 231, 0.6); box-shadow: 0 6px 22px rgba(0,0,0,0.10);
+        }
+        .nav-button {
+            background: linear-gradient(135deg, #2d1b4e, #00d4ff); border: none; color: white;
+            padding: 12px 24px; border-radius: 50px; cursor: pointer; font-size: 13.5px; font-weight: 600;
+            transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 212, 255, 0.3);
+        }
+        .nav-button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 212, 255, 0.4); }
+        .nav-button:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .slide-number {
+            position: fixed; top: 22px; right: 28px; color: #6e6e73; font-size: 13px; z-index: 1000;
+            font-weight: 600; background: rgba(255,255,255,0.92); padding: 6px 14px; border-radius: 20px;
+            border: 1px solid #e5e5e7; backdrop-filter: blur(8px);
+        }
+        .logo-area { position: fixed; top: 18px; left: 26px; z-index: 1000; }
+        .logo-area img { max-width: 120px; height: auto; }
+
+        @media (max-width: 900px) {
+            .slide { padding: 40px 28px 130px 28px; }
+            .slide-title { font-size: 24px; }
+            .cover-title { font-size: 38px; }
+            .questions-grid, .two-col, .two-col.even, .two-col.wide-left,
+            .mini-cards, .mini-cards.two, .mini-cards.four, .stat-pair,
+            .closing-grid, .flow-blocks { grid-template-columns: 1fr; }
+            .flow-arrow { transform: rotate(90deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="logo-area">
+        <img src="../../assets/images/logo-ulacit.png" alt="ULACIT">
+    </div>
+
+    <div class="slide-number">
+        <span id="currentSlide">1</span> / <span id="totalSlides">15</span>
+    </div>
+
+    <div class="presentation-container">
+
+        <!-- ====== SLIDE 1: PORTADA ====== -->
+        <div class="slide cover active">
+            <div class="cover-eyebrow">Semana 12</div>
+            <h1 class="cover-title">Cuando el dinero no puede decidir</h1>
+            <p class="cover-subtitle">Matching markets, el algoritmo de Gale-Shapley y por qué "quién con quién" es a veces una pregunta más importante que "a qué precio".</p>
+            <div class="cover-meta">
+                Teoría de juegos, estrategia y toma de decisiones<br>
+                Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 2: GANCHO + PREGUNTAS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Hoja de ruta · Un gancho incómodo</div>
+                <h2 class="slide-title">La semana pasada todo se resolvía subastando. Hoy, ofrecer más plata puede ser ilegal</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col wide-left">
+                    <div class="form-block">
+                        <span class="badge alt">Ley 9222 · Costa Rica</span>
+                        <h3>Un riñón no se puede comprar</h3>
+                        <p class="sub">Y sin embargo, cada año, cientos de personas reciben uno de un donante compatible que no es el suyo</p>
+                        <div class="caption">Cuando el precio está prohibido, regulado o es socialmente inaceptable, alguien más tiene que decidir <strong>quién queda con quién</strong>. Ese "alguien" es un algoritmo, no un mercado de precios.</div>
+                    </div>
+                    <div class="gps-callout">
+                        <div class="tag">La pregunta de fondo</div>
+                        <h3>Si no hay precio, ¿qué reemplaza al precio?</h3>
+                        <p>La respuesta que vamos a construir hoy ganó el <strong>Premio Nobel de Economía 2012</strong> y hoy asigna médicos, riñones, cupos escolares y, como verán en el caso, hasta talento en empresas costarricenses.</p>
+                    </div>
+                </div>
+                <div class="questions-grid" style="margin-top:20px;">
+                    <div class="question-card">
+                        <div class="question-num">01</div>
+                        <div class="question-tag">La estabilidad</div>
+                        <p class="question-text">¿Qué hace que un emparejamiento <strong>aguante</strong> en el tiempo, sin que nadie se salga por su cuenta?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">02</div>
+                        <div class="question-tag">El mecanismo</div>
+                        <p class="question-text">¿Cómo un algoritmo de <strong>1962</strong> resuelve esto en segundos, sin subastar nada?</p>
+                    </div>
+                    <div class="question-card">
+                        <div class="question-num">03</div>
+                        <div class="question-tag">Lo aplicado</div>
+                        <p class="question-text">¿Qué tienen en común el examen del <strong>CENDEISSS</strong>, un trasplante de riñón y contratar a un analista de datos?</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 3: MERCADO SIN PRECIO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">La gran idea</div>
+                <h2 class="slide-title">Un mercado donde la pregunta no es "a qué precio", sino "quién con quién"</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge">Mercado con precio</span>
+                        <h3>El precio hace el trabajo</h3>
+                        <p class="caption">Sube o baja hasta que la oferta y la demanda calzan. El precio decide quién se lleva cada cosa. Así funciona un supermercado, una bolsa de valores o un remate.</p>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge alt">Mercado de matching</span>
+                        <h3>Alguien más decide</h3>
+                        <p class="caption">El precio no puede hacer ese trabajo porque está <strong>prohibido</strong> (un riñón), <strong>fijo o regulado</strong> (un salario de residencia médica) o es <strong>socialmente inaceptable</strong> (un cupo escolar). Hace falta una regla explícita: un mecanismo.</p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">Analogía</span>
+                    Imagine que una escuela pública subastara sus cupos al mejor postor. La mayoría diría que eso es <strong>repugnante</strong>, no eficiente. Cuando el precio queda fuera de la mesa por esa clase de razones, el diseño de las reglas —no el dinero— es lo que determina si el mercado funciona bien o mal.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 4: ESTABILIDAD Y PAREJA BLOQUEANTE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">El concepto clave</div>
+                <h2 class="slide-title">Un buen emparejamiento es el que nadie tiene motivos para romper</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge muted">Pareja bloqueante</span>
+                        <h3>La bomba de tiempo de un mal emparejamiento</h3>
+                        <svg viewBox="0 0 460 190" style="width:100%; height:auto;">
+                            <rect x="20" y="20" width="160" height="50" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                            <text x="100" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Candidato X</text>
+                            <rect x="280" y="20" width="160" height="50" rx="10" fill="#f3f0fa" stroke="#2d1b4e"/>
+                            <text x="360" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Empresa A</text>
+                            <rect x="20" y="120" width="160" height="50" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                            <text x="100" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Candidato Y</text>
+                            <rect x="280" y="120" width="160" height="50" rx="10" fill="#f3f0fa" stroke="#2d1b4e"/>
+                            <text x="360" y="150" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Empresa B</text>
+                            <line x1="180" y1="45" x2="280" y2="45" stroke="#1a5e3a" stroke-width="2.5"/>
+                            <line x1="180" y1="145" x2="280" y2="145" stroke="#1a5e3a" stroke-width="2.5"/>
+                            <line x1="180" y1="55" x2="280" y2="130" stroke="#a3213f" stroke-width="2.5" stroke-dasharray="6 4"/>
+                            <text x="230" y="105" text-anchor="middle" font-size="11.5" fill="#a3213f" font-weight="700">ambos preferirían esto</text>
+                        </svg>
+                        <p class="caption">X y B no están emparejados, pero <strong>ambos preferirían estarlo</strong> antes que quedarse con lo que tienen. Esa es una pareja bloqueante: los dos tienen incentivo a saltarse el sistema.</p>
+                    </div>
+                    <div>
+                        <div class="gps-callout">
+                            <div class="tag">Estabilidad</div>
+                            <h3>Ningún par de partes tiene un mejor trato disponible entre sí</h3>
+                            <p>Un emparejamiento es <strong>estable</strong> cuando no existe ninguna pareja bloqueante. No es lo mismo que "óptimo": es, sencillamente, un acuerdo que aguanta.</p>
+                        </div>
+                        <div class="analogy">
+                            <span class="lead">Analogía</span>
+                            Estabilidad es como un <strong>contrato que nadie quiere renegociar</strong>. Alvin Roth lo comprobó estudiando mercados médicos reales: los sistemas que producían emparejamientos <strong>inestables</strong> eran abandonados por la gente, que se iba a arreglar por fuera. Los <strong>estables</strong> sobrevivían.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 5: GALE-SHAPLEY RONDA 1 ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">El algoritmo · Ronda 1</div>
+                <h2 class="slide-title">Aceptación diferida: proponer, retener, nunca cerrar la puerta</h2>
+            </div>
+            <div class="slide-body">
+                <div class="form-block">
+                    <span class="badge alt">Ejemplo · tres candidatos, tres empresas</span>
+                    <h3>Ana, Beto y Camila proponen a su primera opción</h3>
+                    <svg viewBox="0 0 640 260" style="width:100%; height:auto;">
+                        <defs>
+                            <marker id="aG1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                <path d="M0,0 L9,4.5 L0,9 Z" fill="#1a5e3a"/>
+                            </marker>
+                            <marker id="aR1" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                <path d="M0,0 L9,4.5 L0,9 Z" fill="#a3213f"/>
+                            </marker>
+                        </defs>
+                        <rect x="20" y="15" width="160" height="55" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                        <text x="100" y="38" text-anchor="middle" font-size="13.5" font-weight="800" fill="#2d1b4e">Ana</text>
+                        <text x="100" y="56" text-anchor="middle" font-size="11" fill="#6e6e73">PagoTico &#8594; Colibrí &#8594; BancoYa</text>
+
+                        <rect x="20" y="100" width="160" height="55" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                        <text x="100" y="123" text-anchor="middle" font-size="13.5" font-weight="800" fill="#2d1b4e">Beto</text>
+                        <text x="100" y="141" text-anchor="middle" font-size="11" fill="#6e6e73">PagoTico &#8594; BancoYa &#8594; Colibrí</text>
+
+                        <rect x="20" y="185" width="160" height="55" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                        <text x="100" y="208" text-anchor="middle" font-size="13.5" font-weight="800" fill="#2d1b4e">Camila</text>
+                        <text x="100" y="226" text-anchor="middle" font-size="11" fill="#6e6e73">Colibrí &#8594; PagoTico &#8594; BancoYa</text>
+
+                        <rect x="460" y="15" width="160" height="55" rx="10" fill="#f3f0fa" stroke="#2d1b4e"/>
+                        <text x="540" y="38" text-anchor="middle" font-size="13.5" font-weight="800" fill="#2d1b4e">PagoTico</text>
+                        <text x="540" y="56" text-anchor="middle" font-size="11" fill="#1a5e3a" font-weight="700">retiene a Ana</text>
+
+                        <rect x="460" y="100" width="160" height="55" rx="10" fill="#f3f0fa" stroke="#2d1b4e"/>
+                        <text x="540" y="123" text-anchor="middle" font-size="13.5" font-weight="800" fill="#2d1b4e">Colibrí Pay</text>
+                        <text x="540" y="141" text-anchor="middle" font-size="11" fill="#1a5e3a" font-weight="700">retiene a Camila</text>
+
+                        <rect x="460" y="185" width="160" height="55" rx="10" fill="#f8f8f9" stroke="#c9c9d0" stroke-dasharray="3 3"/>
+                        <text x="540" y="217" text-anchor="middle" font-size="11.5" fill="#9b9ba1">BancoYa · sin propuestas</text>
+
+                        <line x1="180" y1="42" x2="455" y2="42" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#aG1)"/>
+                        <line x1="180" y1="127" x2="455" y2="45" stroke="#a3213f" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#aR1)"/>
+                        <line x1="180" y1="212" x2="455" y2="127" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#aG1)"/>
+
+                        <text x="300" y="30" text-anchor="middle" font-size="10.5" fill="#1a5e3a" font-weight="700">tentativo</text>
+                        <text x="300" y="100" text-anchor="middle" font-size="10.5" fill="#a3213f" font-weight="700">rechazada: PagoTico prefiere a Ana</text>
+                    </svg>
+                    <div class="legend-row">
+                        <div class="legend-chip"><span class="legend-dot" style="background:#1a5e3a;"></span> retención tentativa</div>
+                        <div class="legend-chip"><span class="legend-dot" style="background:#a3213f;"></span> rechazo (Beto queda libre)</div>
+                    </div>
+                </div>
+                <div class="foot-note">PagoTico recibió dos propuestas y se quedó, <strong>tentativamente</strong>, con la que más prefiere. Nadie está contratado todavía: por eso se llama aceptación <strong>diferida</strong>.</div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 6: GALE-SHAPLEY RONDA 2 Y FIN ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">El algoritmo · Ronda 2 y fin</div>
+                <h2 class="slide-title">Beto, rechazado, propone a su segunda opción. Nadie más queda libre</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge alt">Ronda 2</span>
+                        <h3>Beto propone a BancoYa</h3>
+                        <svg viewBox="0 0 460 200" style="width:100%; height:auto;">
+                            <defs>
+                                <marker id="aG2" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                    <path d="M0,0 L9,4.5 L0,9 Z" fill="#1a5e3a"/>
+                                </marker>
+                            </defs>
+                            <rect x="20" y="70" width="150" height="55" rx="10" fill="#eaf9fe" stroke="#00b4dc"/>
+                            <text x="95" y="93" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Beto</text>
+                            <text x="95" y="111" text-anchor="middle" font-size="10.5" fill="#6e6e73">libre tras la ronda 1</text>
+                            <rect x="290" y="70" width="150" height="55" rx="10" fill="#f3f0fa" stroke="#2d1b4e"/>
+                            <text x="365" y="93" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">BancoYa</text>
+                            <text x="365" y="111" text-anchor="middle" font-size="10.5" fill="#1a5e3a" font-weight="700">estaba vacía: retiene</text>
+                            <line x1="170" y1="97" x2="285" y2="97" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#aG2)"/>
+                        </svg>
+                        <p class="caption">Nadie más es rechazado. El algoritmo se detiene: las retenciones tentativas se vuelven <strong>definitivas</strong>.</p>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge">Emparejamiento final</span>
+                        <h3>Tres rondas, cero parejas bloqueantes</h3>
+                        <table class="match-table">
+                            <tr><th>Candidato</th><th>Empresa</th></tr>
+                            <tr class="hl"><td>Ana</td><td>PagoTico</td></tr>
+                            <tr class="hl"><td>Beto</td><td>BancoYa</td></tr>
+                            <tr class="hl"><td>Camila</td><td>Colibrí Pay</td></tr>
+                        </table>
+                        <p class="caption">Nadie tiene, en este resultado, a alguien afuera que prefiera mutuamente sobre lo que tiene. Es <strong>estable</strong> por construcción.</p>
+                    </div>
+                </div>
+                <div class="foot-note">Gale y Shapley (1962) probaron que este proceso <strong>siempre termina</strong> y <strong>siempre</strong> llega a un resultado estable, sin importar cuántos candidatos o empresas haya.</div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 7: PROPIEDADES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Por qué funciona</div>
+                <h2 class="slide-title">Tres garantías del algoritmo, y una que no es tan bonita</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards">
+                    <div class="mini-card g">
+                        <h4>Siempre termina</h4>
+                        <p>Nadie propone dos veces al mismo lugar y las listas son finitas. No puede dar vueltas para siempre.</p>
+                    </div>
+                    <div class="mini-card g">
+                        <h4>Siempre es estable</h4>
+                        <p>Si alguien prefería otra opción, ya se la propuso y lo rechazaron por alguien que la empresa prefiere más.</p>
+                    </div>
+                    <div class="mini-card o">
+                        <h4>Pero no es neutral</h4>
+                        <p>El resultado depende de <strong>quién propone</strong>. Y ahí aparece una asimetría que cambia todo.</p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">Analogía</span>
+                    Es como mantener a los finalistas de una selección <strong>"en lista de espera tentativa"</strong> hasta cerrar el proceso, en vez de contratar en firme al primero que dice que sí. Esa espera es, precisamente, lo que elimina las parejas bloqueantes.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 8: ASIMETRÍA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">La letra pequeña</div>
+                <h2 class="slide-title">En este juego, quien propone tiene ventaja</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge alt">Si los candidatos proponen</span>
+                        <h3>Cada candidato obtiene su mejor mundo posible</h3>
+                        <table class="match-table">
+                            <tr><th>Candidato</th><th>Empresa</th><th></th></tr>
+                            <tr><td>A</td><td>X</td><td class="check">1.a opción</td></tr>
+                            <tr><td>B</td><td>Y</td><td class="check">1.a opción</td></tr>
+                            <tr><td>C</td><td>Z</td><td class="check">1.a opción</td></tr>
+                        </table>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge muted">Si las empresas proponen</span>
+                        <h3>Los mismos candidatos, con las mismas preferencias, ahora pierden</h3>
+                        <table class="match-table">
+                            <tr><th>Candidato</th><th>Empresa</th><th></th></tr>
+                            <tr><td>A</td><td>Z</td><td class="cross">última opción</td></tr>
+                            <tr><td>B</td><td>X</td><td class="cross">última opción</td></tr>
+                            <tr><td>C</td><td>Y</td><td class="cross">última opción</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="gps-callout" style="margin-top:16px;">
+                    <div class="tag">Moraleja gerencial</div>
+                    <p>Ambos resultados son <strong>igualmente estables</strong>. La diferencia no es de eficiencia: es de <strong>quién diseñó el proceso para proponer primero</strong>. Ningún mecanismo estable puede ser, al mismo tiempo, óptimo para los dos lados.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 9: NRMP + CENDEISSS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Caso paradigmático 1</div>
+                <h2 class="slide-title">El "NRMP costarricense": el examen único de residencias médicas</h2>
+            </div>
+            <div class="slide-body">
+                <div class="stat-pair">
+                    <div class="stat-box">
+                        <div class="flag">NRMP · Estados Unidos, 2026</div>
+                        <div class="big">53.373</div>
+                        <div class="lbl">aplicantes registrados</div>
+                        <div class="big2">44.344</div>
+                        <div class="lbl2">plazas ofrecidas · el Match más grande en 74 años</div>
+                    </div>
+                    <div class="stat-box cr">
+                        <div class="flag">CENDEISSS/CCSS · Costa Rica, 2026-2027</div>
+                        <div class="big">2.280</div>
+                        <div class="lbl">aspirantes rindieron el examen único</div>
+                        <div class="big2">823</div>
+                        <div class="lbl2">superaron la nota de corte para competir por plaza</div>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">El paralelo</span>
+                    Examen único = filtro de elegibilidad. Plazas por especialidad = las "empresas" del emparejamiento. Puntaje de corte = las prioridades. Una escasez brutal de cientos contra unos pocos cientos de plazas: exactamente el mercado que llevó a Roth a rediseñar el NRMP en 1998.
+                </div>
+                <div class="caveat-note"><strong>Pregunta abierta para la clase:</strong> por lo que sabemos hoy, el proceso costarricense se parece más a una asignación por puntaje que a un Gale-Shapley con preferencias de ambos lados. ¿Cambiaría algo si la CCSS adoptara aceptación diferida?</div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 10: RIÑONES ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Caso paradigmático 2</div>
+                <h2 class="slide-title">Cuando ni siquiera se puede negociar: el intercambio de riñones</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col">
+                    <div class="form-block">
+                        <span class="badge muted">El problema</span>
+                        <h3>Un donante dispuesto, pero incompatible</h3>
+                        <p class="caption">Cerca de un tercio de los donantes vivos dispuestos no son compatibles con su propio ser querido. La Ley 9222 prohíbe cualquier pago por un órgano. El precio queda descartado por completo: solo queda el trueque.</p>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge alt">La solución: trueque en círculo</span>
+                        <h3>Top Trading Cycles</h3>
+                        <svg viewBox="0 0 300 220" style="width:100%; height:auto;">
+                            <defs>
+                                <marker id="aC" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                    <path d="M0,0 L9,4.5 L0,9 Z" fill="#1a5e3a"/>
+                                </marker>
+                            </defs>
+                            <circle cx="150" cy="45" r="34" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2"/>
+                            <text x="150" y="50" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Pareja A</text>
+                            <circle cx="60" cy="165" r="34" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2"/>
+                            <text x="60" y="170" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Pareja B</text>
+                            <circle cx="240" cy="165" r="34" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2"/>
+                            <text x="240" y="170" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Pareja C</text>
+                            <path d="M 125 68 C 100 100, 85 120, 75 135" fill="none" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#aC)"/>
+                            <path d="M 95 165 L 205 165" fill="none" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#aC)"/>
+                            <path d="M 225 135 C 210 105, 190 85, 175 68" fill="none" stroke="#1a5e3a" stroke-width="2.5" marker-end="url(#aC)"/>
+                        </svg>
+                        <p class="caption">El donante de A dona al receptor de B; el de B dona al de C; el de C dona al de A. Nadie compró nada: todos recibieron un riñón compatible.</p>
+                    </div>
+                </div>
+                <div class="foot-note">El National Kidney Registry facilitó su trasplante <strong>número 10.000</strong> y, en 2024, cerca de 1.744 solo ese año. Cadenas iniciadas por un donante altruista han llegado a <strong>16 trasplantes</strong> en una sola cadena.</div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 11: SCHOOL CHOICE ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Caso paradigmático 3</div>
+                <h2 class="slide-title">Boston castigaba a las familias honestas. Nueva York no coordinaba a nadie</h2>
+            </div>
+            <div class="slide-body">
+                <div class="two-col even">
+                    <div class="form-block">
+                        <span class="badge muted">Boston, antes de 2005</span>
+                        <h3>El mecanismo de aceptación inmediata</h3>
+                        <p class="caption">Si ponías tu escuela soñada de primera y no entrabas, para cuando llegabas a tu segunda opción, esta ya estaba llena de quienes la pusieron de primera. <strong>Las familias honestas salían perjudicadas</strong>; las que aprendían a mentir, no.</p>
+                    </div>
+                    <div class="form-block">
+                        <span class="badge alt">Boston y Nueva York, después</span>
+                        <h3>Aceptación diferida, la misma de Gale-Shapley</h3>
+                        <p class="caption">Boston adoptó DA en 2005. Nueva York coordinó por primera vez, en 2003, un sistema donde antes un tercio de los estudiantes quedaba sin asignación. <strong>Coordinar importó más que afinar el algoritmo.</strong></p>
+                    </div>
+                </div>
+                <div class="analogy">
+                    <span class="lead">Y en América Latina</span>
+                    Chile implementó el <strong>Sistema de Admisión Escolar</strong> a escala nacional en 2020, basado en el mismo principio: aceptación diferida. Las ganancias de acceso fueron mayores, precisamente, para los estudiantes más desfavorecidos.
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 12: EMPLEO Y CONGESTIÓN POR IA ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Caso paradigmático 4 · el que van a jugar</div>
+                <h2 class="slide-title">PagoTico y Colibrí Pay también compiten por talento</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards four">
+                    <div class="mini-card">
+                        <div class="stat">6,9%</div>
+                        <p>desempleo nacional, INEC, trimestre feb-abr 2026</p>
+                    </div>
+                    <div class="mini-card g">
+                        <div class="stat">197.038</div>
+                        <p>empleos directos en zonas francas, PROCOMER 2024</p>
+                    </div>
+                    <div class="mini-card o">
+                        <div class="stat">70%</div>
+                        <p>de quienes buscan empleo ya usa IA generativa en su búsqueda</p>
+                    </div>
+                    <div class="mini-card p">
+                        <div class="stat">74%</div>
+                        <p>de reclutadores dice detectar contenido generado por IA</p>
+                    </div>
+                </div>
+                <div class="gps-callout" style="margin-top:16px;">
+                    <div class="tag">Congestión, en el sentido de Roth</div>
+                    <p>Cuando postular es casi gratis, llegan miles de solicitudes por vacante y muy poco tiempo para evaluarlas bien. El mercado se vuelve denso demasiado rápido y la calidad del emparejamiento se degrada, aunque nadie mienta.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 13: FRONTERA (BREVE) ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Un vistazo a la frontera 2023-2026</div>
+                <h2 class="slide-title">El mismo principio, con agentes que llegan y se van</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards two">
+                    <div class="mini-card g">
+                        <h4>Reasentamiento de refugiados</h4>
+                        <p>El software Annie MOORE combina optimización y aprendizaje automático para emparejar familias de refugiados con localidades, y lo usa la agencia HIAS desde 2018.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h4>Delivery y ride-hailing</h4>
+                        <p>Uber y apps de reparto agrupan pedidos unos segundos antes de asignar (batching), la misma lucha contra la congestión, pero con precios dinámicos de por medio.</p>
+                    </div>
+                </div>
+                <div class="foot-note">No profundizamos más aquí: el diseño de mecanismos con inteligencia artificial y agentes autónomos es, precisamente, el cierre del curso en la Semana 15.</div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 14: TRANSICIÓN AL JUEGO ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Manos a la obra</div>
+                <h2 class="slide-title">Hoy juegan: PagoTico y Colibrí Pay reclutan talento</h2>
+            </div>
+            <div class="slide-body">
+                <div class="mini-cards">
+                    <div class="mini-card">
+                        <h4>Lab 1 · Corran el algoritmo</h4>
+                        <p>Ejecuten Gale-Shapley paso a paso con candidatos y empresas costarricenses, viendo las retenciones y los rechazos en vivo.</p>
+                        <p class="ex">Aterriza: aceptación diferida, ronda a ronda.</p>
+                    </div>
+                    <div class="mini-card">
+                        <h4>Lab 2 · Cambien quién propone</h4>
+                        <p>Corran el mismo mercado con las empresas proponiendo y comparen el resultado con el de los candidatos proponiendo.</p>
+                        <p class="ex">Aterriza: la asimetría proposer-optimal.</p>
+                    </div>
+                    <div class="mini-card g">
+                        <h4>Lab 3 · Intenten manipular</h4>
+                        <p>Como empresa, oculten parte de su lista de preferencias y observen si eso mejora o empeora su resultado.</p>
+                        <p class="ex">Aterriza: veracidad y sus límites.</p>
+                    </div>
+                </div>
+                <div class="case-box">
+                    <h3>Caso 11 · La estrategia de contratación de PagoTico</h3>
+                    <p>Con lo que descubran en el juego, su equipo debe recomendarle a la gerencia de PagoTico <strong>cómo diseñar su propio proceso de contratación</strong>: quién debería "proponer", qué tan honestos conviene que sean con sus prioridades, y qué aprendizaje del caso CENDEISSS o del caso Boston aplicaría a una empresa privada.</p>
+                    <p class="tools"><strong>La herramienta de hoy:</strong> un juego que se abre con doble clic en el navegador. Sin instalar nada, funciona en Windows, Mac, iPad o el laboratorio.</p>
+                </div>
+                <div class="foot-note">Tienen entre 40 y 60 minutos. Al final, la <strong>ruleta</strong> elige al azar un equipo para exponer en cinco a siete minutos qué hicieron y qué recomiendan.</div>
+            </div>
+        </div>
+
+        <!-- ====== SLIDE 15: SÍNTESIS ====== -->
+        <div class="slide">
+            <div class="slide-header">
+                <div class="slide-eyebrow">Síntesis</div>
+                <h2 class="slide-title">Tres ideas para llevarse</h2>
+            </div>
+            <div class="slide-body">
+                <div class="closing-grid">
+                    <div class="closing-card">
+                        <div class="icon">01</div>
+                        <h4>Sin precio, alguien más decide</h4>
+                        <p>Cuando el precio está prohibido, fijo o es inaceptable, hace falta un mecanismo explícito que decida quién con quién.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">02</div>
+                        <h4>La estabilidad es lo que aguanta</h4>
+                        <p>Un emparejamiento sin parejas bloqueantes no se desarma solo. Por eso Gale-Shapley sigue vigente 60 años después.</p>
+                    </div>
+                    <div class="closing-card">
+                        <div class="icon">03</div>
+                        <h4>Quién propone, gana</h4>
+                        <p>El mismo algoritmo, con las mismas preferencias, favorece a un lado distinto según quién hace la propuesta. Diseñar el mecanismo es tomar partido.</p>
+                    </div>
+                </div>
+                <div class="next-week-box">
+                    <div class="label">Para la semana 13</div>
+                    <div class="content">Behavioral game theory · Por qué los jugadores reales no juegan Nash · Level-k, cognitive hierarchy y el quantal response equilibrium</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="navigation">
+        <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">← Anterior</button>
+        <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+
+        document.getElementById('totalSlides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (n >= totalSlides) currentSlide = totalSlides - 1;
+            else if (n < 0) currentSlide = 0;
+            else currentSlide = n;
+
+            slides[currentSlide].classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            document.getElementById('currentSlide').textContent = currentSlide + 1;
+            document.getElementById('prevBtn').disabled = currentSlide === 0;
+            document.getElementById('nextBtn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function changeSlide(direction) { showSlide(currentSlide + direction); }
+
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowLeft') changeSlide(-1);
+            else if (event.key === 'ArrowRight') changeSlide(1);
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>
