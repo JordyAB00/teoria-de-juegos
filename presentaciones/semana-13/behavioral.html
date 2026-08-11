@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semana 13 - Teoría de juegos del comportamiento</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;overflow-x:hidden;background:#f5f5f7;color:#1d1d1f}
+.slide{width:100%;min-height:100vh;padding:56px 80px 140px;background:#f5f5f7;display:none;flex-direction:column}
+.slide.active{display:flex;animation:fadeIn .4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.slide-header{margin-bottom:22px;flex-shrink:0}
+.slide-eyebrow{font-size:13px;color:#00d4ff;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.slide-title{font-size:33px;font-weight:700;color:#2d1b4e;line-height:1.15}
+.slide-body{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
+.cover{justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#fff,#f5f5f7);padding:80px}
+.cover-eyebrow{font-size:16px;color:#00d4ff;font-weight:700;letter-spacing:5px;text-transform:uppercase;margin-bottom:25px}
+.cover-title{font-size:56px;font-weight:800;background:linear-gradient(90deg,#2d1b4e,#00d4ff,#2d1b4e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:shimmer 4s ease infinite;line-height:1.1;max-width:1100px;margin-bottom:25px}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.cover-subtitle{font-size:20px;color:#6e6e73;font-weight:300;max-width:920px;line-height:1.5}
+.cover-meta{margin-top:40px;font-size:15px;color:#6e6e73;line-height:1.7}
+.questions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:14px}
+.question-card{background:#fff;border-radius:18px;padding:22px;border:1px solid #e5e5e7;box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative;overflow:hidden}
+.question-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#2d1b4e,#00d4ff)}
+.question-num{font-size:36px;font-weight:800;background:linear-gradient(135deg,#2d1b4e,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:8px}
+.question-tag{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#00b4dc;margin-bottom:6px}
+.question-text{font-size:14.5px;line-height:1.5}
+.two-col{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:center}
+.two-col.even{grid-template-columns:1fr 1fr}
+.two-col.wide-left{grid-template-columns:1.35fr 1fr}
+.form-block{background:#fff;border-radius:18px;padding:22px;border:1px solid #e5e5e7;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.badge{display:inline-block;background:linear-gradient(135deg,#2d1b4e,#00d4ff);color:#fff;padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:12px}
+.badge.alt{background:linear-gradient(135deg,#1a5e3a,#2d8659)}
+.badge.gold{background:linear-gradient(135deg,#8a6a10,#c79a2e)}
+.badge.muted{background:linear-gradient(135deg,#6e6e73,#9b9ba1)}
+.badge.red{background:linear-gradient(135deg,#7d1a2f,#a3213f)}
+.form-block h3{color:#2d1b4e;font-size:19px;margin-bottom:4px}
+.form-block .sub{font-size:12.5px;color:#6e6e73;font-style:italic;margin-bottom:12px}
+.form-block .caption{font-size:13.5px;line-height:1.5;margin-top:12px}
+.gps-callout{background:linear-gradient(135deg,#2d1b4e,#4a3680);color:#fff;border-radius:18px;padding:24px}
+.gps-callout .tag{font-size:12px;color:#00d4ff;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.gps-callout h3{font-size:20px;margin-bottom:12px}
+.gps-callout p{font-size:14px;line-height:1.55;opacity:.96}
+.gps-callout .punch{margin-top:14px;background:rgba(0,212,255,.18);border-left:4px solid #00d4ff;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5}
+.analogy{margin-top:16px;background:#fff7e6;border:1px solid #f0dcae;border-left:4px solid #c79a2e;border-radius:12px;padding:13px 16px;font-size:13.5px;color:#5a4410;line-height:1.55}
+.analogy strong{color:#8a6410}
+.analogy .lead{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#b1852b;margin-bottom:5px}
+.foot-note{margin-top:18px;background:#f0f0f2;border-radius:12px;padding:14px 18px;font-size:13.5px;color:#2d1b4e;line-height:1.5;border-left:4px solid #00d4ff;text-align:center}
+.caveat-note{margin-top:14px;background:#fdf3f3;border:1px solid #f0caca;border-left:4px solid #a3213f;border-radius:12px;padding:12px 16px;font-size:12.5px;color:#6e2430;line-height:1.5}
+.caveat-note strong{color:#a3213f}
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.mini-cards.two{grid-template-columns:repeat(2,1fr)}
+.mini-cards.four{grid-template-columns:repeat(4,1fr)}
+.mini-card{background:#fff;border-radius:14px;padding:16px;border:1px solid #e5e5e7;border-top:4px solid #00d4ff;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.mini-card.g{border-top-color:#2d8659}
+.mini-card.p{border-top-color:#2d1b4e}
+.mini-card.o{border-top-color:#c79a2e}
+.mini-card.r{border-top-color:#a3213f}
+.mini-card h4{color:#2d1b4e;font-size:14.5px;margin-bottom:5px}
+.mini-card p{font-size:12.5px;line-height:1.45}
+.mini-card .ex{font-size:11.5px;color:#6e6e73;font-style:italic;margin-top:5px}
+.mini-card .stat{font-size:26px;font-weight:800;color:#2d1b4e;margin-bottom:2px}
+.match-table{border-collapse:collapse;width:100%;margin-top:6px;font-size:13.5px}
+.match-table th{background:#2d1b4e;color:#fff;padding:9px 10px;text-align:left;font-weight:700}
+.match-table td{border-bottom:1px solid #e5e5e7;padding:8px 10px}
+.match-table tr.hl td{background:#eaf9fe;font-weight:700}
+.tab-wrap{display:grid;grid-template-columns:.85fr 1.6fr;gap:20px;align-items:start}
+.tab-input textarea{width:100%;height:118px;border-radius:12px;border:1px solid #d5d5da;padding:10px 12px;font-family:inherit;font-size:14px;resize:vertical;background:#fbfbfd}
+.tab-btns{display:flex;gap:10px;margin-top:10px;flex-wrap:wrap}
+.tab-btn{background:linear-gradient(135deg,#2d1b4e,#00d4ff);color:#fff;border:none;padding:9px 18px;border-radius:40px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit}
+.tab-btn.ghost{background:#fff;color:#2d1b4e;border:1px solid #d5d5da}
+.tab-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}
+.kpi{background:#fff;border:1px solid #e5e5e7;border-radius:12px;padding:10px;text-align:center}
+.kpi .v{font-size:24px;font-weight:800;color:#2d1b4e;line-height:1.1}
+.kpi .k{font-size:10.5px;color:#6e6e73;margin-top:3px}
+.diagram-card{background:#fff;border-radius:18px;padding:18px 22px;border:1px solid #e5e5e7;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.legend-row{display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.legend-chip{display:flex;align-items:center;gap:6px;font-size:12px;color:#2d1b4e}
+.legend-dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.closing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
+.closing-card{background:#fff;border-radius:18px;padding:24px;border:1px solid #e5e5e7;box-shadow:0 2px 10px rgba(0,0,0,.05);text-align:center}
+.closing-card .icon{font-size:32px;font-weight:800;background:linear-gradient(135deg,#2d1b4e,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:Georgia,serif;margin-bottom:8px}
+.closing-card h4{color:#2d1b4e;font-size:15.5px;margin-bottom:6px}
+.closing-card p{font-size:13px;line-height:1.5}
+.case-box{background:#fff;border-radius:18px;padding:22px 24px;border:2px solid #00d4ff;box-shadow:0 4px 18px rgba(0,212,255,.15);margin-top:16px}
+.case-box h3{color:#2d1b4e;font-size:18px;margin-bottom:8px}
+.case-box p{font-size:13.5px;line-height:1.55}
+.case-box .tools{margin-top:10px;font-size:12.5px;color:#2d1b4e}
+.next-week-box{background:linear-gradient(135deg,#2d1b4e,#00d4ff);color:#fff;border-radius:16px;padding:14px 22px;margin-top:14px;text-align:center}
+.next-week-box .label{font-size:11px;opacity:.85;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.next-week-box .content{font-size:14px;line-height:1.5}
+.navigation{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:14px;z-index:1000;background:rgba(245,245,247,.85);backdrop-filter:blur(14px);padding:10px 14px;border-radius:50px;border:1px solid rgba(229,229,231,.6);box-shadow:0 6px 22px rgba(0,0,0,.1)}
+.nav-button{background:linear-gradient(135deg,#2d1b4e,#00d4ff);border:none;color:#fff;padding:12px 24px;border-radius:50px;cursor:pointer;font-size:13.5px;font-weight:600;transition:all .3s}
+.nav-button:disabled{opacity:.4;cursor:not-allowed}
+.slide-number{position:fixed;top:22px;right:28px;color:#6e6e73;font-size:13px;z-index:1000;font-weight:600;background:rgba(255,255,255,.92);padding:6px 14px;border-radius:20px;border:1px solid #e5e5e7}
+.logo-area{position:fixed;top:18px;left:26px;z-index:1000}
+.logo-area img{max-width:120px;height:auto}
+@media (max-width:900px){.slide{padding:40px 28px 130px}.slide-title{font-size:24px}.cover-title{font-size:38px}
+.questions-grid,.two-col,.two-col.even,.two-col.wide-left,.mini-cards,.mini-cards.two,.mini-cards.four,.closing-grid,.tab-wrap{grid-template-columns:1fr}
+.tab-kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="logo-area"><img src="../../assets/images/logo-ulacit.png" alt="ULACIT"></div>
+<div class="slide-number"><span id="currentSlide">1</span> / <span id="totalSlides">15</span></div>
+
+<div class="presentation-container">
+
+<!-- 1 PORTADA -->
+<div class="slide cover active">
+  <div class="cover-eyebrow">Semana 13</div>
+  <h1 class="cover-title">Todos saben la respuesta correcta. Casi nadie la escribe</h1>
+  <p class="cover-subtitle">Teoría de juegos del comportamiento: por qué los jugadores reales se desvían del equilibrio de Nash de forma sistemática, predecible y aprovechable.</p>
+  <div class="cover-meta">Teoría de juegos, estrategia y toma de decisiones<br>Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT</div>
+</div>
+
+<!-- 2 GANCHO -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Hoja de ruta</div>
+    <h2 class="slide-title">Escriban un número. No lo digan en voz alta</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col wide-left">
+      <div class="form-block">
+        <span class="badge">El juego que acabamos de jugar</span>
+        <h3>Elija un número entre 0 y 100</h3>
+        <p class="sub">Gana quien quede más cerca de dos tercios del promedio de todo el grupo</p>
+        <div class="caption">Ese es todo el juego. No hay trampa ni información oculta, y todos tienen exactamente la misma información. Y sin embargo, en un momento vamos a ver que el aula no llegó ni cerca de la respuesta que predice la teoría que llevamos doce semanas estudiando.</div>
+      </div>
+      <div class="gps-callout">
+        <div class="tag">La respuesta que da Nash</div>
+        <h3>Cero, y se llega en cuatro renglones</h3>
+        <p>El promedio máximo posible es 100, así que el objetivo nunca pasa de 66,7. Escribir más que eso está dominado. Si nadie pasa de 66,7, el objetivo no pasa de 44,4. Y así sucesivamente.</p>
+        <div class="punch">Eliminación iterada de estrategias dominadas, exactamente la de la Semana 4. El único equilibrio de Nash es que <strong>todos escriban cero</strong>.</div>
+      </div>
+    </div>
+    <div class="questions-grid" style="margin-top:20px">
+      <div class="question-card"><div class="question-num">01</div><div class="question-tag">El diagnóstico</div><p class="question-text">¿Por qué los jugadores reales <strong>no juegan Nash</strong>, y se desvían siempre en la misma dirección?</p></div>
+      <div class="question-card"><div class="question-num">02</div><div class="question-tag">Los modelos</div><p class="question-text">¿Cómo se formaliza que alguien razone solo <strong>uno o dos pasos</strong> y no infinitos?</p></div>
+      <div class="question-card"><div class="question-num">03</div><div class="question-tag">Lo aplicado</div><p class="question-text">¿Qué gana una empresa al modelar clientes que se equivocan y a quienes <strong>además</strong> les importa la justicia?</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 TABULADOR -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Datos del aula · en vivo</div>
+    <h2 class="slide-title">La respuesta correcta era cero. Nadie escribió cero</h2>
+  </div>
+  <div class="slide-body">
+    <div class="tab-wrap">
+      <div class="tab-input">
+        <textarea id="bcInput" placeholder="Pegue aquí los números del aula, separados por comas, espacios o saltos de línea. Ejemplo: 33 50 22 40 17 35 ..."></textarea>
+        <div class="tab-btns">
+          <button class="tab-btn" onclick="tabular()">Tabular</button>
+          <button class="tab-btn ghost" onclick="cargarEjemplo()">Datos de ejemplo</button>
+        </div>
+        <div class="tab-kpis">
+          <div class="kpi"><div class="v" id="kN">—</div><div class="k">Respuestas</div></div>
+          <div class="kpi"><div class="v" id="kProm">—</div><div class="k">Promedio</div></div>
+          <div class="kpi"><div class="v" id="kObj">—</div><div class="k">Objetivo (2/3)</div></div>
+          <div class="kpi"><div class="v" id="kTau">—</div><div class="k">Nivel-k medio</div></div>
+        </div>
+      </div>
+      <div class="diagram-card">
+        <div id="bcChart"></div>
+        <div class="legend-row">
+          <div class="legend-chip"><span class="legend-dot" style="background:#00b4dc"></span> respuestas del aula</div>
+          <div class="legend-chip"><span class="legend-dot" style="background:#c79a2e"></span> niveles teóricos 50 · 33 · 22 · 15</div>
+          <div class="legend-chip"><span class="legend-dot" style="background:#a3213f"></span> equilibrio de Nash (0)</div>
+        </div>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Lo que estamos viendo</span>No aparecen respuestas repartidas al azar. Aparecen <strong>montoncitos</strong> alrededor de 33 y de 22. Eso no es ruido: es la huella de personas que pensaron exactamente <strong>un paso</strong> y exactamente <strong>dos pasos</strong>. La irracionalidad, cuando existe, tiene forma.</div>
+  </div>
+</div>
+
+<!-- 4 ESCALERA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">La lectura</div>
+    <h2 class="slide-title">La escalera del razonamiento: cada escalón divide entre tres</h2>
+  </div>
+  <div class="slide-body">
+    <div class="diagram-card">
+      <svg viewBox="0 0 900 250" style="width:100%;height:auto">
+        <line x1="40" y1="215" x2="860" y2="215" stroke="#c9c9d0" stroke-width="2"/>
+        <rect x="60" y="45" width="150" height="60" rx="12" fill="#f8f4e6" stroke="#c79a2e" stroke-width="2"/>
+        <text x="135" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#8a6410">Nivel 0</text>
+        <text x="135" y="90" text-anchor="middle" font-size="11.5" fill="#6e6e73">no piensa: elige al azar</text>
+        <line x1="135" y1="105" x2="135" y2="205" stroke="#c79a2e" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="135" cy="215" r="7" fill="#c79a2e"/>
+        <text x="135" y="240" text-anchor="middle" font-size="17" font-weight="800" fill="#2d1b4e">50</text>
+        <rect x="240" y="45" width="150" height="60" rx="12" fill="#f8f4e6" stroke="#c79a2e" stroke-width="2"/>
+        <text x="315" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#8a6410">Nivel 1</text>
+        <text x="315" y="90" text-anchor="middle" font-size="11.5" fill="#6e6e73">50 &#215; 2/3</text>
+        <line x1="315" y1="105" x2="315" y2="205" stroke="#c79a2e" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="315" cy="215" r="7" fill="#c79a2e"/>
+        <text x="315" y="240" text-anchor="middle" font-size="17" font-weight="800" fill="#2d1b4e">33</text>
+        <rect x="420" y="45" width="150" height="60" rx="12" fill="#f8f4e6" stroke="#c79a2e" stroke-width="2"/>
+        <text x="495" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#8a6410">Nivel 2</text>
+        <text x="495" y="90" text-anchor="middle" font-size="11.5" fill="#6e6e73">33 &#215; 2/3</text>
+        <line x1="495" y1="105" x2="495" y2="205" stroke="#c79a2e" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="495" cy="215" r="7" fill="#c79a2e"/>
+        <text x="495" y="240" text-anchor="middle" font-size="17" font-weight="800" fill="#2d1b4e">22</text>
+        <rect x="600" y="45" width="150" height="60" rx="12" fill="#f8f4e6" stroke="#c79a2e" stroke-width="2"/>
+        <text x="675" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#8a6410">Nivel 3</text>
+        <text x="675" y="90" text-anchor="middle" font-size="11.5" fill="#6e6e73">22 &#215; 2/3</text>
+        <line x1="675" y1="105" x2="675" y2="205" stroke="#c79a2e" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="675" cy="215" r="7" fill="#c79a2e"/>
+        <text x="675" y="240" text-anchor="middle" font-size="17" font-weight="800" fill="#2d1b4e">15</text>
+        <rect x="780" y="45" width="90" height="60" rx="12" fill="#fdf0f2" stroke="#a3213f" stroke-width="2"/>
+        <text x="825" y="70" text-anchor="middle" font-size="13" font-weight="800" fill="#a3213f">Nivel &#8734;</text>
+        <text x="825" y="90" text-anchor="middle" font-size="11.5" fill="#6e6e73">Nash</text>
+        <line x1="825" y1="105" x2="825" y2="205" stroke="#a3213f" stroke-width="2" stroke-dasharray="4 4"/>
+        <circle cx="825" cy="215" r="7" fill="#a3213f"/>
+        <text x="825" y="240" text-anchor="middle" font-size="17" font-weight="800" fill="#a3213f">0</text>
+      </svg>
+    </div>
+    <div class="mini-cards" style="margin-top:16px">
+      <div class="mini-card o"><div class="stat">23</div><p>promedio en los experimentos masivos de periódico, con miles de participantes</p></div>
+      <div class="mini-card"><div class="stat">33 y 22</div><p>los dos picos que aparecen una y otra vez en los histogramas: nivel 1 y nivel 2</p></div>
+      <div class="mini-card p"><div class="stat">1,55</div><p>mediana de pasos de razonamiento estimada en 60 juegos distintos</p></div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía</span>Nadie falló por no saber multiplicar por dos tercios. Fallaron porque <strong>no confiaban en que todos los demás lo harían</strong>. Escribir cero es apostar a que el aula entera razonó hasta el final, y esa apuesta casi siempre pierde.</div>
+  </div>
+</div>
+
+<!-- 5 TRICOTOMÍA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">El mapa de la sesión</div>
+    <h2 class="slide-title">Solo hay tres formas de desviarse de Nash. Ni una más</h2>
+  </div>
+  <div class="slide-body">
+    <div class="foot-note" style="margin-top:0;margin-bottom:16px">Nash exige tres cosas a la vez: <strong>pensar estratégicamente</strong>, <strong>elegir la mejor respuesta</strong> y <strong>que las creencias de todos sean correctas</strong>. Las dos primeras la gente sí las cumple. La tercera casi nunca.</div>
+    <div class="mini-cards">
+      <div class="mini-card p"><h4>A · Creencias limitadas</h4><p>Elijo bien, pero le apunto a un rival equivocado: creo que los demás piensan menos de lo que piensan.</p><p class="ex">Modelos: level-k, cognitive hierarchy</p></div>
+      <div class="mini-card"><h4>B · Ruido en la elección</h4><p>Mis creencias son correctas, pero me tiembla la mano: elijo lo mejor con más probabilidad, no con certeza.</p><p class="ex">Modelo: quantal response equilibrium</p></div>
+      <div class="mini-card g"><h4>C · Otras preferencias</h4><p>Maximizo perfectamente, pero lo que maximizo no es solo plata: también equidad, reciprocidad, eficiencia.</p><p class="ex">Modelos: Fehr-Schmidt, Charness-Rabin</p></div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía</span>Un tirador falla el blanco por tres razones distintas: le apuntó al lugar equivocado (A), le tembló el pulso (B), o nunca quiso darle al centro porque su objetivo era otro (C). <strong>Diagnosticar cuál de las tres está pasando cambia por completo qué hacer al respecto.</strong></div>
+    <div class="foot-note">En el caso de hoy, cada una de las tres decisiones del comité de PagoTico corresponde a una de estas tres causas.</div>
+  </div>
+</div>
+
+<!-- 6 LEVEL-K VS CH -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque A · el modelo</div>
+    <h2 class="slide-title">Cognitive hierarchy: nadie cree que todos los demás son igual de tontos</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block">
+        <span class="badge muted">Level-k</span>
+        <h3>Creo que todos son exactamente un escalón más abajo</h3>
+        <svg viewBox="0 0 420 150" style="width:100%;height:auto">
+          <rect x="150" y="10" width="120" height="34" rx="9" fill="#f3f0fa" stroke="#2d1b4e" stroke-width="2"/>
+          <text x="210" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Yo soy nivel 3</text>
+          <rect x="20" y="100" width="105" height="34" rx="9" fill="#f0f0f2" stroke="#c9c9d0"/>
+          <text x="72" y="122" text-anchor="middle" font-size="11.5" fill="#9b9ba1">nivel 0</text>
+          <rect x="150" y="100" width="105" height="34" rx="9" fill="#f0f0f2" stroke="#c9c9d0"/>
+          <text x="202" y="122" text-anchor="middle" font-size="11.5" fill="#9b9ba1">nivel 1</text>
+          <rect x="285" y="100" width="115" height="34" rx="9" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2.5"/>
+          <text x="342" y="122" text-anchor="middle" font-size="11.5" font-weight="800" fill="#2d1b4e">nivel 2 · 100%</text>
+          <line x1="240" y1="46" x2="330" y2="96" stroke="#00b4dc" stroke-width="3"/>
+        </svg>
+        <p class="caption">Toda mi creencia va a un solo escalón. Simple, pero implica que cuanto más listo me creo, <strong>más equivocado estoy</strong> sobre el mundo.</p>
+      </div>
+      <div class="form-block">
+        <span class="badge alt">Cognitive hierarchy</span>
+        <h3>Creo que abajo hay de todo, repartido</h3>
+        <svg viewBox="0 0 420 150" style="width:100%;height:auto">
+          <rect x="150" y="10" width="120" height="34" rx="9" fill="#f3f0fa" stroke="#2d1b4e" stroke-width="2"/>
+          <text x="210" y="32" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Yo soy nivel 3</text>
+          <rect x="20" y="100" width="105" height="34" rx="9" fill="#e7f4ec" stroke="#2d8659" stroke-width="2"/>
+          <text x="72" y="122" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a5e3a">nivel 0 · 26%</text>
+          <rect x="150" y="100" width="105" height="34" rx="9" fill="#e7f4ec" stroke="#2d8659" stroke-width="2"/>
+          <text x="202" y="122" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a5e3a">nivel 1 · 39%</text>
+          <rect x="285" y="100" width="115" height="34" rx="9" fill="#e7f4ec" stroke="#2d8659" stroke-width="2"/>
+          <text x="342" y="122" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1a5e3a">nivel 2 · 35%</text>
+          <line x1="190" y1="46" x2="85" y2="96" stroke="#2d8659" stroke-width="2"/>
+          <line x1="210" y1="46" x2="205" y2="96" stroke="#2d8659" stroke-width="2.5"/>
+          <line x1="235" y1="46" x2="325" y2="96" stroke="#2d8659" stroke-width="2.3"/>
+        </svg>
+        <p class="caption">Los pesos vienen de una distribución con un solo parámetro, <strong>&#964;</strong>, que es el número promedio de pasos que razona la población.</p>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía</span>Level-k es el jugador de póker que asume que <strong>todos en la mesa son novatos igualitos</strong>. Cognitive hierarchy es el que asume que <strong>hay novatos, intermedios y avanzados, y que él está un poco arriba de todos</strong>. La segunda creencia es más realista y, no por casualidad, se equivoca menos.</div>
+    <div class="foot-note">Con <strong>&#964; = 1,5</strong>, el valor recomendado para predecir en juegos nuevos, alrededor del <strong>22%</strong> de la población no razona ningún paso.</div>
+  </div>
+</div>
+
+<!-- 7 NIVEL 0 -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque A · la grieta</div>
+    <h2 class="slide-title">El talón de Aquiles: nadie sabe bien qué es un "nivel 0"</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col">
+      <div class="form-block">
+        <span class="badge red">Problema abierto</span>
+        <h3>¿Qué hace exactamente el nivel 0?</h3>
+        <p class="caption">El nivel 0 no es una persona observada: es el <strong>ancla</strong> desde la que se construyen todos los demás niveles. Si cambio el supuesto sobre él, cambian todas las predicciones. Y no hay acuerdo sobre qué proporción de la población es nivel 0:</p>
+        <div class="mini-cards four" style="margin-top:14px">
+          <div class="mini-card"><div class="stat">0%</div><p>Stahl y Wilson, 1994</p></div>
+          <div class="mini-card"><div class="stat">17%</div><p>Stahl y Wilson, 1995</p></div>
+          <div class="mini-card"><div class="stat">32%</div><p>Wright y Leyton-Brown</p></div>
+          <div class="mini-card"><div class="stat">37%</div><p>Burchardi y Penczynski</p></div>
+        </div>
+      </div>
+      <div>
+        <div class="gps-callout">
+          <div class="tag">Por qué importa esto en clase</div>
+          <h3>Un modelo útil no es un modelo cerrado</h3>
+          <p>Level-k y cognitive hierarchy predicen bien la primera jugada en juegos nuevos. Pero descansan sobre un supuesto que la propia literatura reconoce sin resolver. Saber dónde está la grieta de un modelo es parte de saber usarlo.</p>
+        </div>
+        <div class="analogy"><span class="lead">Analogía</span>Es una regla graduada perfecta a la que <strong>nadie sabe dónde ponerle el cero</strong>. Todas las mediciones relativas siguen siendo correctas; el punto de partida absoluto queda en disputa.</div>
+      </div>
+    </div>
+    <div class="caveat-note"><strong>Advertencia práctica:</strong> el nivel de una persona no es un rasgo fijo. Cambia entre juegos y con la forma en que se presente el problema. No etiquete a un compañero como "un nivel 2".</div>
+  </div>
+</div>
+
+<!-- 8 QRE -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque B · el modelo</div>
+    <h2 class="slide-title">El termostato de la racionalidad: un solo dial entre el azar y Nash</h2>
+  </div>
+  <div class="slide-body">
+    <div class="diagram-card">
+      <svg viewBox="0 0 900 210" style="width:100%;height:auto">
+        <text x="150" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">&#955; = 0 · pura moneda al aire</text>
+        <rect x="80" y="45" width="60" height="120" fill="#c9c9d0" rx="4"/>
+        <rect x="160" y="45" width="60" height="120" fill="#c9c9d0" rx="4"/>
+        <text x="110" y="185" text-anchor="middle" font-size="12" fill="#6e6e73">50%</text>
+        <text x="190" y="185" text-anchor="middle" font-size="12" fill="#6e6e73">50%</text>
+        <text x="450" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">&#955; intermedio · sesgo hacia lo bueno</text>
+        <rect x="380" y="105" width="60" height="60" fill="#9ecfe4" rx="4"/>
+        <rect x="460" y="45" width="60" height="120" fill="#00b4dc" rx="4"/>
+        <text x="410" y="185" text-anchor="middle" font-size="12" fill="#6e6e73">30%</text>
+        <text x="490" y="185" text-anchor="middle" font-size="12" fill="#6e6e73">70%</text>
+        <text x="750" y="24" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">&#955; &#8594; &#8734; · esto es Nash</text>
+        <rect x="680" y="160" width="60" height="5" fill="#e0e0e4" rx="2"/>
+        <rect x="760" y="45" width="60" height="120" fill="#2d1b4e" rx="4"/>
+        <text x="710" y="185" text-anchor="middle" font-size="12" fill="#6e6e73">2%</text>
+        <text x="790" y="185" text-anchor="middle" font-size="12" fill="#6e6e73">98%</text>
+        <line x1="60" y1="200" x2="850" y2="200" stroke="#c79a2e" stroke-width="2.5" stroke-dasharray="7 5"/>
+      </svg>
+    </div>
+    <div class="two-col even" style="margin-top:16px">
+      <div class="form-block"><span class="badge">La regla</span><h3>Entre más grande la ventaja, más probable que la tome</h3><p class="caption">Nash dice: si una opción es mejor, la elijo con probabilidad 1. Esto dice: si una opción es mejor, la elijo <strong>con más probabilidad</strong>, y esa probabilidad crece con el tamaño de la ventaja.</p></div>
+      <div class="form-block"><span class="badge alt">Y sigue siendo un equilibrio</span><h3>Las creencias sí son correctas</h3><p class="caption">Diferencia con level-k: aquí nadie se equivoca sobre los demás. Todos anticipan bien que el rival también elige con ruido. Se equivoca la <strong>mano</strong>, no la <strong>cabeza</strong>.</p></div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía</span>Un termostato viejo. Con la perilla en cero, la temperatura anda a la deriva. Conforme uno sube la perilla, la casa se acerca cada vez más a la temperatura deseada, sin llegar nunca del todo. <strong>Nash es la perilla al máximo</strong>: una idealización, no el caso general.</div>
+  </div>
+</div>
+
+<!-- 9 MAGNITUD -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque B · por qué sirve y dónde falla</div>
+    <h2 class="slide-title">El dial se estima con datos, pero no se puede comparar entre estudios</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block"><span class="badge muted">Premio pequeño</span><h3>La ventaja de la opción buena es de unas pocas monedas</h3><p class="caption">Nadie se esfuerza demasiado en acertar. Las elecciones quedan repartidas, lejos del equilibrio.</p></div>
+      <div class="form-block"><span class="badge">Premio grande</span><h3>La misma estructura, con mucho dinero encima</h3><p class="caption">Todo el mundo se concentra y el comportamiento se pega al equilibrio. <strong>El juego es idéntico; solo cambió la escala.</strong> Nash predice lo mismo en ambos casos, y por eso falla.</p></div>
+    </div>
+    <div class="gps-callout" style="margin-top:16px">
+      <div class="tag">Dónde aparece esto en los negocios</div>
+      <h3>Sobrepuja en subastas, guerras de promociones y licitaciones</h3>
+      <p>Cuando la diferencia entre pujar bien y pujar mal es pequeña, la gente puja de más y el subastador gana. Cuando la diferencia es enorme, los participantes afinan. Un modelo que ignore la magnitud de lo que está en juego va a predecir mal las dos veces.</p>
+    </div>
+    <div class="caveat-note"><strong>Honestidad intelectual:</strong> el dial se mide en unidades de utilidad, así que su valor <strong>no es comparable entre estudios con pagos de distinta magnitud</strong>. Y en 2008 se demostró que, sin restricciones sobre cómo se comete el error, el modelo puede racionalizar casi cualquier comportamiento. La respuesta de la literatura fue una versión con cuatro axiomas que sí es contrastable. El debate sigue abierto.</div>
+  </div>
+</div>
+
+<!-- 10 ULTIMÁTUM -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque C · el fenómeno</div>
+    <h2 class="slide-title">La gente quema su propia plata para castigar una oferta injusta</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col wide-left">
+      <div class="form-block">
+        <span class="badge">El juego del ultimátum</span>
+        <h3>Yo reparto cien mil colones. Usted acepta o rechaza. Si rechaza, ambos quedamos en cero</h3>
+        <svg viewBox="0 0 620 130" style="width:100%;height:auto">
+          <rect x="20" y="20" width="140" height="46" rx="10" fill="#f3f0fa" stroke="#2d1b4e" stroke-width="2"/>
+          <text x="90" y="48" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Propongo 5.000</text>
+          <line x1="160" y1="43" x2="230" y2="43" stroke="#a3213f" stroke-width="2.5"/>
+          <rect x="235" y="20" width="150" height="46" rx="10" fill="#fdf0f2" stroke="#a3213f" stroke-width="2"/>
+          <text x="310" y="42" text-anchor="middle" font-size="12.5" font-weight="800" fill="#a3213f">Usted rechaza</text>
+          <text x="310" y="58" text-anchor="middle" font-size="11" fill="#6e2430">y pierde 5.000</text>
+          <line x1="385" y1="43" x2="450" y2="43" stroke="#a3213f" stroke-width="2.5"/>
+          <rect x="455" y="20" width="145" height="46" rx="10" fill="#f8f8f9" stroke="#c9c9d0"/>
+          <text x="527" y="48" text-anchor="middle" font-size="12.5" font-weight="700" fill="#6e6e73">Ambos: cero</text>
+          <text x="310" y="105" text-anchor="middle" font-size="13" font-weight="700" fill="#2d1b4e">La teoría clásica dice que 5.000 es mejor que 0 y que usted debería aceptar. Casi nadie acepta.</text>
+        </svg>
+      </div>
+      <div class="mini-cards two" style="margin-top:0">
+        <div class="mini-card g"><div class="stat">40%</div><p>oferta promedio observada en los experimentos de ultimátum</p></div>
+        <div class="mini-card r"><div class="stat">16%</div><p>tasa de rechazo promedio: la gente sí castiga</p></div>
+        <div class="mini-card"><div class="stat">28,3%</div><p>lo que regala un dictador sin miedo a rechazo, en 616 experimentos</p></div>
+        <div class="mini-card p"><div class="stat">64%</div><p>de los dictadores da algo, aun sin ninguna consecuencia por no dar</p></div>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía</span>La herencia entre hermanos. Cuando uno recibe mucho menos que el otro, a veces prefiere <strong>tumbar el reparto completo</strong> antes que firmarlo, aunque tumbándolo se quede sin nada. Eso no es irracional: es una preferencia distinta a la del dinero puro.</div>
+  </div>
+</div>
+
+<!-- 11 ALFA Y BETA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque C · el modelo</div>
+    <h2 class="slide-title">Dos números: cuánta envidia y cuánta culpa</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block"><span class="badge red">Alfa · envidia</span><h3>Me duele que el otro gane más que yo</h3><p class="caption">Es el motor de los rechazos. Un alfa alto significa que prefiero cero antes que quedar muy por debajo.</p></div>
+      <div class="form-block"><span class="badge gold">Beta · culpa</span><h3>Me incomoda ganar mucho más que el otro</h3><p class="caption">Es el motor de las ofertas generosas. Y siempre pesa menos que la envidia: nos molesta más perder que ganar de más.</p></div>
+    </div>
+    <div class="two-col even" style="margin-top:16px">
+      <div class="form-block"><span class="badge muted">Aversión pura a la desigualdad</span><h3>Predice que queremos achicar la brecha</h3><p class="caption">Si esto fuera todo, la gente debería sacrificarse para <strong>bajar</strong> al que va ganando. En los experimentos casi nunca lo hace.</p></div>
+      <div class="form-block"><span class="badge alt">Bienestar social y reciprocidad</span><h3>Nos sacrificamos para subir al que va peor</h3><p class="caption">Y hay una condición: esa disposición <strong>se retira</strong> si el otro se portó de forma egoísta primero. La generosidad no es incondicional, es recíproca.</p></div>
+    </div>
+    <div class="analogy"><span class="lead">La prueba de fuego: salir del laboratorio</span>Pagarle de más a un trabajador como regalo elevó el esfuerzo <strong>solo las primeras horas</strong>; después la diferencia se borró y al empleador le salió peor. En cambio, un regalo <strong>no monetario</strong> y con esfuerzo detrás produjo efectos grandes y duraderos. La reciprocidad es real, pero depende mucho más de la <strong>forma</strong> del gesto que de su monto.</div>
+  </div>
+</div>
+
+<!-- 12 EVIDENCIA REGIONAL -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque C · aterrizaje</div>
+    <h2 class="slide-title">Evidencia de campo en Colombia y Costa Rica</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block"><span class="badge alt">Colombia</span><h3>Multar poco puede salir peor que no multar</h3><p class="caption">En un experimento con comunidades rurales sobre uso de un recurso común, la gente cooperaba bastante más de lo que predice el egoísmo. Al imponer una regulación externa débil, con muy baja probabilidad de fiscalización, <strong>la cooperación cayó</strong> hacia el nivel egoísta. La regla desplazó a la norma.</p></div>
+      <div class="form-block"><span class="badge alt">Costa Rica</span><h3>La vergüenza movió más el reciclaje que el orgullo</h3><p class="caption">En experimentos de campo con hogares urbanos costarricenses, las preocupaciones por la reputación moldearon la conducta ambiental: el marco de <strong>evitar quedar mal</strong> generó más cooperación que el de quedar bien.</p></div>
+    </div>
+    <div class="analogy"><span class="lead">Por qué esto importa para el proyecto</span>Estos resultados desmontan la idea de que la teoría del comportamiento es "cosa de laboratorios gringos". Pero también advierten lo contrario: en 76 países, la variación <strong>dentro</strong> de cada país resultó mayor que la variación entre países. No existe un "consumidor costarricense promedio".</div>
+  </div>
+</div>
+
+<!-- 13 REPLICACIÓN -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Honestidad científica</div>
+    <h2 class="slide-title">Qué está sólido, qué está en disputa y qué se desinfló</h2>
+  </div>
+  <div class="slide-body">
+    <div class="mini-cards">
+      <div class="mini-card g"><h4>Aguanta bien</h4><p>El patrón de niveles del beauty contest, los rechazos en el ultimátum, la generosidad parcial del dictador, la cooperación inicial que decae en bienes públicos.</p><p class="ex">Efectos grandes, replicados muchas veces.</p></div>
+      <div class="mini-card o"><h4>En disputa</h4><p>Cómo especificar el nivel 0. Si el modelo del dial es contrastable sin restricciones adicionales. Si la culpa es un motivo genuino o se reduce a otra cosa.</p><p class="ex">Frontera activa, no consenso.</p></div>
+      <div class="mini-card r"><h4>Se desinfló</h4><p>Los "nudges": un metaanálisis grande reportó un efecto medio considerable, y otro equipo mostró que <strong>tras corregir por sesgo de publicación no queda evidencia agregada</strong>. Una revisión de 2025 pasó de 0,27 a prácticamente cero.</p><p class="ex">Probablemente funcionan en algunos dominios, no en general.</p></div>
+    </div>
+    <div class="caveat-note"><strong>Para el proyecto integrador:</strong> si citan un efecto conductual, revisen si sobrevivió a la replicación. Un dato de laboratorio no es una promesa de campo, y un efecto publicado no es necesariamente un efecto real.</div>
+  </div>
+</div>
+
+<!-- 14 CIERRE Y CASO -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Manos a la obra</div>
+    <h2 class="slide-title">Cómo elegir el modelo en un proyecto de inteligencia de negocios</h2>
+  </div>
+  <div class="slide-body">
+    <table class="match-table">
+      <tr><th>Si en su problema pasa esto...</th><th>El modelo que sirve</th><th>Lo que le va a decir</th></tr>
+      <tr class="hl"><td>La decisión se toma una sola vez, sin historial ni retroalimentación</td><td>Level-k / cognitive hierarchy</td><td>Sus rivales razonan uno o dos pasos, no infinitos</td></tr>
+      <tr class="hl"><td>Hay ruido, y la conducta cambia según cuánto dinero esté en juego</td><td>Quantal response equilibrium</td><td>Cuánto se acercará la gente al equilibrio según la escala</td></tr>
+      <tr class="hl"><td>Alguien puede rechazar un trato que le conviene, por injusto</td><td>Preferencias sociales</td><td>Cuál es la oferta mínima que no le explota en la cara</td></tr>
+    </table>
+    <div class="case-box">
+      <h3>Caso 12 · El comité de decisiones de PagoTico</h3>
+      <p>PagoTico tiene tres decisiones sobre la mesa y cada una falla si se resuelve con Nash puro: <strong>cuánto cashback lanzar</strong> anticipando al mercado, <strong>qué tan agresiva</strong> será la respuesta de Colibrí Pay, y <strong>qué porcentaje del ahorro</strong> ofrecerle a los comercios afiliados sin que le tiren el trato. Su equipo tiene que llevarle al comité una recomendación con evidencia.</p>
+      <p class="tools"><strong>La herramienta de hoy:</strong> un juego que se abre con doble clic en el navegador. Sin instalar nada, funciona en Windows, Mac, iPad o el laboratorio.</p>
+    </div>
+    <div class="foot-note">Tienen entre 40 y 60 minutos. Al final, la <strong>ruleta</strong> elige al azar un equipo para exponer en cinco a siete minutos qué encontraron y qué recomiendan.</div>
+  </div>
+</div>
+
+<!-- 15 SÍNTESIS -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Síntesis</div>
+    <h2 class="slide-title">Tres ideas para llevarse</h2>
+  </div>
+  <div class="slide-body">
+    <div class="closing-grid">
+      <div class="closing-card"><div class="icon">01</div><h4>El error tiene forma</h4><p>La gente no se desvía de Nash al azar. Se desvía en montoncitos, en la misma dirección y en cantidades que se pueden medir y predecir.</p></div>
+      <div class="closing-card"><div class="icon">02</div><h4>Tres causas, tres remedios</h4><p>Creencias limitadas, mano temblorosa o preferencias distintas al dinero. Diagnosticar cuál está operando es la mitad del trabajo.</p></div>
+      <div class="closing-card"><div class="icon">03</div><h4>Suponer racionalidad plena cuesta plata</h4><p>Ofrecer lo mínimo porque "deberían aceptarlo" es la forma más cara de tener razón en teoría.</p></div>
+    </div>
+    <div class="next-week-box">
+      <div class="label">Para la semana 14</div>
+      <div class="content">Mecanismos en plataformas digitales, blockchain y pricing algorítmico · Mercados de dos lados, MEV y el caso RealPage</div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="navigation">
+  <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">&#8592; Anterior</button>
+  <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente &#8594;</button>
+</div>
+
+<script>
+let currentSlide=0;
+const slides=document.querySelectorAll('.slide');
+const totalSlides=slides.length;
+document.getElementById('totalSlides').textContent=totalSlides;
+function showSlide(n){
+  slides.forEach(s=>s.classList.remove('active'));
+  if(n>=totalSlides)currentSlide=totalSlides-1;else if(n<0)currentSlide=0;else currentSlide=n;
+  slides[currentSlide].classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('currentSlide').textContent=currentSlide+1;
+  document.getElementById('prevBtn').disabled=currentSlide===0;
+  document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;
+}
+function changeSlide(d){showSlide(currentSlide+d);}
+document.addEventListener('keydown',function(e){
+  const t=e.target.tagName;
+  if(t==='TEXTAREA'||t==='INPUT')return;
+  if(e.key==='ArrowLeft')changeSlide(-1);else if(e.key==='ArrowRight')changeSlide(1);
+});
+
+const EJEMPLO="50 33 22 35 40 25 30 33 18 45 22 50 10 33 28 60 22 15 38 33 20 42 25 30 8 33 48 22 36 27";
+function cargarEjemplo(){document.getElementById('bcInput').value=EJEMPLO;tabular();}
+function parseNums(t){
+  return (t||'').split(/[^0-9.,-]+/).map(s=>s.replace(/,$/,''))
+    .map(s=>parseFloat(s.replace(',','.'))).filter(v=>!isNaN(v)&&v>=0&&v<=100);
+}
+function nivelDe(x){
+  let k=Math.round(Math.log(Math.max(x,0.5)/50)/Math.log(2/3));
+  if(k<0)k=0;if(k>8)k=8;return k;
+}
+function tabular(){
+  const d=parseNums(document.getElementById('bcInput').value);
+  if(d.length===0){
+    document.getElementById('bcChart').innerHTML='<div style="padding:44px 10px;text-align:center;color:#6e6e73;font-size:14px">Pegue los números del aula y presione Tabular.</div>';
+    ['kN','kProm','kObj','kTau'].forEach(i=>document.getElementById(i).textContent='—');
+    return;
+  }
+  const n=d.length, prom=d.reduce((a,b)=>a+b,0)/n, obj=prom*2/3;
+  const niv=d.map(nivelDe), nivProm=niv.reduce((a,b)=>a+b,0)/n;
+  document.getElementById('kN').textContent=n;
+  document.getElementById('kProm').textContent=prom.toFixed(1).replace('.',',');
+  document.getElementById('kObj').textContent=obj.toFixed(1).replace('.',',');
+  document.getElementById('kTau').textContent=nivProm.toFixed(2).replace('.',',');
+  dibujar(d,prom,obj);
+}
+function dibujar(d,prom,obj){
+  const bins=new Array(20).fill(0);
+  d.forEach(v=>{let i=Math.floor(v/5);if(i>19)i=19;bins[i]++;});
+  const maxB=Math.max(...bins,1);
+  const W=760,H=300,ML=40,MR=16,MT=18,MB=46,pw=W-ML-MR,ph=H-MT-MB,bw=pw/20;
+  const xPos=v=>ML+(v/100)*pw;
+  let s='<svg viewBox="0 0 '+W+' '+H+'" style="width:100%;height:auto">';
+  for(let i=0;i<20;i++){
+    if(bins[i]===0)continue;
+    const h=(bins[i]/maxB)*ph, x=ML+i*bw+1.5, y=MT+ph-h;
+    s+='<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+(bw-3).toFixed(1)+'" height="'+h.toFixed(1)+'" rx="3" fill="#00b4dc" opacity="0.85"/>';
+    s+='<text x="'+(x+(bw-3)/2).toFixed(1)+'" y="'+(y-5).toFixed(1)+'" text-anchor="middle" font-size="11" font-weight="700" fill="#2d1b4e">'+bins[i]+'</text>';
+  }
+  [[50,'L0'],[33,'L1'],[22,'L2'],[15,'L3']].forEach(m=>{
+    const x=xPos(m[0]);
+    s+='<line x1="'+x.toFixed(1)+'" y1="'+MT+'" x2="'+x.toFixed(1)+'" y2="'+(MT+ph)+'" stroke="#c79a2e" stroke-width="2" stroke-dasharray="5 4"/>';
+    s+='<text x="'+x.toFixed(1)+'" y="'+(MT+12)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="#8a6410">'+m[1]+'</text>';
+  });
+  const x0=xPos(0);
+  s+='<line x1="'+x0.toFixed(1)+'" y1="'+MT+'" x2="'+x0.toFixed(1)+'" y2="'+(MT+ph)+'" stroke="#a3213f" stroke-width="2.5"/>';
+  s+='<text x="'+(x0+16).toFixed(1)+'" y="'+(MT+12)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="#a3213f">Nash</text>';
+  const xp=xPos(prom), xo=xPos(obj);
+  s+='<line x1="'+xp.toFixed(1)+'" y1="'+MT+'" x2="'+xp.toFixed(1)+'" y2="'+(MT+ph)+'" stroke="#2d1b4e" stroke-width="2.5"/>';
+  s+='<text x="'+xp.toFixed(1)+'" y="'+(MT+ph+32)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#2d1b4e">promedio '+prom.toFixed(1).replace('.',',')+'</text>';
+  s+='<line x1="'+xo.toFixed(1)+'" y1="'+MT+'" x2="'+xo.toFixed(1)+'" y2="'+(MT+ph)+'" stroke="#1a5e3a" stroke-width="2.5" stroke-dasharray="6 4"/>';
+  s+='<text x="'+xo.toFixed(1)+'" y="'+(MT+ph+44)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#1a5e3a">ganador '+obj.toFixed(1).replace('.',',')+'</text>';
+  s+='<line x1="'+ML+'" y1="'+(MT+ph)+'" x2="'+(W-MR)+'" y2="'+(MT+ph)+'" stroke="#9b9ba1" stroke-width="1.5"/>';
+  [0,25,50,75,100].forEach(v=>{s+='<text x="'+xPos(v).toFixed(1)+'" y="'+(MT+ph+17)+'" text-anchor="middle" font-size="11" fill="#6e6e73">'+v+'</text>';});
+  s+='</svg>';
+  document.getElementById('bcChart').innerHTML=s;
+}
+showSlide(0);tabular();
+</script>
+</body>
+</html>
