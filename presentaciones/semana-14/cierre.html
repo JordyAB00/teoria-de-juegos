@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semana 14-15 - Plataformas, colusión algorítmica y agentes de IA</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;overflow-x:hidden;background:#f5f5f7;color:#1d1d1f}
+.slide{width:100%;min-height:100vh;padding:56px 80px 140px;background:#f5f5f7;display:none;flex-direction:column}
+.slide.active{display:flex;animation:fadeIn .4s ease-out}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.slide-header{margin-bottom:22px;flex-shrink:0}
+.slide-eyebrow{font-size:13px;color:#00d4ff;font-weight:700;letter-spacing:3px;text-transform:uppercase;margin-bottom:10px}
+.slide-title{font-size:33px;font-weight:700;color:#2d1b4e;line-height:1.15}
+.slide-body{flex:1 0 auto;display:flex;flex-direction:column;justify-content:center}
+.cover{justify-content:center;align-items:center;text-align:center;background:linear-gradient(135deg,#fff,#f5f5f7);padding:80px}
+.cover-eyebrow{font-size:16px;color:#00d4ff;font-weight:700;letter-spacing:5px;text-transform:uppercase;margin-bottom:25px}
+.cover-title{font-size:56px;font-weight:800;background:linear-gradient(90deg,#2d1b4e,#00d4ff,#2d1b4e);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;background-size:200% 200%;animation:shimmer 4s ease infinite;line-height:1.1;max-width:1100px;margin-bottom:25px}
+@keyframes shimmer{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.cover-subtitle{font-size:20px;color:#6e6e73;font-weight:300;max-width:920px;line-height:1.5}
+.cover-meta{margin-top:40px;font-size:15px;color:#6e6e73;line-height:1.7}
+.questions-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:14px}
+.question-card{background:#fff;border-radius:18px;padding:22px;border:1px solid #e5e5e7;box-shadow:0 2px 8px rgba(0,0,0,.05);position:relative;overflow:hidden}
+.question-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:4px;background:linear-gradient(90deg,#2d1b4e,#00d4ff)}
+.question-num{font-size:36px;font-weight:800;background:linear-gradient(135deg,#2d1b4e,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;line-height:1;margin-bottom:8px}
+.question-tag{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#00b4dc;margin-bottom:6px}
+.question-text{font-size:14.5px;line-height:1.5}
+.two-col{display:grid;grid-template-columns:1.1fr 1fr;gap:26px;align-items:center}
+.two-col.even{grid-template-columns:1fr 1fr}
+.two-col.wide-left{grid-template-columns:1.35fr 1fr}
+.two-col.wide-right{grid-template-columns:1fr 1.35fr}
+.form-block{background:#fff;border-radius:18px;padding:22px;border:1px solid #e5e5e7;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.badge{display:inline-block;background:linear-gradient(135deg,#2d1b4e,#00d4ff);color:#fff;padding:4px 12px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:1.5px;margin-bottom:12px}
+.badge.alt{background:linear-gradient(135deg,#1a5e3a,#2d8659)}
+.badge.gold{background:linear-gradient(135deg,#8a6a10,#c79a2e)}
+.badge.muted{background:linear-gradient(135deg,#6e6e73,#9b9ba1)}
+.badge.red{background:linear-gradient(135deg,#7d1a2f,#a3213f)}
+.form-block h3{color:#2d1b4e;font-size:19px;margin-bottom:4px}
+.form-block .sub{font-size:12.5px;color:#6e6e73;font-style:italic;margin-bottom:12px}
+.form-block .caption{font-size:13.5px;line-height:1.5;margin-top:12px}
+.gps-callout{background:linear-gradient(135deg,#2d1b4e,#4a3680);color:#fff;border-radius:18px;padding:24px}
+.gps-callout .tag{font-size:12px;color:#00d4ff;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+.gps-callout h3{font-size:20px;margin-bottom:12px}
+.gps-callout p{font-size:14px;line-height:1.55;opacity:.96}
+.gps-callout .punch{margin-top:14px;background:rgba(0,212,255,.18);border-left:4px solid #00d4ff;border-radius:10px;padding:12px 14px;font-size:13px;line-height:1.5}
+.analogy{margin-top:16px;background:#fff7e6;border:1px solid #f0dcae;border-left:4px solid #c79a2e;border-radius:12px;padding:13px 16px;font-size:13.5px;color:#5a4410;line-height:1.55}
+.analogy strong{color:#8a6410}
+.analogy .lead{display:block;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:#b1852b;margin-bottom:5px}
+.foot-note{margin-top:18px;background:#f0f0f2;border-radius:12px;padding:14px 18px;font-size:13.5px;color:#2d1b4e;line-height:1.5;border-left:4px solid #00d4ff;text-align:center}
+.caveat-note{margin-top:14px;background:#fdf3f3;border:1px solid #f0caca;border-left:4px solid #a3213f;border-radius:12px;padding:12px 16px;font-size:12.5px;color:#6e2430;line-height:1.5}
+.caveat-note strong{color:#a3213f}
+.mini-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:16px}
+.mini-cards.two{grid-template-columns:repeat(2,1fr)}
+.mini-cards.four{grid-template-columns:repeat(4,1fr)}
+.mini-card{background:#fff;border-radius:14px;padding:16px;border:1px solid #e5e5e7;border-top:4px solid #00d4ff;box-shadow:0 2px 6px rgba(0,0,0,.04)}
+.mini-card.g{border-top-color:#2d8659}
+.mini-card.p{border-top-color:#2d1b4e}
+.mini-card.o{border-top-color:#c79a2e}
+.mini-card.r{border-top-color:#a3213f}
+.mini-card h4{color:#2d1b4e;font-size:14.5px;margin-bottom:5px}
+.mini-card p{font-size:12.5px;line-height:1.45}
+.mini-card .ex{font-size:11.5px;color:#6e6e73;font-style:italic;margin-top:5px}
+.mini-card .stat{font-size:26px;font-weight:800;color:#2d1b4e;margin-bottom:2px}
+.match-table{border-collapse:collapse;width:100%;margin-top:6px;font-size:13.5px}
+.match-table th{background:#2d1b4e;color:#fff;padding:9px 10px;text-align:left;font-weight:700}
+.match-table td{border-bottom:1px solid #e5e5e7;padding:8px 10px}
+.match-table tr.hl td{background:#eaf9fe;font-weight:700}
+.match-table td.num{text-align:center;font-weight:700}
+.diagram-card{background:#fff;border-radius:18px;padding:18px 22px;border:1px solid #e5e5e7;box-shadow:0 2px 10px rgba(0,0,0,.05)}
+.legend-row{display:flex;gap:18px;margin-top:10px;flex-wrap:wrap;justify-content:center}
+.legend-chip{display:flex;align-items:center;gap:6px;font-size:12px;color:#2d1b4e}
+.legend-dot{width:12px;height:12px;border-radius:4px;display:inline-block}
+.closing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:6px}
+.closing-card{background:#fff;border-radius:18px;padding:24px;border:1px solid #e5e5e7;box-shadow:0 2px 10px rgba(0,0,0,.05);text-align:center}
+.closing-card .icon{font-size:32px;font-weight:800;background:linear-gradient(135deg,#2d1b4e,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-family:Georgia,serif;margin-bottom:8px}
+.closing-card h4{color:#2d1b4e;font-size:15.5px;margin-bottom:6px}
+.closing-card p{font-size:13px;line-height:1.5}
+.case-box{background:#fff;border-radius:18px;padding:22px 24px;border:2px solid #00d4ff;box-shadow:0 4px 18px rgba(0,212,255,.15);margin-top:16px}
+.case-box h3{color:#2d1b4e;font-size:18px;margin-bottom:8px}
+.case-box p{font-size:13.5px;line-height:1.55}
+.case-box .tools{margin-top:10px;font-size:12.5px;color:#2d1b4e}
+.next-week-box{background:linear-gradient(135deg,#2d1b4e,#00d4ff);color:#fff;border-radius:16px;padding:14px 22px;margin-top:14px;text-align:center}
+.next-week-box .label{font-size:11px;opacity:.85;letter-spacing:2px;text-transform:uppercase;margin-bottom:4px}
+.next-week-box .content{font-size:14px;line-height:1.5}
+.status-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:6px}
+.status-card{border-radius:14px;padding:16px 18px;border:1px solid #e5e5e7;background:#fff}
+.status-card .lbl{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px}
+.status-card.ok{border-left:5px solid #2d8659}
+.status-card.ok .lbl{color:#1a5e3a}
+.status-card.mid{border-left:5px solid #c79a2e}
+.status-card.mid .lbl{color:#8a6410}
+.status-card.hot{border-left:5px solid #a3213f}
+.status-card.hot .lbl{color:#a3213f}
+.status-card p{font-size:12.5px;line-height:1.45}
+.status-card .src{font-size:11px;color:#6e6e73;font-style:italic;margin-top:6px}
+.code-strip{background:#2d1b4e;border-radius:14px;padding:16px 20px;margin-top:14px;font-family:'Consolas','Courier New',monospace;font-size:13px;color:#eaf9fe;line-height:1.7;overflow-x:auto}
+.code-strip .cm{color:#9b9ba1}
+.code-strip .hl{color:#00d4ff;font-weight:700}
+.navigation{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;gap:14px;z-index:1000;background:rgba(245,245,247,.85);backdrop-filter:blur(14px);padding:10px 14px;border-radius:50px;border:1px solid rgba(229,229,231,.6);box-shadow:0 6px 22px rgba(0,0,0,.1)}
+.nav-button{background:linear-gradient(135deg,#2d1b4e,#00d4ff);border:none;color:#fff;padding:12px 24px;border-radius:50px;cursor:pointer;font-size:13.5px;font-weight:600;transition:all .3s}
+.nav-button:disabled{opacity:.4;cursor:not-allowed}
+.slide-number{position:fixed;top:22px;right:28px;color:#6e6e73;font-size:13px;z-index:1000;font-weight:600;background:rgba(255,255,255,.92);padding:6px 14px;border-radius:20px;border:1px solid #e5e5e7}
+.logo-area{position:fixed;top:18px;left:26px;z-index:1000}
+.logo-area img{max-width:120px;height:auto}
+@media (max-width:900px){.slide{padding:40px 28px 130px}.slide-title{font-size:24px}.cover-title{font-size:38px}
+.questions-grid,.two-col,.two-col.even,.two-col.wide-left,.two-col.wide-right,.mini-cards,.mini-cards.two,.mini-cards.four,.closing-grid,.status-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="logo-area"><img src="../../assets/images/logo-ulacit.png" alt="ULACIT"></div>
+<div class="slide-number"><span id="currentSlide">1</span> / <span id="totalSlides">16</span></div>
+
+<div class="presentation-container">
+
+<!-- 1 PORTADA -->
+<div class="slide cover active">
+  <div class="cover-eyebrow">Semanas 14 y 15</div>
+  <h1 class="cover-title">Nadie le cobró al comensal. Alguien pagó la fiesta</h1>
+  <p class="cover-subtitle">Plataformas de dos lados, mecanismos en blockchain, colusión algorítmica y el momento en que los agentes de inteligencia artificial empiezan a fijar los precios por nosotros.</p>
+  <div class="cover-meta">Teoría de juegos, estrategia y toma de decisiones<br>Bachillerato en Inteligencia de Negocios y Gestión de la Información · ULACIT</div>
+</div>
+
+<!-- 2 GANCHO -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Hoja de ruta</div>
+    <h2 class="slide-title">Tres preguntas y un hilo que las une</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col wide-left">
+      <div class="form-block">
+        <span class="badge">La pregunta incómoda</span>
+        <h3>Usted pide comida por una aplicación y no paga comisión. El repartidor cobra. La app gana. ¿De dónde sale esa plata?</h3>
+        <p class="caption">Del restaurante, que entrega entre <strong>25 % y 29 %</strong> de cada pedido en Costa Rica. Y no es un abuso improvisado: es la solución matemáticamente correcta a un problema que hoy vamos a resolver nosotros mismos con números.</p>
+      </div>
+      <div class="gps-callout">
+        <div class="tag">El hilo de toda la sesión</div>
+        <h3>Incentivos, equilibrios y quién se lleva el excedente</h3>
+        <p>Una app de delivery, una cadena de bloques y un algoritmo de precios parecen tres mundos distintos. Los tres son el mismo problema: <strong>alguien diseña las reglas y todos los demás juegan dentro de ellas</strong>.</p>
+        <div class="punch">Y al final aparece el giro: cuando quien juega ya no es una persona sino un algoritmo que aprende, las reglas que creíamos seguras dejan de serlo.</div>
+      </div>
+    </div>
+    <div class="questions-grid" style="margin-top:20px">
+      <div class="question-card"><div class="question-num">01</div><div class="question-tag">Plataformas</div><p class="question-text">¿Por qué <strong>un lado paga todo</strong> y el otro no paga nada, y por qué eso no es un capricho?</p></div>
+      <div class="question-card"><div class="question-num">02</div><div class="question-tag">Blockchain y precios</div><p class="question-text">¿Cuándo un algoritmo de precios deja de competir y empieza, sin que nadie se lo pida, a <strong>coludir</strong>?</p></div>
+      <div class="question-card"><div class="question-num">03</div><div class="question-tag">Agentes de IA</div><p class="question-text">¿Qué pasa cuando el que negocia y pone precios ya <strong>no es humano</strong>?</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- 3 DOS LADOS -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · el modelo</div>
+    <h2 class="slide-title">El huevo y la gallina: ningún lado llega primero</h2>
+  </div>
+  <div class="slide-body">
+    <div class="diagram-card">
+      <svg viewBox="0 0 900 210" style="width:100%;height:auto">
+        <rect x="60" y="55" width="200" height="90" rx="16" fill="#f3f0fa" stroke="#2d1b4e" stroke-width="2.5"/>
+        <text x="160" y="92" text-anchor="middle" font-size="16" font-weight="800" fill="#2d1b4e">Restaurantes</text>
+        <text x="160" y="115" text-anchor="middle" font-size="12.5" fill="#6e6e73">solo entran si hay comensales</text>
+        <rect x="640" y="55" width="200" height="90" rx="16" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2.5"/>
+        <text x="740" y="92" text-anchor="middle" font-size="16" font-weight="800" fill="#2d1b4e">Comensales</text>
+        <text x="740" y="115" text-anchor="middle" font-size="12.5" fill="#6e6e73">solo bajan la app si hay restaurantes</text>
+        <rect x="340" y="60" width="220" height="80" rx="14" fill="#2d1b4e"/>
+        <text x="450" y="95" text-anchor="middle" font-size="15" font-weight="800" fill="#00d4ff">La plataforma</text>
+        <text x="450" y="118" text-anchor="middle" font-size="12" fill="#fff">pone las dos tarifas</text>
+        <path d="M265 85 L335 85" stroke="#2d8659" stroke-width="3" marker-end="url(#ar1)"/>
+        <path d="M635 85 L565 85" stroke="#2d8659" stroke-width="3" marker-end="url(#ar1)"/>
+        <path d="M335 118 L265 118" stroke="#c79a2e" stroke-width="3" marker-end="url(#ar2)"/>
+        <path d="M565 118 L635 118" stroke="#c79a2e" stroke-width="3" marker-end="url(#ar2)"/>
+        <defs>
+          <marker id="ar1" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d8659"/></marker>
+          <marker id="ar2" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#c79a2e"/></marker>
+        </defs>
+        <text x="450" y="175" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1a5e3a">Cada lado le da valor al otro sin quererlo: eso es una externalidad de red cruzada</text>
+      </svg>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · SINPE Móvil</span>Si una pulpería acepta SINPE pero nadie lo tiene instalado, no le sirve de nada. Si todo el país lo tiene pero ninguna pulpería lo acepta, tampoco. <strong>El BCCR rompió el empate regalándole el servicio al usuario</strong> hasta que hubo masa crítica. Nadie llega primero por su cuenta: alguien tiene que subsidiar a un lado.</div>
+    <div class="foot-note">Rochet y Tirole (2003) le pusieron nombre a esto y ganaron con ello el Nobel de 2014. La idea que sigue es la que de verdad importa.</div>
+  </div>
+</div>
+
+<!-- 4 ESTRUCTURA VS NIVEL -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · la idea central</div>
+    <h2 class="slide-title">No importa cuánto cobra. Importa a quién se lo cobra</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block">
+        <span class="badge red">Reparto parejo</span>
+        <h3>Cobrarle la mitad a cada lado</h3>
+        <svg viewBox="0 0 380 90" style="width:100%;height:auto">
+          <rect x="20" y="25" width="150" height="40" rx="8" fill="#a3213f" opacity=".8"/>
+          <text x="95" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Restaurante 50</text>
+          <rect x="205" y="25" width="150" height="40" rx="8" fill="#a3213f" opacity=".8"/>
+          <text x="280" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Comensal 50</text>
+        </svg>
+        <p class="caption">Parece justo. El comensal ve un cobro y se va. Sin comensales, el restaurante se va detrás. <strong>La plataforma se queda vacía.</strong></p>
+      </div>
+      <div class="form-block">
+        <span class="badge alt">Reparto asimétrico</span>
+        <h3>Cobrarle todo a un solo lado</h3>
+        <svg viewBox="0 0 380 90" style="width:100%;height:auto">
+          <rect x="20" y="25" width="240" height="40" rx="8" fill="#1a5e3a"/>
+          <text x="140" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">Restaurante 100</text>
+          <rect x="275" y="25" width="80" height="40" rx="8" fill="#e5e5e7"/>
+          <text x="315" y="50" text-anchor="middle" font-size="13" font-weight="800" fill="#6e6e73">Comensal 0</text>
+        </svg>
+        <p class="caption">La plataforma cobra <strong>exactamente lo mismo en total</strong>. Pero hay comensales, hay pedidos y el restaurante llena mesas. Por eso acepta pagar.</p>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · la fiesta y el patrocinador</span>Una fiesta cobra entrada a los hombres y deja pasar gratis a las mujeres. No es galantería: es que <strong>un lado atrae al otro</strong>. El que atrae entra gratis. El que viene atraído paga. Las tarjetas de crédito hacen lo mismo (le dan puntos al tarjetahabiente y le cobran al comercio) y OpenTable también.</div>
+    <div class="foot-note">La regla en una línea: <strong>se subsidia al lado más sensible al precio y que más valor le da al otro; se cobra al lado que no puede irse.</strong></div>
+  </div>
+</div>
+
+<!-- 5 QUIEN PAGA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · en el mundo real</div>
+    <h2 class="slide-title">Quién paga en las plataformas que usamos todos los días</h2>
+  </div>
+  <div class="slide-body">
+    <table class="match-table">
+      <tr><th>Plataforma</th><th>Lado subsidiado</th><th>Lado que paga</th><th style="text-align:center">Cuánto</th></tr>
+      <tr class="hl"><td>Uber Eats y PedidosYa en Costa Rica</td><td>El comensal</td><td>El restaurante</td><td class="num">25 % a 29 %</td></tr>
+      <tr><td>OpenTable</td><td>El comensal, que no paga nada</td><td>El restaurante</td><td class="num">149 a 499 USD al mes</td></tr>
+      <tr><td>Airbnb, esquema dividido</td><td>Ninguno del todo</td><td>Sobre todo el huésped</td><td class="num">3 % anfitrión + 14 % huésped</td></tr>
+      <tr><td>MercadoLibre</td><td>El comprador</td><td>El vendedor</td><td class="num">cerca de 12 % a 20 %</td></tr>
+      <tr class="hl"><td>Tarjetas de crédito</td><td>El tarjetahabiente, que gana puntos</td><td>El comercio</td><td class="num">comisión por transacción</td></tr>
+    </table>
+    <div class="mini-cards" style="margin-top:18px">
+      <div class="mini-card p"><h4>Multi-homing</h4><p>El chofer que anda en Uber y DiDi a la vez, o usted con las dos apps de delivery abiertas comparando precios.</p><p class="ex">Reduce el poder de cada plataforma</p></div>
+      <div class="mini-card"><h4>Single-homing</h4><p>El restaurante que solo puede darse el lujo de estar en una app. Queda cautivo, y por eso le cobran más.</p><p class="ex">Ahí está el poder de mercado</p></div>
+      <div class="mini-card r"><h4>Cuando el Estado entra</h4><p>En abril de 2025 la Comisión Europea puso sus primeras multas por el reglamento de mercados digitales: 500 millones de euros a Apple y 200 millones a Meta.</p><p class="ex">La estructura de fees ya es materia regulada</p></div>
+    </div>
+    <div class="caveat-note"><strong>Advertencia de datos:</strong> estos porcentajes cambian seguido y varios provienen de reportajes y de fuentes de industria, no de estados financieros auditados. Si los usan en el proyecto, cítenlos con su fecha y digan de dónde salieron.</div>
+  </div>
+</div>
+
+<!-- 6 PROOF OF STAKE -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · blockchain</div>
+    <h2 class="slide-title">Proof of stake: poner una fianza en vez de quemar electricidad</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col wide-left">
+      <div class="diagram-card">
+        <svg viewBox="0 0 620 190" style="width:100%;height:auto">
+          <rect x="20" y="30" width="170" height="120" rx="14" fill="#fdf3f3" stroke="#a3213f" stroke-width="2"/>
+          <text x="105" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#a3213f">Proof of work</text>
+          <text x="105" y="85" text-anchor="middle" font-size="12" fill="#6e2430">Gano el derecho</text>
+          <text x="105" y="103" text-anchor="middle" font-size="12" fill="#6e2430">gastando electricidad</text>
+          <text x="105" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#a3213f">Costo hundido</text>
+          <path d="M205 90 L255 90" stroke="#2d1b4e" stroke-width="3" marker-end="url(#ar3)"/>
+          <defs><marker id="ar3" markerWidth="9" markerHeight="9" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#2d1b4e"/></marker></defs>
+          <rect x="270" y="30" width="170" height="120" rx="14" fill="#e7f4ec" stroke="#1a5e3a" stroke-width="2"/>
+          <text x="355" y="58" text-anchor="middle" font-size="14" font-weight="800" fill="#1a5e3a">Proof of stake</text>
+          <text x="355" y="85" text-anchor="middle" font-size="12" fill="#1a5e3a">Deposito 32 ETH</text>
+          <text x="355" y="103" text-anchor="middle" font-size="12" fill="#1a5e3a">como garantía</text>
+          <text x="355" y="130" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1a5e3a">Capital en riesgo</text>
+          <rect x="465" y="30" width="140" height="55" rx="12" fill="#e7f4ec" stroke="#2d8659" stroke-width="2"/>
+          <text x="535" y="52" text-anchor="middle" font-size="12.5" font-weight="800" fill="#1a5e3a">Me porto bien</text>
+          <text x="535" y="71" text-anchor="middle" font-size="12" fill="#1a5e3a">recompensa</text>
+          <rect x="465" y="95" width="140" height="55" rx="12" fill="#fdf3f3" stroke="#a3213f" stroke-width="2"/>
+          <text x="535" y="117" text-anchor="middle" font-size="12.5" font-weight="800" fill="#a3213f">Hago trampa</text>
+          <text x="535" y="136" text-anchor="middle" font-size="12" fill="#a3213f">pierdo el depósito</text>
+          <path d="M445 70 L462 58" stroke="#2d8659" stroke-width="2.5"/>
+          <path d="M445 110 L462 122" stroke="#a3213f" stroke-width="2.5"/>
+        </svg>
+      </div>
+      <div class="gps-callout">
+        <div class="tag">Por qué esto es teoría de juegos</div>
+        <h3>La seguridad dejó de ser física y pasó a ser económica</h3>
+        <p>Atacar la red ya no cuesta electricidad: cuesta <strong>poner en riesgo su propia plata</strong>. El mecanismo está diseñado para que portarse mal nunca sea la mejor respuesta.</p>
+        <div class="punch">El cambio de 2022 redujo el consumo eléctrico de Ethereum en más de <strong>99,98 %</strong>. No es una estimación de marketing: es una medición.</div>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · el depósito del alquiler</span>Cuando usted alquila, deja un mes de depósito. Nadie lo vigila las veinticuatro horas: simplemente <strong>si rompe algo, pierde el depósito</strong>. Eso es todo el proof of stake. Y el castigo por hacer trampa tiene nombre propio: <em>slashing</em>.</div>
+  </div>
+</div>
+
+<!-- 7 MEV Y PBS -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · el impuesto invisible</div>
+    <h2 class="slide-title">MEV: el que arma el bloque decide quién va primero</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block">
+        <span class="badge red">El problema</span>
+        <h3>Sus transacciones son públicas antes de ejecutarse</h3>
+        <p class="caption">Quien arma el bloque ve su orden de compra antes de que se ejecute y puede <strong>ponerse adelante</strong>, dejar que su compra suba el precio y vender después. Se le llama <em>sandwich</em>, y en 2025 representó más de la mitad del volumen de este tipo de operaciones.</p>
+      </div>
+      <div class="form-block">
+        <span class="badge alt">El arreglo: separar los roles</span>
+        <h3>Que quien arme el bloque no sea quien lo proponga</h3>
+        <svg viewBox="0 0 400 120" style="width:100%;height:auto">
+          <rect x="10" y="15" width="110" height="42" rx="10" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2"/>
+          <text x="65" y="34" text-anchor="middle" font-size="11.5" font-weight="800" fill="#2d1b4e">Builders</text>
+          <text x="65" y="49" text-anchor="middle" font-size="10.5" fill="#6e6e73">arman y pujan</text>
+          <rect x="145" y="15" width="110" height="42" rx="10" fill="#f3f0fa" stroke="#2d1b4e" stroke-width="2"/>
+          <text x="200" y="34" text-anchor="middle" font-size="11.5" font-weight="800" fill="#2d1b4e">Subasta</text>
+          <text x="200" y="49" text-anchor="middle" font-size="10.5" fill="#6e6e73">gana la puja alta</text>
+          <rect x="280" y="15" width="110" height="42" rx="10" fill="#e7f4ec" stroke="#1a5e3a" stroke-width="2"/>
+          <text x="335" y="34" text-anchor="middle" font-size="11.5" font-weight="800" fill="#1a5e3a">Proposer</text>
+          <text x="335" y="49" text-anchor="middle" font-size="10.5" fill="#1a5e3a">solo elige</text>
+          <path d="M122 36 L142 36" stroke="#6e6e73" stroke-width="2.5" marker-end="url(#ar4)"/>
+          <path d="M257 36 L277 36" stroke="#6e6e73" stroke-width="2.5" marker-end="url(#ar4)"/>
+          <defs><marker id="ar4" markerWidth="8" markerHeight="8" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#6e6e73"/></marker></defs>
+          <text x="200" y="90" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2d1b4e">Así el validador pequeño no necesita ser experto</text>
+          <text x="200" y="107" text-anchor="middle" font-size="11.5" font-weight="700" fill="#2d1b4e">en extraer valor para poder competir</text>
+        </svg>
+      </div>
+    </div>
+    <div class="mini-cards two" style="margin-top:16px">
+      <div class="mini-card r"><div class="stat">90 %</div><p>de los bloques de Ethereum se construyen a través de este mercado de subastas</p></div>
+      <div class="mini-card r"><div class="stat">3 builders</div><p>produjeron cerca del <strong>80 %</strong> de esos bloques. El remedio contra la centralización terminó concentrado.</p></div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · la fila del banco</span>Imagine que el cajero puede ver su trámite antes de atenderlo y <strong>reordenar la fila</strong> para que primero pase su primo, que va a hacer justo la operación que se beneficia de la suya. No es ilegal en ese sistema: es una consecuencia de que la fila sea transparente. Separar roles es como poner a una persona a armar el orden y a otra distinta a aprobarlo.</div>
+  </div>
+</div>
+
+<!-- 8 GOBERNANZA DAO -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · gobernanza</div>
+    <h2 class="slide-title">Un token, un voto: la plutocracia con otro nombre</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="diagram-card">
+        <svg viewBox="0 0 420 175" style="width:100%;height:auto">
+          <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Voto por token: quien más compró, decide</text>
+          <rect x="40" y="30" width="60" height="110" rx="6" fill="#a3213f"/>
+          <text x="70" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">ballena</text>
+          <rect x="130" y="105" width="60" height="35" rx="6" fill="#c9c9d0"/>
+          <text x="160" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">socio</text>
+          <rect x="220" y="122" width="60" height="18" rx="6" fill="#c9c9d0"/>
+          <text x="250" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">socio</text>
+          <rect x="310" y="130" width="60" height="10" rx="5" fill="#c9c9d0"/>
+          <text x="340" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">socio</text>
+        </svg>
+      </div>
+      <div class="diagram-card">
+        <svg viewBox="0 0 420 175" style="width:100%;height:auto">
+          <text x="210" y="18" text-anchor="middle" font-size="13" font-weight="800" fill="#1a5e3a">Voto cuadrático: cada voto extra cuesta más caro</text>
+          <rect x="40" y="82" width="60" height="58" rx="6" fill="#2d8659"/>
+          <text x="70" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">ballena</text>
+          <rect x="130" y="98" width="60" height="42" rx="6" fill="#8fc7a8"/>
+          <text x="160" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">socio</text>
+          <rect x="220" y="107" width="60" height="33" rx="6" fill="#8fc7a8"/>
+          <text x="250" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">socio</text>
+          <rect x="310" y="115" width="60" height="25" rx="6" fill="#8fc7a8"/>
+          <text x="340" y="155" text-anchor="middle" font-size="11.5" fill="#6e6e73">socio</text>
+        </svg>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · la asociación de desarrollo del barrio</span>Si en la asamblea manda quien más cuotas pagó, siempre gana el mismo. El voto cuadrático es como decir: <strong>su primer voto cuesta mil colones, el segundo cuatro mil, el tercero nueve mil</strong>. El rico sigue teniendo más peso, pero ya no arrasa. Ese es todo el truco.</div>
+    <div class="foot-note">Caso real: en diciembre de 2025 Uniswap aprobó activar su cobro de comisiones y quemar 100 millones de sus tokens, con <strong>125 millones de votos a favor y 742 en contra</strong>. Una unanimidad así también dice algo: quizá no había mucha oposición organizada.</div>
+  </div>
+</div>
+
+<!-- 9 COLUSION ALGORITMICA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · el corazón de la sesión</div>
+    <h2 class="slide-title">Dos algoritmos que nunca se hablaron y aun así subieron los precios</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col wide-left">
+      <div class="form-block">
+        <span class="badge">De dónde viene esto</span>
+        <h3>Es el juego repetido de la semana 8, otra vez</h3>
+        <p class="caption">Bajar el precio conviene hoy y sale caro mañana, si el rival se da cuenta y responde. Cuando el juego se repite muchas veces y <strong>cada uno puede ver y castigar</strong> lo que hizo el otro, sostener precios altos deja de ser un acuerdo ilegal y pasa a ser simplemente un equilibrio.</p>
+        <p class="caption">Un algoritmo que aprende por prueba y error <strong>puede descubrir esa estrategia solo</strong>, sin que nadie se lo enseñe y sin comunicarse con nadie.</p>
+      </div>
+      <div class="gps-callout">
+        <div class="tag">Lo que se necesita para que funcione</div>
+        <h3>Tres ingredientes, ninguno ilegal</h3>
+        <p><strong>1.</strong> Que el juego se repita muchas veces.<br><strong>2.</strong> Que yo pueda <strong>observar</strong> lo que hace el otro.<br><strong>3.</strong> Que pueda <strong>castigarlo</strong> rápido si se desvía.</p>
+        <div class="punch">Retenga el punto 2. Toda la regulación de 2025 y 2026 apunta ahí, y en el laboratorio de hoy lo van a comprobar ustedes.</div>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · las dos pulperías de la esquina</span>Dos pulperías vecinas venden la gaseosa cara. Nunca hablaron. Pero cada una <strong>ve el precio de la otra desde la acera</strong>, y sabe que si baja, la otra baja al día siguiente y ambas pierden. Así se sostienen los precios altos sin conversación, sin acuerdo y sin nada que un juez pueda leer. Ahora quítele la acera: si no pueden verse, el castigo desaparece y el equilibrio se cae.</div>
+  </div>
+</div>
+
+<!-- 10 EVIDENCIA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · honestidad científica</div>
+    <h2 class="slide-title">Qué está probado, qué está en disputa</h2>
+  </div>
+  <div class="slide-body">
+    <div class="status-row">
+      <div class="status-card ok">
+        <div class="lbl">Publicado y arbitrado</div>
+        <p>Algoritmos de aprendizaje por refuerzo aprenden a cobrar <strong>precios por encima del competitivo sin comunicarse</strong>, y sostienen esos precios con castigos seguidos de un regreso gradual a la cooperación.</p>
+        <p class="src">Calvano y otros, American Economic Review, 2020</p>
+      </div>
+      <div class="status-card ok">
+        <div class="lbl">Publicado y arbitrado</div>
+        <p>Evidencia de campo en gasolineras alemanas: adoptar precios algorítmicos <strong>subió los márgenes</strong>, pero solo cuando <strong>ambas</strong> estaciones del duopolio lo adoptaron.</p>
+        <p class="src">Assad y otros, Journal of Political Economy, 2024</p>
+      </div>
+      <div class="status-card hot">
+        <div class="lbl">Frontera sin arbitrar</div>
+        <p>Agentes construidos sobre modelos de lenguaje alcanzan precios supracompetitivos por su cuenta, y <strong>frases aparentemente inofensivas en la instrucción</strong> cambian cuánto coluden.</p>
+        <p class="src">Fish, Gonczarowski y Shorrer, 2024, documento de trabajo</p>
+      </div>
+    </div>
+    <div class="caveat-note"><strong>Cómo usar esto en el proyecto:</strong> los dos primeros hallazgos se pueden citar como evidencia establecida. El tercero es sugerente pero todavía no pasó revisión por pares. Decir cuál es cuál <strong>suma puntos</strong>; presentarlos todos como verdad probada los resta.</div>
+    <div class="analogy"><span class="lead">La distinción que importa</span>La ley antimonopolio tradicional persigue el <strong>acuerdo</strong>: una reunión, un correo, una llamada. Aquí no hay nada de eso. Hay dos máquinas optimizando por separado que llegan al mismo lugar al que habrían llegado dos gerentes conspirando en un restaurante. <strong>El resultado es idéntico; la prueba, imposible.</strong></div>
+  </div>
+</div>
+
+<!-- 11 REALPAGE -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 1 · el caso ancla</div>
+    <h2 class="slide-title">RealPage: cuando el software le puso precio a los alquileres de un país</h2>
+  </div>
+  <div class="slide-body">
+    <div class="diagram-card">
+      <svg viewBox="0 0 900 165" style="width:100%;height:auto">
+        <line x1="55" y1="70" x2="850" y2="70" stroke="#c9c9d0" stroke-width="3"/>
+        <circle cx="110" cy="70" r="10" fill="#2d1b4e"/>
+        <text x="110" y="45" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">Ago 2024</text>
+        <text x="110" y="98" text-anchor="middle" font-size="11.5" fill="#6e6e73">El Departamento</text>
+        <text x="110" y="113" text-anchor="middle" font-size="11.5" fill="#6e6e73">de Justicia demanda</text>
+        <circle cx="300" cy="70" r="10" fill="#00b4dc"/>
+        <text x="300" y="45" text-anchor="middle" font-size="12.5" font-weight="800" fill="#2d1b4e">2024-2025</text>
+        <text x="300" y="98" text-anchor="middle" font-size="11.5" fill="#6e6e73">Ciudades y estados</text>
+        <text x="300" y="113" text-anchor="middle" font-size="11.5" fill="#6e6e73">lo prohíben por ley</text>
+        <circle cx="500" cy="70" r="12" fill="#a3213f"/>
+        <text x="500" y="42" text-anchor="middle" font-size="12.5" font-weight="800" fill="#a3213f">Nov 2025</text>
+        <text x="500" y="98" text-anchor="middle" font-size="11.5" font-weight="700" fill="#a3213f">Acuerdo sin multa</text>
+        <text x="500" y="113" text-anchor="middle" font-size="11.5" fill="#6e2430">y sin admitir culpa</text>
+        <circle cx="690" cy="70" r="10" fill="#2d8659"/>
+        <text x="690" y="45" text-anchor="middle" font-size="12.5" font-weight="800" fill="#1a5e3a">2026</text>
+        <text x="690" y="98" text-anchor="middle" font-size="11.5" fill="#6e6e73">Aprobación final</text>
+        <text x="690" y="113" text-anchor="middle" font-size="11.5" fill="#6e6e73">del acuerdo</text>
+        <circle cx="830" cy="70" r="10" fill="#c79a2e"/>
+        <text x="830" y="45" text-anchor="middle" font-size="12.5" font-weight="800" fill="#8a6410">Hoy</text>
+        <text x="830" y="98" text-anchor="middle" font-size="11.5" fill="#6e6e73">Demandas</text>
+        <text x="830" y="113" text-anchor="middle" font-size="11.5" fill="#6e6e73">cruzadas abiertas</text>
+        <text x="450" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#2d1b4e">La acusación en una frase: el software reemplazó la competencia por coordinación</text>
+      </svg>
+    </div>
+    <div class="two-col even" style="margin-top:16px">
+      <div class="form-block">
+        <span class="badge red">Lo que el acuerdo prohibió</span>
+        <h3>No le tocaron el precio. Le tocaron los datos</h3>
+        <p class="caption">Entrenar los modelos <strong>solo con datos históricos de al menos doce meses</strong>. Prohibido usar información de arrendamientos en tiempo real. Nada más granular que el nivel estatal. Un supervisor independiente durante siete años.</p>
+      </div>
+      <div class="form-block">
+        <span class="badge">Por qué ese remedio y no otro</span>
+        <h3>Porque sin observar al rival no hay castigo posible</h3>
+        <p class="caption">Volvamos a las pulperías: <strong>el regulador les quitó la acera</strong>. Si el algoritmo no puede ver lo que el competidor está cobrando hoy, no puede detectar una rebaja ni responderla, y el equilibrio de precios altos se desarma solo.</p>
+      </div>
+    </div>
+    <div class="foot-note">En el laboratorio de hoy van a <strong>medir exactamente eso</strong>: cuánto cae la colusión cuando se cambia la información que el algoritmo puede ver.</div>
+  </div>
+</div>
+
+<!-- 12 MARL -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 2 · cambio de escena</div>
+    <h2 class="slide-title">Cuando todos aprenden a la vez, el piso se mueve</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block">
+        <span class="badge muted">Un solo agente aprendiendo</span>
+        <h3>El mundo se queda quieto mientras yo mejoro</h3>
+        <p class="caption">Un algoritmo que aprende a jugar solo enfrenta un entorno con reglas fijas. Practica, mide, corrige. Tarde o temprano converge.</p>
+      </div>
+      <div class="form-block">
+        <span class="badge red">Varios agentes aprendiendo</span>
+        <h3>Cada vez que mejoro, cambio el problema de los demás</h3>
+        <p class="caption">Y cuando ellos mejoran, cambian el mío. Se le llama <strong>no estacionariedad</strong>, y es la razón por la que aquí las garantías de convergencia se caen.</p>
+      </div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · aprender a manejar en Costa Rica</span>Aprender en un parqueo vacío es fácil: los conos no se mueven. Aprender en presa de las cinco de la tarde es otra cosa, porque <strong>todos los demás también están aprendiendo a esquivarlo a usted</strong>. Ese es exactamente el salto de un agente a muchos, y es donde está la dificultad matemática.</div>
+    <div class="foot-note">Detalle nada menor: <strong>el laboratorio de hoy es justamente esto.</strong> Dos algoritmos de precios que aprenden al mismo tiempo son, literalmente, un sistema multiagente.</div>
+  </div>
+</div>
+
+<!-- 13 EQUILIBRIOS -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 2 · el resultado técnico</div>
+    <h2 class="slide-title">Nash es difícil de calcular. Y por eso las máquinas llegan a otra parte</h2>
+  </div>
+  <div class="slide-body">
+    <div class="diagram-card">
+      <svg viewBox="0 0 880 205" style="width:100%;height:auto">
+        <ellipse cx="440" cy="115" rx="410" ry="80" fill="#eaf9fe" stroke="#00b4dc" stroke-width="2"/>
+        <text x="440" y="55" text-anchor="middle" font-size="13.5" font-weight="800" fill="#00637d">Equilibrio correlacionado grueso</text>
+        <text x="440" y="73" text-anchor="middle" font-size="11.5" fill="#00637d">fácil de alcanzar aprendiendo</text>
+        <ellipse cx="440" cy="128" rx="270" ry="58" fill="#e7f4ec" stroke="#2d8659" stroke-width="2"/>
+        <text x="440" y="105" text-anchor="middle" font-size="13" font-weight="800" fill="#1a5e3a">Equilibrio correlacionado</text>
+        <ellipse cx="440" cy="140" rx="130" ry="36" fill="#f3f0fa" stroke="#2d1b4e" stroke-width="2.5"/>
+        <text x="440" y="138" text-anchor="middle" font-size="13" font-weight="800" fill="#2d1b4e">Nash</text>
+        <text x="440" y="156" text-anchor="middle" font-size="11" fill="#6e6e73">computacionalmente duro</text>
+        <text x="130" y="190" text-anchor="middle" font-size="11.5" font-style="italic" fill="#6e6e73">más grande y más alcanzable</text>
+        <text x="740" y="190" text-anchor="middle" font-size="11.5" font-style="italic" fill="#6e6e73">más exigente y menos alcanzable</text>
+      </svg>
+    </div>
+    <div class="two-col even" style="margin-top:16px">
+      <div class="form-block"><span class="badge red">El obstáculo</span><h3>Calcular un equilibrio de Nash es un problema duro</h3><p class="caption">Está demostrado formalmente. No es que todavía no hayamos encontrado el método: es que <strong>casi con seguridad no existe uno rápido</strong> para el caso general.</p></div>
+      <div class="form-block"><span class="badge alt">La salida</span><h3>Los algoritmos que minimizan arrepentimiento sí convergen</h3><p class="caption">Pero convergen, en promedio, a los conceptos más anchos del dibujo. La máquina no encuentra Nash: <strong>encuentra algo más flojo y se acomoda ahí</strong>.</p></div>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · el semáforo</span>Nash sería que cada carro calcule por su cuenta exactamente cuándo pasar, sin coordinarse con nadie. El equilibrio correlacionado es que haya <strong>un semáforo</strong>: una señal común que todos siguen porque a nadie le conviene ignorarla. Es más fácil de conseguir y muchas veces deja a todos mejor.</div>
+  </div>
+</div>
+
+<!-- 14 CASOS MAQUINA -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 2 · lo que ya se logró</div>
+    <h2 class="slide-title">La máquina ya gana en póker, en Stratego y negociando</h2>
+  </div>
+  <div class="slide-body">
+    <div class="mini-cards">
+      <div class="mini-card p"><h4>Póker de seis jugadores</h4><p>Venció a profesionales en un juego con información oculta, faroles y varios rivales a la vez.</p><p class="ex">Pluribus, 2019</p></div>
+      <div class="mini-card"><h4>Stratego</h4><p>Nivel experto en un juego donde uno no ve las piezas del rival, aprendiendo sin conocer las reglas de antemano.</p><p class="ex">DeepNash, 2022</p></div>
+      <div class="mini-card g"><h4>Diplomacy</h4><p>Un juego que se gana <strong>negociando y haciendo alianzas por chat</strong>. Sacó más del doble del puntaje humano promedio y quedó en el 10 % superior de la liga.</p><p class="ex">Cicero, 2022</p></div>
+    </div>
+    <div class="gps-callout" style="margin-top:16px">
+      <div class="tag">El matiz que no se puede omitir</div>
+      <h3>Todo eso ocurre en mundos con reglas fijas y un marcador claro</h3>
+      <p>Demuestran juego experto en dominios cerrados. <strong>No demuestran</strong> razonamiento estratégico general ni comprensión del mundo. Un sistema que domina el póker no sabe negociar el contrato de su empresa.</p>
+    </div>
+    <div class="analogy"><span class="lead">Analogía · el ajedrecista</span>Alguien puede ser campeón nacional de ajedrez y ser malísimo para negociar el aumento de su salario. <strong>Ganar en un tablero con reglas escritas no es lo mismo que ganar donde las reglas se discuten mientras se juega.</strong></div>
+  </div>
+</div>
+
+<!-- 15 LLMS -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Bloque 2 · el cierre del curso</div>
+    <h2 class="slide-title">Los modelos de lenguaje juegan como nosotros, con nuestros defectos</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col even">
+      <div class="form-block">
+        <span class="badge alt">Lo que hacen bien</span>
+        <h3>Se comportan como un humano promedio</h3>
+        <p class="caption">En una batería de juegos de confianza, equidad y cooperación, el comportamiento resultó <strong>estadísticamente indistinguible</strong> del de decenas de miles de personas de más de cincuenta países, con tendencia al lado más cooperativo. Y juegan muy bien el dilema del prisionero repetido.</p>
+        <p class="ex" style="font-size:11.5px;color:#6e6e73;font-style:italic;margin-top:6px">PNAS, 2024 · Nature Human Behaviour, 2025</p>
+      </div>
+      <div class="form-block">
+        <span class="badge red">Dónde fallan</span>
+        <h3>No logran coordinarse</h3>
+        <p class="caption">En juegos donde hay que <strong>ponerse de acuerdo</strong> y no solo defenderse, el desempeño cae. Mejora si primero se les pide predecir en voz alta qué hará el otro, lo cual dice algo interesante: <strong>les cuesta ponerse en los zapatos del rival por su cuenta</strong>.</p>
+      </div>
+    </div>
+    <div class="gps-callout" style="margin-top:16px">
+      <div class="tag">Y aquí se cierra el círculo de la sesión</div>
+      <h3>Si dos empresas rivales ponen agentes de IA a fijar sus precios</h3>
+      <p>Vuelve el problema del bloque 1, pero amplificado: no hace falta que nadie ordene coludir. Basta con pedirle a cada agente que maximice utilidades y darle la capacidad de <strong>ver los precios del rival</strong>. La regulación de mercados de alquiler apenas está aprendiendo a lidiar con esto; los agentes autónomos van más rápido.</p>
+    </div>
+    <div class="caveat-note"><strong>Dónde estamos parados:</strong> esta última parte es frontera abierta, no manual cerrado. Si su proyecto entra aquí, la exigencia no es tener la respuesta, sino <strong>plantear bien la pregunta y decir qué evidencia haría falta</strong>.</div>
+  </div>
+</div>
+
+<!-- 16 CASO Y CIERRE -->
+<div class="slide">
+  <div class="slide-header">
+    <div class="slide-eyebrow">Manos a la obra</div>
+    <h2 class="slide-title">Lo que van a hacer ahora en Google Colab</h2>
+  </div>
+  <div class="slide-body">
+    <div class="two-col wide-left">
+      <div class="form-block">
+        <span class="badge">Cómo se usa el cuaderno</span>
+        <h3>Se abre en el navegador, se aprieta un botón y corre</h3>
+        <p class="caption">No hay que instalar nada ni saber programar. Cada celda tiene un bloque marcado <strong>CAMBIE AQUÍ</strong> con los pocos números que ustedes deciden. Todo lo demás ya está escrito.</p>
+        <div class="code-strip">
+<span class="cm"># ====== CAMBIE AQUÍ ======</span><br>
+comision_restaurante = <span class="hl">0.30</span>   <span class="cm"># 30 %</span><br>
+fee_comensal         = <span class="hl">0</span>      <span class="cm"># colones</span><br>
+<span class="cm"># =========================</span>
+        </div>
+        <p class="caption">Se cambia el número, se vuelve a apretar el botón de la celda y sale la tabla nueva. Eso es todo el flujo de trabajo de hoy.</p>
+      </div>
+      <div>
+        <div class="case-box">
+          <h3>Caso 13 · PagoTico entra al delivery</h3>
+          <p>PagoTico lanza <strong>PagoTico Delivery</strong> y tiene tres decisiones sobre la mesa: cómo repartir la tarifa entre restaurantes y comensales, si contratar o no un motor de precios automático que comparte proveedor con la competencia, y qué responderle a la comisión de competencia que ya está preguntando.</p>
+          <p class="tools"><strong>Tres laboratorios:</strong> estructura de tarifas, colusión algorítmica medida por ustedes, y auditoría de riesgo regulatorio.</p>
+        </div>
+        <div class="analogy"><span class="lead">El entregable</span>Un memo de dos páginas para la gerencia. No un reporte técnico: <strong>tres decisiones, cada una con el número que la respalda</strong>.</div>
+      </div>
+    </div>
+    <div class="foot-note">Tienen entre 40 y 60 minutos. Después, la <strong>ruleta</strong> elige un equipo al azar para exponer entre cinco y siete minutos.</div>
+  </div>
+</div>
+
+</div>
+
+<div class="navigation">
+  <button class="nav-button" id="prevBtn" onclick="changeSlide(-1)">&#8592; Anterior</button>
+  <button class="nav-button" id="nextBtn" onclick="changeSlide(1)">Siguiente &#8594;</button>
+</div>
+
+<script>
+let currentSlide=0;
+const slides=document.querySelectorAll('.slide');
+const totalSlides=slides.length;
+document.getElementById('totalSlides').textContent=totalSlides;
+function showSlide(n){
+  slides.forEach(s=>s.classList.remove('active'));
+  if(n>=totalSlides)currentSlide=totalSlides-1;else if(n<0)currentSlide=0;else currentSlide=n;
+  slides[currentSlide].classList.add('active');
+  window.scrollTo({top:0,behavior:'instant'});
+  document.getElementById('currentSlide').textContent=currentSlide+1;
+  document.getElementById('prevBtn').disabled=currentSlide===0;
+  document.getElementById('nextBtn').disabled=currentSlide===totalSlides-1;
+}
+function changeSlide(d){showSlide(currentSlide+d);}
+document.addEventListener('keydown',function(e){
+  const t=e.target.tagName;
+  if(t==='TEXTAREA'||t==='INPUT')return;
+  if(e.key==='ArrowLeft')changeSlide(-1);else if(e.key==='ArrowRight')changeSlide(1);
+});
+showSlide(0);
+</script>
+</body>
+</html>
